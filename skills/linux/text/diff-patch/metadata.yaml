@@ -1,0 +1,11 @@
+id: linux/text/diff-patch
+title: "对比与打补丁：diff/patch 的安全用法（含 dry-run）"
+domain: linux
+level: gold
+risk_level: medium
+platforms: [linux]
+tools: []
+tags: []
+last_verified: "2026-01-15"
+owners: ["LabRAI"]
+aliases: []

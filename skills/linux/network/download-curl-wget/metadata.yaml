@@ -1,11 +1,11 @@
 id: linux/network/download-curl-wget
 title: "下载与 HTTP 调试：curl/wget（header、重试、代理）"
 domain: linux
-level: bronze
+level: silver
 risk_level: low
 platforms: [linux]
 tools: []
 tags: []
-last_verified: ""
-owners: []
+last_verified: "2026-01-15"
+owners: ["LabRAI"]
 aliases: []

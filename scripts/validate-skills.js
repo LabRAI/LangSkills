@@ -62,6 +62,53 @@ function countMatches(text, re) {
   return m ? m.length : 0;
 }
 
+function normalizeLicenseToken(raw) {
+  let t = String(raw || "").trim();
+  if (!t) return "";
+
+  const url = t.match(/^https?:\/\/\S+$/i) ? t : null;
+  if (url) {
+    if (/^https?:\/\/creativecommons\.org\/licenses\/by\/4\.0\/?/i.test(url)) return "cc-by-4.0";
+    if (/^https?:\/\/creativecommons\.org\/licenses\/by-sa\/4\.0\/?/i.test(url)) return "cc-by-sa-4.0";
+    if (/^https?:\/\/creativecommons\.org\/publicdomain\/zero\/1\.0\/?/i.test(url)) return "cc0-1.0";
+    if (/^https?:\/\/opensource\.org\/licenses\/MIT/i.test(url)) return "mit";
+    if (/^https?:\/\/opensource\.org\/licenses\/Apache-2\.0/i.test(url)) return "apache-2.0";
+  }
+
+  t = t.replace(/\blicen[cs]e\b/gi, "").trim();
+  t = t.replace(/\s+/g, " ").trim();
+  t = t.replace(/[–—]/g, "-");
+  t = t.replace(/[_\s]+/g, "-");
+  t = t.replace(/[^a-zA-Z0-9.+-]/g, "-");
+  t = t.replace(/-+/g, "-").replace(/^-+/, "").replace(/-+$/, "");
+  return t.toLowerCase();
+}
+
+function loadLicensePolicy(policyPath) {
+  const p = String(policyPath || "").trim();
+  if (!p) throw new Error("Missing license policy path");
+  if (!exists(p)) throw new Error(`Missing license policy file: ${p}`);
+  let parsed = null;
+  try {
+    parsed = JSON.parse(readText(p));
+  } catch (e) {
+    throw new Error(`Invalid license policy JSON: ${p} (${String(e && e.message ? e.message : e)})`);
+  }
+  const allowed = new Set((parsed.allowed || []).map(normalizeLicenseToken).filter(Boolean));
+  const review = new Set((parsed.review || []).map(normalizeLicenseToken).filter(Boolean));
+  const denied = new Set((parsed.denied || []).map(normalizeLicenseToken).filter(Boolean));
+  return { allowed, review, denied, raw: parsed, path: p };
+}
+
+function classifyLicense(rawLicense, policy) {
+  const normalized = normalizeLicenseToken(rawLicense);
+  if (!normalized) return { classification: "review", normalized };
+  if (policy.denied.has(normalized)) return { classification: "denied", normalized };
+  if (policy.allowed.has(normalized)) return { classification: "allowed", normalized };
+  if (policy.review.has(normalized)) return { classification: "review", normalized };
+  return { classification: "review", normalized };
+}
+
 function parseArgs(argv) {
   const out = {
     skillsRoot: null,
@@ -69,6 +116,10 @@ function parseArgs(argv) {
     requireCommandCitations: false,
     requireSourceEvidence: false,
     requireLicenseFields: false,
+    licensePolicy: "scripts/license-policy.json",
+    failOnLicenseReview: false,
+    requireNoDuplicates: false,
+    requireRiskScan: false,
     requireSourcePolicy: false,
     requireNoVerbatimCopy: false,
     cacheDir: ".cache/web",
@@ -88,6 +139,15 @@ function parseArgs(argv) {
       out.requireSourceEvidence = true;
     } else if (a === "--require-license-fields") {
       out.requireLicenseFields = true;
+    } else if (a === "--license-policy") {
+      out.licensePolicy = argv[i + 1] || out.licensePolicy;
+      i++;
+    } else if (a === "--fail-on-license-review") {
+      out.failOnLicenseReview = true;
+    } else if (a === "--require-no-duplicates") {
+      out.requireNoDuplicates = true;
+    } else if (a === "--require-risk-scan") {
+      out.requireRiskScan = true;
     } else if (a === "--require-source-policy") {
       out.requireSourcePolicy = true;
     } else if (a === "--require-no-verbatim-copy") {
@@ -107,9 +167,11 @@ function parseArgs(argv) {
       out.requireSourcePolicy = true;
       out.requireNoTodo = true;
       out.requireSafetyNotes = true;
+      out.requireNoDuplicates = true;
+      out.requireRiskScan = true;
     } else if (a === "-h" || a === "--help") {
       console.log(
-        "Usage: node scripts/validate-skills.js [--skills-root <path>] [--cache-dir <path>] [--require-citations] [--require-command-citations] [--require-source-evidence] [--require-license-fields] [--require-source-policy] [--require-no-verbatim-copy] [--require-no-todo] [--require-safety-notes] [--strict]",
+        "Usage: node scripts/validate-skills.js [--skills-root <path>] [--cache-dir <path>] [--require-citations] [--require-command-citations] [--require-source-evidence] [--require-license-fields] [--license-policy <path>] [--fail-on-license-review] [--require-no-duplicates] [--require-risk-scan] [--require-source-policy] [--require-no-verbatim-copy] [--require-no-todo] [--require-safety-notes] [--strict]",
       );
       process.exit(0);
     }
@@ -323,6 +385,32 @@ if (skillDirs.length === 0) {
 }
 
 const errors = [];
+const warnings = [];
+const licensePolicyPath = args.licensePolicy ? path.resolve(repoRoot, args.licensePolicy) : path.join(repoRoot, "scripts", "license-policy.json");
+const licensePolicy = args.requireLicenseFields ? loadLicensePolicy(licensePolicyPath) : null;
+const libraryHashes = new Map(); // sha256 -> first skill id
+
+function riskRank(level) {
+  const v = String(level || "").trim().toLowerCase();
+  if (v === "low") return 0;
+  if (v === "medium") return 1;
+  if (v === "high") return 2;
+  return -1;
+}
+
+const RISK_PATTERNS = [
+  { min: "high", re: /\brm\s+-rf\b/i, hint: "rm -rf" },
+  { min: "high", re: /\bdd\s+if=/i, hint: "dd if=" },
+  { min: "high", re: /\bmkfs(?:\.[a-z0-9]+)?\b/i, hint: "mkfs" },
+  { min: "high", re: /\b(?:userdel|groupdel|deluser)\b/i, hint: "userdel/groupdel" },
+  { min: "high", re: /\b(?:kill|pkill)\s+-(?:9|KILL)\b/i, hint: "kill -9/-KILL" },
+  { min: "high", re: /\bvisudo\b/i, hint: "visudo" },
+  { min: "high", re: /\bmount\b/i, hint: "mount" },
+  { min: "medium", re: /\bpatch\b/i, hint: "patch" },
+  { min: "medium", re: /\bxargs\b/i, hint: "xargs" },
+  { min: "medium", re: /\bchmod\b/i, hint: "chmod" },
+  { min: "medium", re: /\bchown\b/i, hint: "chown" },
+];
 
 for (const skillDir of skillDirs) {
   const rel = path.relative(skillsRoot, skillDir);
@@ -363,21 +451,33 @@ for (const skillDir of skillDirs) {
   const examplesPath = path.join(skillDir, "reference", "examples.md");
 
   let metaRiskLevel = null;
+  let metaLevel = null;
   if (exists(metadataPath)) {
     const meta = readText(metadataPath);
     const id = parseSimpleYamlScalar(meta, "id");
+    const title = parseSimpleYamlScalar(meta, "title");
     const metaDomain = parseSimpleYamlScalar(meta, "domain");
+    const level = parseSimpleYamlScalar(meta, "level");
     const riskLevel = parseSimpleYamlScalar(meta, "risk_level");
     metaRiskLevel = riskLevel;
+    metaLevel = level;
 
     if (!id) errors.push(`[${relPosix}] metadata.yaml missing id`);
     if (id && id !== expectedId) {
       errors.push(`[${relPosix}] metadata id mismatch: '${id}' != '${expectedId}'`);
     }
 
+    if (!title) errors.push(`[${relPosix}] metadata.yaml missing title`);
+
     if (!metaDomain) errors.push(`[${relPosix}] metadata.yaml missing domain`);
     if (metaDomain && metaDomain !== domain) {
       errors.push(`[${relPosix}] metadata domain mismatch: '${metaDomain}' != '${domain}'`);
+    }
+
+    const allowedLevels = new Set(["bronze", "silver", "gold"]);
+    if (!level) errors.push(`[${relPosix}] metadata.yaml missing level`);
+    if (level && !allowedLevels.has(level)) {
+      errors.push(`[${relPosix}] invalid level: '${level}'`);
     }
 
     const allowedRisk = new Set(["low", "medium", "high"]);
@@ -385,10 +485,21 @@ for (const skillDir of skillDirs) {
     if (riskLevel && !allowedRisk.has(riskLevel)) {
       errors.push(`[${relPosix}] invalid risk_level: '${riskLevel}'`);
     }
+
+    if (level === "silver" || level === "gold") {
+      const owners = parseInlineYamlList(parseSimpleYamlScalar(meta, "owners")) || [];
+      const lastVerified = parseSimpleYamlScalar(meta, "last_verified") || "";
+      if (owners.length === 0) errors.push(`[${relPosix}] ${level} skill missing owners`);
+      if (!lastVerified) errors.push(`[${relPosix}] ${level} skill missing last_verified`);
+      else if (!/^\d{4}-\d{2}-\d{2}$/.test(lastVerified)) {
+        errors.push(`[${relPosix}] invalid last_verified (expected YYYY-MM-DD): '${lastVerified}'`);
+      }
+    }
   }
 
   if (exists(skillPath)) {
     const md = readText(skillPath);
+    const libraryMd = exists(libraryPath) ? readText(libraryPath) : "";
 
     const requiredHeadings = [
       { name: "Goal", re: /Goal\b/ },
@@ -480,6 +591,16 @@ for (const skillDir of skillDirs) {
           const lic = mLic ? String(mLic[1] || "").trim() : "";
           if (!lic) errors.push(`[${relPosix}] sources.md missing License for [${i}]`);
           else if (/^TODO\b/i.test(lic)) errors.push(`[${relPosix}] sources.md License is TODO for [${i}]`);
+          else if (licensePolicy) {
+            const c = classifyLicense(lic, licensePolicy);
+            if (c.classification === "denied") {
+              errors.push(`[${relPosix}] sources.md denied License for [${i}]: '${lic}'`);
+            } else if (c.classification === "review") {
+              const msg = `[${relPosix}] sources.md License needs review for [${i}]: '${lic}'`;
+              if (args.failOnLicenseReview) errors.push(msg);
+              else warnings.push(msg);
+            }
+          }
         }
 
 	        if (sourcePolicy && url) {
@@ -572,6 +693,32 @@ for (const skillDir of skillDirs) {
         if (placeholderRe.test(t)) errors.push(`[${relPosix}] contains TODO placeholder: ${path.relative(skillDir, p)}`);
       }
     }
+
+    if (args.requireNoDuplicates && exists(libraryPath)) {
+      const norm = String(libraryMd || "").replace(/\r\n/g, "\n").trim();
+      if (norm.length >= 200) {
+        const h = sha256Hex(norm);
+        const prev = libraryHashes.get(h);
+        if (prev && prev !== relPosix) {
+          errors.push(`[${relPosix}] library.md duplicates ${prev} (exact match)`);
+        } else if (!prev) {
+          libraryHashes.set(h, relPosix);
+        }
+      }
+    }
+
+    if (args.requireRiskScan && metaRiskLevel) {
+      const text = `${md}\n\n${libraryMd}`;
+      const have = riskRank(metaRiskLevel);
+      for (const p of RISK_PATTERNS) {
+        const need = riskRank(p.min);
+        if (need < 0 || have < 0) continue;
+        if (have >= need) continue;
+        if (p.re.test(text)) {
+          errors.push(`[${relPosix}] risk_level too low: '${metaRiskLevel}' < '${p.min}' (matched: ${p.hint})`);
+        }
+      }
+    }
   }
 }
 
@@ -579,6 +726,11 @@ if (errors.length > 0) {
   console.error(`Skill validation failed (${errors.length} issues):`);
   for (const e of errors) console.error(`- ${e}`);
   process.exit(1);
+}
+
+if (warnings.length > 0) {
+  console.error(`Skill validation warnings (${warnings.length}):`);
+  for (const w of warnings) console.error(`- ${w}`);
 }
 
 console.log(`OK: ${skillDirs.length} skills validated.`);

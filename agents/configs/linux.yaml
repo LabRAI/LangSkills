@@ -67,6 +67,22 @@ topics:
     title: 打包与解包：tar（含 gzip/xz）最佳实践
     risk_level: low
     level: bronze
+  - id: filesystem/copy-move-cp-mv
+    title: 文件复制与移动：cp/mv 的覆盖、保留属性与安全预览
+    risk_level: medium
+    level: bronze
+  - id: filesystem/checksums-cksum-sha256sum
+    title: 文件校验与完整性：cksum/sha256sum 的正确用法
+    risk_level: low
+    level: bronze
+  - id: filesystem/compress-gzip-xz
+    title: 压缩与解压：gzip/xz 的常用选项与坑
+    risk_level: low
+    level: bronze
+  - id: filesystem/mount-umount
+    title: 挂载与卸载：mount/umount 的安全流程（含常见故障）
+    risk_level: high
+    level: bronze
 
   - id: text/view-files-less-tail
     title: 查看文件与日志：less/head/tail -f 的实战用法
@@ -83,6 +99,22 @@ topics:
   - id: text/parse-awk
     title: 结构化文本处理：awk 提取列、统计、聚合
     risk_level: low
+    level: bronze
+  - id: text/sort-uniq
+    title: 排序与去重：sort/uniq 的高频用法（含计数与按列排序）
+    risk_level: low
+    level: bronze
+  - id: text/cut-paste
+    title: 列切分与拼接：cut/paste 处理 CSV/TSV 的常用套路
+    risk_level: low
+    level: bronze
+  - id: text/diff-patch
+    title: 对比与打补丁：diff/patch 的安全用法（含 dry-run）
+    risk_level: medium
+    level: bronze
+  - id: text/xargs-basics
+    title: 批量执行命令：xargs 的安全模式（-0/-n/-P）
+    risk_level: medium
     level: bronze
 
   - id: network/download-curl-wget
@@ -123,6 +155,10 @@ topics:
     title: 会话保持：tmux（创建/分离/恢复）
     risk_level: low
     level: bronze
+  - id: process/pkill-killall
+    title: 结束进程：pkill/killall/kill 的安全信号策略（TERM→KILL）
+    risk_level: high
+    level: bronze
 
   - id: system/system-info-uname-dmesg
     title: 系统信息与启动排查：uname/lsb_release/dmesg
@@ -131,6 +167,18 @@ topics:
   - id: system/resources-free-vmstat
     title: 资源诊断：free/vmstat/iostat 区分 CPU/内存/IO 瓶颈
     risk_level: low
+    level: bronze
+  - id: system/env-path
+    title: 环境变量与 PATH：查看、临时设置、持久化与避坑
+    risk_level: low
+    level: bronze
+  - id: system/date-time-tz
+    title: 时间与时区：date 的格式化/解析、TZ 临时切换与一致性检查
+    risk_level: low
+    level: bronze
+  - id: system/permissions-umask
+    title: 默认权限：umask 的含义、常见值（022/077）与验证方法
+    risk_level: medium
     level: bronze
 
   - id: systemd/systemctl-service-status

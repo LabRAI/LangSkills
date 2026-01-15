@@ -1,11 +1,11 @@
 id: linux/text/search-grep-ripgrep
 title: "文本搜索：grep（或 rg）按关键字/正则定位问题"
 domain: linux
-level: bronze
+level: silver
 risk_level: low
 platforms: [linux]
 tools: []
 tags: []
-last_verified: ""
-owners: []
+last_verified: "2026-01-15"
+owners: ["LabRAI"]
 aliases: []

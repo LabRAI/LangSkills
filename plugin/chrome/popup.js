@@ -29,7 +29,7 @@ async function copyText(text) {
   throw new Error("Clipboard API not available");
 }
 
-const DEFAULT_BASE = "https://shatianming5.github.io/skill_lain/";
+const DEFAULT_BASE = "http://127.0.0.1:4173/";
 
 async function loadBaseUrl() {
   const r = await chrome.storage.local.get(["baseUrl"]);
@@ -167,4 +167,3 @@ async function main() {
 main().catch((e) => {
   setStatus(String(e && e.message ? e.message : e), "error");
 });
-

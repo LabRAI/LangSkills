@@ -1,0 +1,11 @@
+id: linux/filesystem/copy-move-cp-mv
+title: "文件复制与移动：cp/mv 的覆盖、保留属性与安全预览"
+domain: linux
+level: bronze
+risk_level: medium
+platforms: [linux]
+tools: []
+tags: []
+last_verified: ""
+owners: []
+aliases: []

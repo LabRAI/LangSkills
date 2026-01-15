@@ -1,11 +1,11 @@
 id: productivity/writing/respond-to-reviewers
 title: "回应审稿意见：逐条回复 + 修改对照表"
 domain: productivity
-level: bronze
+level: silver
 risk_level: low
 platforms: []
 tools: []
 tags: []
-last_verified: ""
-owners: []
+last_verified: "2026-01-15"
+owners: ["LabRAI"]
 aliases: []

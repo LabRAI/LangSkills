@@ -72,7 +72,7 @@
 
 爬取范围是 “**domain seeds + source_policy allow/deny + sources registry**”：
 
-- seeds：`agents/configs/<domain>.yaml` 的 `seeds:`（例如 `agents/configs/linux.yaml`、`agents/configs/productivity.yaml`）或 `agents/configs/sources.yaml` 中 domain 绑定的 Tier1 seeds（由 `sources.primary[]` 引用）。
+- seeds：`agents/configs/<domain>.yaml` 的 `seeds:`（例如 `agents/configs/linux.yaml`、`agents/configs/productivity.yaml`、`agents/configs/integrations.yaml`）或 `agents/configs/sources.yaml` 中 domain 绑定的 Tier1 seeds（由 `sources.primary[]` 引用）。
 - 强制执行：crawler/capture 都会按 allow/deny 过滤来源域名（不在白名单的 URL 会被阻断或不入队），并把 block 写入 `runs/<run-id>/crawl_log.jsonl` 以便审计。
 
 scale 方式：

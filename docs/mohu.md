@@ -117,38 +117,107 @@
     - 2026-01-15: `rm -rf /tmp/skill-verify-runs /tmp/skill-verify-cache && node agents/crawler/run.js --domain linux --runs-dir /tmp/skill-verify-runs --run-id verify-linux-config-seeds --cache-dir /tmp/skill-verify-cache --max-pages 1 --max-depth 0`
     - 2026-01-15: `node scripts/self-check.js --skip-remote`
 
+- [x] Missing-006: integrations domain 配置与来源种子（Q2/Q6）
+  - Location: `agents/configs/integrations.yaml`, `agents/configs/sources.yaml`, `docs/domains/integrations.md`
+  - Acceptance:
+    - `agents/configs/integrations.yaml` 存在且 `domain: integrations`，`sources.primary` 指向 integrations 来源，`source_policy.allow_domains` 至少包含 `slack.com`
+    - `agents/configs/sources.yaml` 新增 `integrations_slack_docs`（`type: http_seed_crawl`，`seeds` 包含 `https://api.slack.com/`）
+    - `docs/domains/integrations.md` 明确范围与来源策略
+    - （可选验证）`node agents/orchestrator/run.js --domain integrations --run-id integrations-demo --crawl-max-pages 1 --extract-max-docs 1` 产生 `runs/integrations-demo/crawl_state.json`
+  - Evidence:
+    - 当前只有 `linux`/`productivity` domain 配置；`agents/configs/sources.yaml` 未包含 integrations 来源
+  - Implementation:
+    - 新增 `agents/configs/integrations.yaml`：定义 `integrations` domain，allowlist 包含 `slack.com`，并绑定 `integrations_slack_docs`。
+    - 更新 `agents/configs/sources.yaml`：新增 `integrations_slack_docs`（Slack API docs seeds + refresh）。
+    - 新增 `docs/domains/integrations.md`，并在 `docs/domains/README.md` 列出 integrations。
+    - 更新 `README.md` 与 `docs/meeting_qa.md`，使 domain 列表与示例保持一致。
+  - Next:
+    - `node agents/orchestrator/run.js --domain integrations --run-id integrations-demo --crawl-max-pages 1 --extract-max-docs 1`
+  - Verified:
+    - 2026-01-15: `node agents/orchestrator/run.js --domain integrations --run-id integrations-demo --crawl-max-pages 1 --extract-max-docs 1`
+
+- [ ] Missing-007: 将 `type: github_repo` sources 接入可运行的 ingest 管线（Tier0 must-ingest）（Q4/Q6）
+  - Location: `agents/orchestrator/run.js`, `agents/adapters/github_repo.js`, `agents/configs/sources.yaml`
+  - Acceptance:
+    - 支持从 `agents/configs/sources.yaml` 读取 `type: github_repo` 的 source（例如 `upstream_anthropic_skills`）并完成：discover → fetch → parse → candidates
+    - 产物至少包含：`runs/<run-id>/repo_state.json`（进度/断点续跑）与 `runs/<run-id>/repo_docs.jsonl`（每个文件一行，含 repo/commit/path/sha）
+    - 能对 `include_globs` 生效（只 ingest 指定文件集合）
+  - Notes:
+    - 当前长跑闭环主要覆盖 `http_seed_crawl`；Tier0 的 repo ingest 仍缺“远端拉取/增量/解析”能力
+
 ## Ambiguous
-- [ ] Amb-001: “网页端的 integration” 的具体范围是什么？（Q2/Q6）
+- [x] Amb-001: “网页端的 integration” 的具体范围是什么？（Q2/Q6）
   - Location: `docs/plan.md`, `docs/domains/`
   - Question: 这里的 integration 是指（A）生成“集成类 skills”（Slack/Notion/Sheets API 等），还是（B）机器人执行浏览器/网页自动化（playwright 等），还是（C）网站/插件作为分发入口？
-  - Needed: 明确 A/B/C 哪些必须做（以及合规边界），优先级与验收方式。
-  - Proposed spec:
-    - 最小可交付：先支持 A（集成类 skills 的来源抓取 + 生成），B 作为后续可选。
+  - Resolution:
+    - integration 明确定义为 **A：集成类 skills 的来源抓取与生成**（官方 API docs/开发者文档 → candidates → skills）。
+    - **B（浏览器自动化/登录网页代操作）不做**，遵循 `SAFETY.md` 的安全边界。
+    - 分发入口（C）由既有 `website/cli/plugin` 覆盖，无需额外定义。
+    - 验收以 `integrations` domain 的配置 + 来源种子可抓取为准（见 Missing-006）。
+  - Converted to:
+    - Missing-006: integrations domain 配置与来源种子（Q2/Q6）
+  - Implementation:
+    - 通过 `agents/configs/integrations.yaml` + `agents/configs/sources.yaml` + `docs/domains/integrations.md` 落地。
+  - Next:
+    - `node agents/orchestrator/run.js --domain integrations --run-id integrations-demo --crawl-max-pages 1 --extract-max-docs 1`
   - Notes: 未定会影响 Q2/Q6 的实现边界
 
-- [ ] Amb-002: “逐条检查 license” 的政策口径与允许范围（Q3）
-  - Location: `docs/governance.md`
+- [x] Amb-002: “逐条检查 license” 的政策口径与允许范围（Q3）
+  - Location: `docs/license_policy.md`, `scripts/license-policy.json`, `scripts/validate-skills.js`
   - Question: 允许引用哪些 license（例如 CC BY/官方文档/政府文档/论文等），是否要求记录 license 文本或 URL？
-  - Needed: 一份明确的 license policy（允许/禁止/需人工复核），以及默认可接受的做法（只做引用+不拷贝原文 vs 允许少量引用）。
-  - Proposed spec:
-    - 强制：不包含大段原文拷贝；Sources 必须可达且记录抓取指纹；对未知 license 标记为 “needs review”。
-  - Notes: 需要业务决策
+  - Resolution (executable):
+    - 每条来源必须在 `skills/**/reference/sources.md` 的对应块里填写 `License:`。
+    - License 取值按 `scripts/license-policy.json` 分类为 **allowed/review/denied**：
+      - `denied`（黑名单）→ `node scripts/validate-skills.js --strict` 直接失败（阻断合并）。
+      - `review`（灰名单，例如 `unknown`/`custom`）→ 默认只警告；可用 `--fail-on-license-review` 将其升级为失败（用于 silver/gold 升级或发布门禁）。
+      - `allowed`（白名单）→ 通过。
+    - 额外硬门禁仍保持：不允许大段原文拷贝（`--require-no-verbatim-copy`）+ Steps 必须做 `[[n]]` 来源绑定。
+  - Implementation:
+    - 新增 `scripts/license-policy.json`：白/灰/黑名单可配置。
+    - `scripts/validate-skills.js`：在 `--require-license-fields/--strict` 下加载 policy，对 `denied` 阻断、对 `review` 记录 warning；新增 `--fail-on-license-review`。
+    - 新增 `docs/license_policy.md`，并在 `docs/governance.md` 引用该政策与门禁命令。
+  - Next:
+    - `node scripts/validate-skills.js --strict`
+    - `node scripts/validate-skills.js --strict --fail-on-license-review`
 
-- [ ] Amb-003: 自动 git push 的认证与分支/PR 策略（Q5）
+- [x] Amb-003: 自动 git push 的认证与分支/PR 策略（Q5）
   - Location: `.github/workflows/`, `scripts/`
   - Question: 目标是 push 到 `main` 还是只 push bot 分支 + PR？使用 GitHub Actions 的 `GITHUB_TOKEN` 还是 PAT/SSH？
-  - Needed: 目标仓库权限模型与 bot 身份策略。
-  - Proposed spec:
-    - 默认：创建分支 `bot/<domain>/<date>`，push 后由 CI 创建 PR（或输出 PR 指令）。
-  - Notes: 未定会影响实现与安全边界
+  - Resolution (executable):
+    - **不允许 bot 直接 push 到 `main`**；bot 只能 push 到分支并创建 PR，由 CI + 人审合并。
+    - GitHub Actions 场景：使用 `GITHUB_TOKEN`（最小权限）
+      - `contents: write`：push bot 分支
+      - `pull-requests: write`：创建 PR
+    - 分支命名：默认 `bot/<domain>/<github.run_id>`（可通过 workflow input 覆盖）。
+    - PR 策略：同一 `head+base` 已存在 open PR 时不重复创建（幂等）。
+    - 自动化边界：**创建 PR 可以自动化；合并不自动化**（除非未来显式增加人工审批或 label-based automerge）。
+  - Implementation:
+    - 新增 `scripts/create-pr.js`：用 GitHub REST API 创建 PR；若已存在 open PR 则直接返回（幂等）。
+    - 更新 `.github/workflows/agent-generate.yml`：在 `dry_run=false` 时固定分支名、push 分支后自动创建 PR（base=main）。
+  - Acceptance:
+    - 在 GitHub Actions 手动触发 `agent-generate` 且 `dry_run=false` 后：
+      - 仓库出现分支 `bot/linux/<run_id>`
+      - 自动创建一个 PR（head=该分支，base=main）
+  - Next:
+    - （本地手动）`GITHUB_TOKEN=... node scripts/create-pr.js --repo <owner>/<repo> --head <branch> --base main --title "..."`
 
-- [ ] Amb-004: “至少吃掉现有所有这些 library” 指的是哪些具体库/站点？（Q4/Q6）
-  - Location: `docs/plan.md`
+- [x] Amb-004: “至少吃掉现有所有这些 library” 指的是哪些具体库/站点？（Q4/Q6）
+  - Location: `docs/must_ingest_sources.md`, `agents/configs/sources.yaml`
   - Question: 需要覆盖哪些已有 library（清单/链接/优先级）？是否允许抓取需要 JS 渲染/登录的站点？
-  - Needed: 初始 seeds 列表 + 每个 domain 的来源范围与合规边界。
-  - Proposed spec:
-    - 先从稳定公开源开始（man/官方 docs/发行版 docs/公开指南），逐步扩展。
-  - Notes: 未定会影响 crawler 与长期运行策略
+  - Resolution (executable):
+    - “必须吃掉”的起步清单固定为两类（详见 `docs/must_ingest_sources.md`）：
+      - Tier0（reference-only）：会议提到的 4 个上游 repo（Anthropic/AgentSkills/Context-Engineering/K-Dense）。
+      - Tier1（primary）：各 domain 的稳定公开权威来源（linux/productivity/integrations 的 seeds）。
+    - 这些来源以 stable IDs 落盘在 `agents/configs/sources.yaml`，bot 运行只认配置，不允许隐式扩大抓取范围。
+    - 边界明确：不抓登录态，不做 JS 渲染站点；crawler 只做 HTML `href=` 发现，并强制 allow/deny domains（写入 `runs/<run-id>/crawl_log.jsonl`）。
+  - Converted to:
+    - Missing-007: 将 `type: github_repo` sources 接入 orchestrator/crawler/extractor（远端拉取/增量/解析），使 Tier0 repo 可被真正“吃掉”。
+  - Implementation:
+    - 新增 `docs/must_ingest_sources.md` 明确 must-ingest 清单与边界。
+    - `agents/configs/sources.yaml` 已包含 Tier0/Tier1 的 stable IDs（可直接用于长期跑与覆盖统计）。
+  - Next:
+    - `cat agents/configs/sources.yaml`
 
 ## Log
 - 2026-01-15: 初始化问题 2–6 的 Missing/Ambiguous 跟踪列表，并按优先级准备逐一修复。
+- 2026-01-15: 根据 plan 复核实现，新增 integrations domain 的 Missing-006。

@@ -61,3 +61,15 @@
   - Result: PASS
   - Notes: End-to-end smoke includes crawler discovery+dedupe+enqueue (local seed + allowlist block) and site build pipeline.
   - Artifacts: (see command output temp dirs)
+
+## Missing-006
+- 2026-01-15: `node agents/orchestrator/run.js --domain integrations --run-id integrations-demo --crawl-max-pages 1 --extract-max-docs 1`
+  - Result: PASS
+  - Notes: Orchestrator ran crawler+extractor for integrations and wrote state/metrics.
+  - Artifacts: `runs/integrations-demo/crawl_state.json`, `runs/integrations-demo/candidates.jsonl`, `runs/integrations-demo/metrics.json`
+
+## Amb-002
+- 2026-01-15: `node scripts/validate-skills.js --strict`
+  - Result: PASS
+  - Notes: License policy loaded from `scripts/license-policy.json`; denied licenses fail, review licenses warn.
+  - Artifacts: (n/a)

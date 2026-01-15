@@ -1,0 +1,17 @@
+domain: integrations
+owners: []
+
+sources:
+  primary:
+    - integrations_slack_docs
+
+source_policy:
+  prefer:
+    - official docs
+    - api reference
+  allow_domains:
+    - slack.com
+  deny_domains: []
+
+seeds: []
+topics: []

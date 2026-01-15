@@ -14,6 +14,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   generate:
@@ -23,6 +24,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
+      - name: Compute branch name
+        id: vars
+        run: |
+          if [ -n "${{ inputs.branch }}" ]; then
+            echo "branch=${{ inputs.branch }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "branch=bot/linux/${{ github.run_id }}" >> "$GITHUB_OUTPUT"
+          fi
       - name: Configure git identity
         run: |
           git config user.name "skill-bot"
@@ -33,7 +42,25 @@ jobs:
         run: node scripts/validate-skills.js
       - name: Auto commit/push (optional)
         run: |
-          args=(--paths skills --remote origin --message "chore: agent-generate")
-          if [ -n "${{ inputs.branch }}" ]; then args+=(--branch "${{ inputs.branch }}"); fi
+          args=(--paths skills --remote origin --branch "${{ steps.vars.outputs.branch }}" --message "chore: agent-generate (linux)")
           if [ "${{ inputs.dry_run }}" != "true" ]; then args+=(--execute); fi
           node scripts/git-automation.js "${args[@]}"
+      - name: Create PR (optional)
+        if: ${{ inputs.dry_run != 'true' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cat > pr_body.md <<'EOF'
+          Automated update from `agent-generate` workflow.
+
+          - Workflow run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          - Branch: `${{ steps.vars.outputs.branch }}`
+
+          CI (validate + site build) must pass before merge.
+          EOF
+          node scripts/create-pr.js \
+            --repo "${{ github.repository }}" \
+            --head "${{ steps.vars.outputs.branch }}" \
+            --base "main" \
+            --title "chore(linux): agent-generate" \
+            --body-file pr_body.md

@@ -1,11 +1,11 @@
 id: linux/text/parse-awk
 title: "结构化文本处理：awk 提取列、统计、聚合"
 domain: linux
-level: bronze
+level: silver
 risk_level: low
 platforms: [linux]
 tools: []
 tags: []
-last_verified: ""
-owners: []
+last_verified: "2026-01-15"
+owners: ["LabRAI"]
 aliases: []

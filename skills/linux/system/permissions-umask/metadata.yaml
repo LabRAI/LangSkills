@@ -1,0 +1,11 @@
+id: linux/system/permissions-umask
+title: "默认权限：umask 的含义、常见值（022/077）与验证方法"
+domain: linux
+level: bronze
+risk_level: medium
+platforms: [linux]
+tools: []
+tags: []
+last_verified: ""
+owners: []
+aliases: []

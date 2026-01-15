@@ -1,6 +1,12 @@
-# Skill Repo 项目 Proposal
+# LangSkills
+
+[![CI](https://github.com/LabRAI/LangSkills/actions/workflows/ci.yml/badge.svg)](https://github.com/LabRAI/LangSkills/actions/workflows/ci.yml)
+[![Link Check](https://github.com/LabRAI/LangSkills/actions/workflows/link-check.yml/badge.svg)](https://github.com/LabRAI/LangSkills/actions/workflows/link-check.yml)
+[![Build Site](https://github.com/LabRAI/LangSkills/actions/workflows/build-site.yml/badge.svg)](https://github.com/LabRAI/LangSkills/actions/workflows/build-site.yml)
 
 本仓库把“可执行的 Agent Skill”当作一种可治理的数据资产：每个技能以 `skills/<domain>/<topic>/<slug>/` 目录存储，拆分为 `skill.md`（≤12 步 SOP + Verification + Safety + Sources）、`library.md`（可复制的最小块）、`metadata.yaml`（索引/分级/过滤），并将来源证据与合规信息落到 `reference/`（每条来源记录 URL、License、抓取指纹 sha256/bytes/cache）。生成侧以 `agents/` 提供可长跑的抓取与候选生成链路：来源通过 `agents/configs/sources.yaml` 注册、`agents/configs/<domain>.yaml` 约束 allowlist/denylist；crawler 把抓取队列与每个 URL 的状态写入 `runs/<run-id>/crawl_state.json`（日志 `crawl_log.jsonl`），raw snapshot 缓存在 `.cache/web/`；extractor 从快照抽取 headings 形成 `runs/<run-id>/candidates.jsonl`；orchestrator 用 `--loop` 循环调度并在 `runs/<run-id>/metrics.json`/`metrics_log.jsonl` 输出吞吐与覆盖指标。合并门禁由 `node scripts/validate-skills.js --strict` 在 CI 强制执行（结构、引用绑定 `[[n]]`、来源域名策略、license 字段、可选原文拷贝审计），写入与发布侧提供 `scripts/git-automation.js` 的安全分支推送与 `scripts/build-site.js --out website/dist` 生成 `website/dist/index.json` 供网站/CLI/插件统一检索。这个组合解决了传统 prompt/脚本库常见的“不可治理（格式漂移/重复膨胀）、不可复现（无证据链/无法回归）、不可扩张（缺长跑队列与覆盖指标）、不可合规（license 不可审计）”问题。
+
+![Demo](docs/assets/demo.gif)
 
 ### Repo 运行历程图（从来源 → 生成 → 门禁 → 发布）
 
@@ -33,9 +39,16 @@ skills/**  --> node scripts/validate-skills.js --strict  (CI gate)
          - website/dist/index.json   --> website/ + cli/ + plugin/chrome/
 ```
 
+## Roadmap
+
+- v0.1-alpha（当前）：`skills/`≥50（20 silver、5 gold）、`agents/` 可生成并提 PR、`validate-skills --strict` 作为合并门禁、`website/cli/plugin` 可搜索与复制
+- Next：补齐 Tier0 `github_repo` ingest（见 `docs/mohu.md` 的 `Missing-007`），并扩展更多 domains 与 sources
+
+任务与验收记录：`docs/plan.md`、`docs/mohu.md`、`docs/verify_log.md`。
+
 ## Q1–Q6：实现与证据（可复现命令 + 产物路径）
 
-下面我按你 6 个问题逐条回答。每条都给出 **可复现命令** 与 **具体产物路径**（你可以直接打开文件核对），不靠口头背书。
+下面按 6 个问题逐条回答。每条都给出 **可复现命令** 与 **具体产物路径**（可以直接打开文件核对），不靠口头背书。
 
 快速入口（推荐先跑一遍再看细节）：
 
@@ -53,7 +66,7 @@ node scripts/validate-skills.js --strict
 
 结论：不完全一样；但“技能内容组织”理念一致（**每个 skill 一个目录 + progressive disclosure**）。本 repo 比很多上游 repo 多出来的是：**严格门禁 + 长跑抓取/候选生成 + 安全 git 自动化 + 网站/CLI/插件分发**，目的是支撑规模化运营（不是一次性脚本）。
 
-你开会提到的内容库/基准 repo 是：
+对比的基准 repo 包括：
 
 - https://github.com/anthropics/skills
 - https://github.com/agentskills/agentskills
@@ -211,9 +224,9 @@ node scripts/build-site.js --out website/dist
 
 ```json
 {
-  "skills_count": 38,
+  "skills_count": 50,
   "skills": [
-    { "id": "linux/filesystem/find-files", "level": "bronze", "risk_level": "medium" }
+    { "id": "linux/filesystem/find-files", "level": "gold", "risk_level": "medium" }
   ]
 }
 ```
@@ -224,7 +237,7 @@ node scripts/build-site.js --out website/dist
 
 - 网页端检索与分发：构建后产出 `website/dist/index.json`，网站/CLI/插件统一读取（见 2.1）。
 - 本地开源模型参与生成/提质：`agents/run_local.js` 支持 `mock|ollama|openai`，可在本机用 Ollama 做 rewrite（见 2.2）。
-- 第三方 integrations（Slack/Notion 等）内容生产：通过 “sources registry → crawler/extractor 产候选 → writer/runner 生成 skills” 的流水线接入；目前 repo 内置 domain 示例是 `linux`/`productivity`，新增 integrations 只需要补一个 domain 配置 + sources registry（例子见 2.3）。
+- 第三方 integrations（Slack/Notion 等）内容生产：通过 “sources registry → crawler/extractor 产候选 → writer/runner 生成 skills” 的流水线接入；当前 repo 已内置 `integrations` domain，并在 `agents/configs/sources.yaml` 中配置 `integrations_slack_docs`（Slack API docs）作为示例来源（例子见 2.3）。
 
 > 安全边界：本 repo 不做“登录网页/代操作账号”的浏览器自动化（见 `SAFETY.md`）。
 
@@ -303,7 +316,7 @@ node agents/run_local.js \
   license_policy: "manual_review_per_page (record License field in sources.md; no verbatim copy)"
 ```
 
-2) 新建 `agents/configs/integrations.yaml`（最小可运行形态：白名单 + source 选择；topics 可先空或先人工挑选）：
+2) 配置 `agents/configs/integrations.yaml`（最小可运行形态：白名单 + source 选择；topics 可先空或先人工挑选）：
 
 ```yaml
 domain: integrations
@@ -396,7 +409,9 @@ node scripts/validate-skills.js --strict
 #### 3.3 License 记录与审计（具体）
 
 - 当前实现要求每条来源都有：`URL` + `License:` + 抓取指纹（sha256/bytes/cache），并且用 `agents/configs/<domain>.yaml` 的 allow/deny 域名策略做第一道“越界阻断”。
-- 对于“license 自动判定（允许/禁止/需复核）”，需要把一份明确的 policy（白/黑/灰）落成机器可执行规则；目前仓库里把这件事作为待补齐的工程项（见 `docs/mohu.md` 的 Amb-002）。
+- 对于“license 自动判定（允许/禁止/需复核）”，本仓库已落成 **可执行 policy**：`scripts/license-policy.json`（白/灰/黑），由 `node scripts/validate-skills.js --strict` 加载并执行（文档：`docs/license_policy.md`）。
+  - `denied`（黑名单）→ 直接失败（阻断合并）；`review`（灰名单，如 `unknown/custom`）→ 默认只警告；可用 `--fail-on-license-review` 升级为失败（用于 silver/gold 升级或发布门禁）。
+  - 示例（来自 policy 与文档）：allowed: `MIT`/`Apache-2.0`/`CC-BY-4.0`；denied: `proprietary`/`source-available`/`CC-BY-NC-4.0`/`CC-BY-ND-4.0`。
 
 如果你希望把“疑似大段原文拷贝”作为硬门禁（强烈建议），额外启用：
 
@@ -496,7 +511,7 @@ node scripts/validate-skills.js --strict --require-no-verbatim-copy --cache-dir 
 
 #### 4.3 “至少吃掉现有所有这些 library”——目前做到哪、还缺哪（不含糊）
 
-- 已做到：`agents/configs/sources.yaml` 已登记你提到的上游 repo（Tier0，reference-only）：
+- 已做到：`agents/configs/sources.yaml` 已登记以下上游 repo（Tier0，reference-only）：
   - `upstream_anthropic_skills` → https://github.com/anthropics/skills
   - `upstream_agentskills_spec` → https://github.com/agentskills/agentskills
   - `upstream_context_engineering_skills` → https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering
@@ -509,7 +524,7 @@ node scripts/validate-skills.js --strict --require-no-verbatim-copy --cache-dir 
 
 Git 自动化入口是 `scripts/git-automation.js`：默认 dry-run（只打印计划），显式 `--execute` 才会在分支上 commit 并 push。`node scripts/self-check.js --skip-remote` 会在临时 git repo + 本地 bare remote 中做回归，覆盖 dry-run 与分支 push 的关键路径。
 
-目前自动化覆盖的是 “push branch”；PR 创建可用 GitHub UI 或 `gh pr create` 补齐（如果需要完全自动化，可在 workflow/脚本层对接 GitHub API 或 `gh`）。
+PR 创建入口是 `scripts/create-pr.js`（GitHub REST API），并已接入 `.github/workflows/agent-generate.yml`：当 workflow 以 `dry_run=false` 运行时，会 push `bot/linux/<run_id>` 分支并自动创建 PR（base=main）。
 
 #### 5.1 这件事在代码里具体怎么做（例子）
 
@@ -541,7 +556,7 @@ node scripts/git-automation.js --paths skills --branch bot/linux/demo --message 
 
 ### 6 - 机器人部署之后会爬取哪里的内容？他们足够多吗？我们接下来如何方便高效地 scale 到足够多的内容上去？
 
-爬取范围完全由配置决定，并且会被 crawler 强制执行（allow/deny + 阻断日志）。当前仓库内置的 domain 配置是 `linux`/`productivity`，因此“默认会爬哪里”非常明确：只会从 `agents/configs/<domain>.yaml` 与 `agents/configs/sources.yaml` 合并出来的 seeds 出发，并且只允许落在 `source_policy.allow_domains` 里的域名。
+爬取范围完全由配置决定，并且会被 crawler 强制执行（allow/deny + 阻断日志）。当前仓库内置的 domain 配置是 `linux`/`productivity`/`integrations`，因此“默认会爬哪里”非常明确：只会从 `agents/configs/<domain>.yaml` 与 `agents/configs/sources.yaml` 合并出来的 seeds 出发，并且只允许落在 `source_policy.allow_domains` 里的域名。
 
 规模化的关键是把新增来源变成“主要改 YAML”：对 `http_seed_crawl`（公开 docs 站点）已经可以做到；对 repo/sitemap/openapi/manpage 等来源类型，仓库已提供 adapter 雏形，继续把它们接入 orchestrator 的 discover/fetch 即可把覆盖面扩大到更多“可枚举、可增量”的数据源。
 

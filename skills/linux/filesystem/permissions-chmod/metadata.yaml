@@ -1,11 +1,11 @@
 id: linux/filesystem/permissions-chmod
 title: "文件权限入门：chmod 数字/符号写法与常见坑"
 domain: linux
-level: bronze
+level: silver
 risk_level: medium
 platforms: [linux]
 tools: []
 tags: []
-last_verified: ""
-owners: []
+last_verified: "2026-01-15"
+owners: ["LabRAI"]
 aliases: []

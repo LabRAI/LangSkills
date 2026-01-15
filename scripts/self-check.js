@@ -87,7 +87,7 @@ function parseArgs(argv) {
     strictRemote: false,
     skipRemote: false,
     withCapture: false,
-    remoteUrl: process.env.SKILL_REMOTE_INDEX_URL || "https://shatianming5.github.io/skill_lain/index.json",
+    remoteUrl: process.env.SKILL_REMOTE_INDEX_URL || "https://labrai.github.io/LangSkills/index.json",
   };
 
   for (let i = 0; i < argv.length; i++) {
@@ -406,7 +406,7 @@ async function main() {
 	      const json = JSON.parse(raw);
       const hp = Array.isArray(json.host_permissions) ? json.host_permissions : [];
       assertOk(hp.includes("http://127.0.0.1/*"), "plugin missing localhost host_permissions");
-      assertOk(hp.some((x) => x.startsWith("https://shatianming5.github.io/")), "plugin missing GitHub Pages host_permissions");
+      assertOk(hp.includes("https://labrai.github.io/LangSkills/*"), "plugin missing GitHub Pages host_permissions");
 	      record("plugin(manifest)", true, "host_permissions OK");
 	    }
 

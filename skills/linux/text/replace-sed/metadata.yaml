@@ -1,11 +1,11 @@
 id: linux/text/replace-sed
 title: "批量替换：sed 常见替换、就地修改与备份策略"
 domain: linux
-level: bronze
+level: silver
 risk_level: medium
 platforms: [linux]
 tools: []
 tags: []
-last_verified: ""
-owners: []
+last_verified: "2026-01-15"
+owners: ["LabRAI"]
 aliases: []

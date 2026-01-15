@@ -1,0 +1,11 @@
+id: linux/filesystem/checksums-cksum-sha256sum
+title: "文件校验与完整性：cksum/sha256sum 的正确用法"
+domain: linux
+level: silver
+risk_level: low
+platforms: [linux]
+tools: []
+tags: []
+last_verified: "2026-01-15"
+owners: ["LabRAI"]
+aliases: []

@@ -1,11 +1,11 @@
 id: linux/filesystem/ownership-chown
 title: "所有者与用户组：chown/chgrp 递归修改与安全边界"
 domain: linux
-level: bronze
+level: silver
 risk_level: medium
 platforms: [linux]
 tools: []
 tags: []
-last_verified: ""
-owners: []
+last_verified: "2026-01-15"
+owners: ["LabRAI"]
 aliases: []

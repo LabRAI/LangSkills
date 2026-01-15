@@ -1,0 +1,11 @@
+id: linux/text/xargs-basics
+title: "批量执行命令：xargs 的安全模式（-0/-n/-P）"
+domain: linux
+level: bronze
+risk_level: medium
+platforms: [linux]
+tools: []
+tags: []
+last_verified: ""
+owners: []
+aliases: []

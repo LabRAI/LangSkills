@@ -1,0 +1,11 @@
+id: linux/filesystem/compress-gzip-xz
+title: "压缩与解压：gzip/xz 的常用选项与坑"
+domain: linux
+level: bronze
+risk_level: low
+platforms: [linux]
+tools: []
+tags: []
+last_verified: ""
+owners: []
+aliases: []

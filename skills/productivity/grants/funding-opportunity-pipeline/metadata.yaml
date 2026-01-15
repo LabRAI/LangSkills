@@ -1,11 +1,11 @@
 id: productivity/grants/funding-opportunity-pipeline
 title: "基金机会管线（pipeline）：搜集、筛选与年度提交节奏"
 domain: productivity
-level: bronze
+level: silver
 risk_level: low
 platforms: []
 tools: []
 tags: []
-last_verified: ""
-owners: []
+last_verified: "2026-01-15"
+owners: ["LabRAI"]
 aliases: []

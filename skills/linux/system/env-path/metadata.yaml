@@ -1,0 +1,11 @@
+id: linux/system/env-path
+title: "环境变量与 PATH：查看、临时设置、持久化与避坑"
+domain: linux
+level: bronze
+risk_level: low
+platforms: [linux]
+tools: []
+tags: []
+last_verified: ""
+owners: []
+aliases: []

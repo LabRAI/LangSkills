@@ -30,6 +30,18 @@ sources:
     allowlist: true
     license_policy: "manual_review_per_page (record License field in sources.md; no verbatim copy)"
 
+  - id: integrations_slack_docs
+    type: http_seed_crawl
+    domain: integrations
+    seeds:
+      - https://api.slack.com/
+    refresh:
+      mode: ttl
+      interval: 7d
+    purpose: primary
+    allowlist: true
+    license_policy: "manual_review_per_page (record License field in sources.md; no verbatim copy)"
+
   # Tier0: upstream “skills repos/spec” (reference-only ingest; do not verbatim copy)
   - id: upstream_anthropic_skills
     type: github_repo

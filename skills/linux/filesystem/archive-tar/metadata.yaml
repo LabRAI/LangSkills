@@ -1,11 +1,11 @@
 id: linux/filesystem/archive-tar
 title: "打包与解包：tar（含 gzip/xz）最佳实践"
 domain: linux
-level: bronze
+level: gold
 risk_level: low
 platforms: [linux]
 tools: []
 tags: []
-last_verified: ""
-owners: []
+last_verified: "2026-01-15"
+owners: ["LabRAI"]
 aliases: []

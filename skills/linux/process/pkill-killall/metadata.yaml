@@ -1,0 +1,11 @@
+id: linux/process/pkill-killall
+title: "结束进程：pkill/killall/kill 的安全信号策略（TERM→KILL）"
+domain: linux
+level: bronze
+risk_level: high
+platforms: [linux]
+tools: []
+tags: []
+last_verified: ""
+owners: []
+aliases: []

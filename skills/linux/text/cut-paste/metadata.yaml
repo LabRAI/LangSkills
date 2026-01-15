@@ -1,0 +1,11 @@
+id: linux/text/cut-paste
+title: "列切分与拼接：cut/paste 处理 CSV/TSV 的常用套路"
+domain: linux
+level: gold
+risk_level: low
+platforms: [linux]
+tools: []
+tags: []
+last_verified: "2026-01-15"
+owners: ["LabRAI"]
+aliases: []

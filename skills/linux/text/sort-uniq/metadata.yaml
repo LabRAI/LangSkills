@@ -1,0 +1,11 @@
+id: linux/text/sort-uniq
+title: "排序与去重：sort/uniq 的高频用法（含计数与按列排序）"
+domain: linux
+level: gold
+risk_level: low
+platforms: [linux]
+tools: []
+tags: []
+last_verified: "2026-01-15"
+owners: ["LabRAI"]
+aliases: []
