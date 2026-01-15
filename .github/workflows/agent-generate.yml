@@ -1,0 +1,39 @@
+name: agent-generate
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry-run (no commit/push)"
+        type: boolean
+        default: true
+      branch:
+        description: "Target branch name (optional)"
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Configure git identity
+        run: |
+          git config user.name "skill-bot"
+          git config user.email "skill-bot@users.noreply.github.com"
+      - name: Generate skeleton skills (linux)
+        run: node agents/run_local.js --domain linux --out skills
+      - name: Validate skills
+        run: node scripts/validate-skills.js
+      - name: Auto commit/push (optional)
+        run: |
+          args=(--paths skills --remote origin --message "chore: agent-generate")
+          if [ -n "${{ inputs.branch }}" ]; then args+=(--branch "${{ inputs.branch }}"); fi
+          if [ "${{ inputs.dry_run }}" != "true" ]; then args+=(--execute); fi
+          node scripts/git-automation.js "${args[@]}"

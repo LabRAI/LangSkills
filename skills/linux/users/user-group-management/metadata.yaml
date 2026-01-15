@@ -1,0 +1,11 @@
+id: linux/users/user-group-management
+title: "用户与组管理：useradd/usermod/groups（含 sudo 组）"
+domain: linux
+level: bronze
+risk_level: high
+platforms: [linux]
+tools: []
+tags: []
+last_verified: ""
+owners: []
+aliases: []

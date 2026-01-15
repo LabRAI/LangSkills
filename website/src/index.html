@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Skill Repo</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <header class="header">
+      <div class="brand">
+        <div class="title">Skill Repo</div>
+        <div class="subtitle">Search → open → copy library</div>
+      </div>
+      <div class="actions">
+        <a class="link" href="https://github.com/shatianming5/skill_lain" target="_blank" rel="noreferrer">Repo</a>
+      </div>
+    </header>
+
+    <main class="main">
+      <section class="search">
+        <input id="q" class="q" type="search" placeholder="Search skills (id/title/domain)..." />
+        <div class="meta">
+          <span id="count">0</span> skills
+          <span class="dot">·</span>
+          <span>Click a result to view</span>
+        </div>
+      </section>
+
+      <section class="grid">
+        <aside class="results">
+          <div id="results" class="results-list"></div>
+        </aside>
+
+        <article class="detail">
+          <div id="empty" class="empty">
+            Select a skill from the left, or paste an id into the search box.
+          </div>
+
+          <div id="panel" class="panel hidden">
+            <div class="panel-head">
+              <div class="panel-title" id="panelTitle"></div>
+              <div class="badges">
+                <span id="badgeDomain" class="badge"></span>
+                <span id="badgeLevel" class="badge"></span>
+                <span id="badgeRisk" class="badge"></span>
+              </div>
+            </div>
+
+            <div class="tabs">
+              <button class="tab active" data-tab="library">Library</button>
+              <button class="tab" data-tab="skill">Skill</button>
+              <button class="tab" data-tab="sources">Sources</button>
+              <div class="tab-spacer"></div>
+              <button id="copyBtn" class="btn">Copy Library</button>
+            </div>
+
+            <div class="tab-body">
+              <pre id="tabLibrary" class="md"></pre>
+              <pre id="tabSkill" class="md hidden"></pre>
+              <pre id="tabSources" class="md hidden"></pre>
+            </div>
+          </div>
+        </article>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div>Built from repository <code>skills/</code> (static index)</div>
+    </footer>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

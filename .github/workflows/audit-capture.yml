@@ -1,0 +1,17 @@
+name: audit-capture
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 4 * * 0"
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Self-check with capture + verbatim audit
+        run: node scripts/self-check.js --with-capture --skip-remote

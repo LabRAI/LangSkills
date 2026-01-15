@@ -1,0 +1,12 @@
+{
+  "manifest_version": 3,
+  "name": "Skill Repo",
+  "description": "Search skills and copy library snippets from your Skill Repo.",
+  "version": "0.1.0",
+  "action": {
+    "default_title": "Skill Repo",
+    "default_popup": "popup.html"
+  },
+  "permissions": ["storage", "clipboardWrite", "tabs"],
+  "host_permissions": ["https://shatianming5.github.io/*", "http://127.0.0.1/*", "http://localhost/*"]
+}

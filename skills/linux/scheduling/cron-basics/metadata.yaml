@@ -1,0 +1,11 @@
+id: linux/scheduling/cron-basics
+title: "定时任务：cron/crontab（环境差异与日志）"
+domain: linux
+level: bronze
+risk_level: medium
+platforms: [linux]
+tools: []
+tags: []
+last_verified: ""
+owners: []
+aliases: []

@@ -1,0 +1,11 @@
+id: linux/network/ports-ss-lsof
+title: "端口与进程：ss/lsof 找出谁在监听哪个端口"
+domain: linux
+level: bronze
+risk_level: medium
+platforms: [linux]
+tools: []
+tags: []
+last_verified: ""
+owners: []
+aliases: []

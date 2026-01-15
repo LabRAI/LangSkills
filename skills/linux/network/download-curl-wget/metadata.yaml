@@ -1,0 +1,11 @@
+id: linux/network/download-curl-wget
+title: "下载与 HTTP 调试：curl/wget（header、重试、代理）"
+domain: linux
+level: bronze
+risk_level: low
+platforms: [linux]
+tools: []
+tags: []
+last_verified: ""
+owners: []
+aliases: []

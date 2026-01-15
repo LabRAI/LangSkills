@@ -1,0 +1,11 @@
+id: linux/system/resources-free-vmstat
+title: "资源诊断：free/vmstat/iostat 区分 CPU/内存/IO 瓶颈"
+domain: linux
+level: bronze
+risk_level: low
+platforms: [linux]
+tools: []
+tags: []
+last_verified: ""
+owners: []
+aliases: []

@@ -1,0 +1,11 @@
+id: linux/network/dns-dig-nslookup
+title: "DNS 排查：dig/nslookup 看解析链路与 TTL"
+domain: linux
+level: bronze
+risk_level: low
+platforms: [linux]
+tools: []
+tags: []
+last_verified: ""
+owners: []
+aliases: []

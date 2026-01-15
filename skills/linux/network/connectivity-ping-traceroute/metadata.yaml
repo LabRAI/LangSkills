@@ -1,0 +1,11 @@
+id: linux/network/connectivity-ping-traceroute
+title: "连通性诊断：ping/traceroute（或 tracepath）"
+domain: linux
+level: bronze
+risk_level: low
+platforms: [linux]
+tools: []
+tags: []
+last_verified: ""
+owners: []
+aliases: []

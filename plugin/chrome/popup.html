@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Skill Repo</title>
+    <link rel="stylesheet" href="./popup.css" />
+  </head>
+  <body>
+    <header class="header">
+      <div class="title">Skill Repo</div>
+      <div class="sub">Search → copy library</div>
+    </header>
+
+    <section class="cfg">
+      <label class="label" for="baseUrl">Base URL</label>
+      <div class="row">
+        <input id="baseUrl" class="input" type="text" spellcheck="false" />
+        <button id="saveBase" class="btn">Save</button>
+      </div>
+      <div id="status" class="status"></div>
+    </section>
+
+    <section class="search">
+      <input id="q" class="input" type="search" placeholder="Search (id/title/domain)..." />
+      <div class="meta"><span id="count">0</span> skills</div>
+    </section>
+
+    <section class="body">
+      <div id="results" class="results"></div>
+
+      <div id="detail" class="detail hidden">
+        <div class="detail-head">
+          <div id="detailTitle" class="detail-title"></div>
+          <div class="badges">
+            <span id="badgeRisk" class="badge"></span>
+            <span id="badgeLevel" class="badge"></span>
+          </div>
+        </div>
+        <div class="detail-actions">
+          <button id="copy" class="btn">Copy</button>
+          <button id="open" class="btn secondary">Open</button>
+        </div>
+        <pre id="library" class="pre"></pre>
+      </div>
+    </section>
+
+    <script src="./popup.js"></script>
+  </body>
+</html>
+

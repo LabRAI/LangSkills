@@ -1,0 +1,11 @@
+id: linux/ssh/scp-rsync
+title: "文件传输：scp vs rsync（增量、断点、权限保留）"
+domain: linux
+level: bronze
+risk_level: medium
+platforms: [linux]
+tools: []
+tags: []
+last_verified: ""
+owners: []
+aliases: []

@@ -1,0 +1,11 @@
+id: linux/system/system-info-uname-dmesg
+title: "系统信息与启动排查：uname/lsb_release/dmesg"
+domain: linux
+level: bronze
+risk_level: low
+platforms: [linux]
+tools: []
+tags: []
+last_verified: ""
+owners: []
+aliases: []

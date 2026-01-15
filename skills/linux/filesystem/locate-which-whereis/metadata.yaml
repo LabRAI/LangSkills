@@ -1,0 +1,11 @@
+id: linux/filesystem/locate-which-whereis
+title: "用 locate/which/whereis/type 快速定位命令与路径"
+domain: linux
+level: bronze
+risk_level: low
+platforms: [linux]
+tools: []
+tags: []
+last_verified: ""
+owners: []
+aliases: []

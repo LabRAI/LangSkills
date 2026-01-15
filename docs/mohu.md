@@ -1,0 +1,154 @@
+# Mohu
+
+## Missing
+- [x] Missing-001: 支持本地开源模型（LLM Provider）并接入生成流程（Q2）
+  - Location: `agents/run_local.js`, `agents/` (new `llm/` module), `scripts/self-check.js`
+  - Acceptance:
+    - `node agents/run_local.js --domain linux --topic filesystem/find-files --out /tmp/skill-llm-out --overwrite --capture` 仍可成功生成
+    - 新增 LLM 模式后可离线跑通：`node agents/run_local.js --domain linux --topic filesystem/find-files --out /tmp/skill-llm-out --overwrite --capture --llm-provider mock --llm-fixture agents/llm/fixtures/rewrite.json`
+    - 严格门禁可过：`node scripts/validate-skills.js --skills-root /tmp/skill-llm-out --strict`
+    - 文档明确如何切到本地开源模型（例如 Ollama）的配置方式
+  - Evidence:
+    - 当前生成器仅支持模板/`--capture`，没有 LLM provider 或本地模型接入点（见 `agents/run_local.js`、`rg -n "openai|ollama|model"` 无实现）
+  - Notes: 优先级最高（Q2）
+  - Implementation:
+    - 新增 `agents/llm/index.js`：提供 `mock`/`ollama`/`openai` 三种 provider，并提供 `rewriteMarkdown()` 用于提质（保留 citations/commands）。
+    - 更新 `agents/run_local.js`：新增 `--llm-*` 参数；当 `--capture` 且生成 payload 成功时，对 `skill.md`/`library.md` 进行可选 rewrite（默认 best-effort，`--llm-strict` 可改为失败即退出）。
+    - 更新 `scripts/self-check.js`：在 `--with-capture` 的 capture smoke 路径中加入 `--llm-provider mock` 覆盖该集成。
+  - Next:
+    - `rm -rf /tmp/skill-llm-out && node agents/run_local.js --domain linux --topic filesystem/find-files --out /tmp/skill-llm-out --overwrite --capture --llm-provider mock --llm-fixture agents/llm/fixtures/rewrite.json`
+    - `node scripts/validate-skills.js --skills-root /tmp/skill-llm-out --strict`
+    - （可选，含网络抓取）`node scripts/self-check.js --with-capture --skip-remote`
+  - Verified:
+    - 2026-01-15: `rm -rf /tmp/skill-llm-out && node agents/run_local.js --domain linux --topic filesystem/find-files --out /tmp/skill-llm-out --overwrite --capture`
+    - 2026-01-15: `rm -rf /tmp/skill-llm-out && node agents/run_local.js --domain linux --topic filesystem/find-files --out /tmp/skill-llm-out --overwrite --capture --llm-provider mock --llm-fixture agents/llm/fixtures/rewrite.json`
+    - 2026-01-15: `node scripts/validate-skills.js --skills-root /tmp/skill-llm-out --strict`
+
+- [x] Missing-002: 生成内容质量与 license 审计门禁（Q3）
+  - Location: `scripts/validate-skills.js`, `docs/governance.md`, `agents/generator/`
+  - Acceptance:
+    - 增加“疑似大段原文拷贝”检测（基于 `.cache/web` 的抓取缓存）并可在 CI/self-check 中运行
+    - 增加来源 license 风险记录/策略（至少：可配置 allow/deny domains + 审计字段）
+  - Evidence:
+    - 已实现：`--strict` 覆盖 License 字段与 source_policy 校验；原文拷贝审计需显式启用 `--require-no-verbatim-copy` 并提供抓取缓存（见 `scripts/validate-skills.js`）
+  - Notes: 对应 Q3
+  - Implementation:
+    - `scripts/validate-skills.js`：
+      - `--strict` 现在额外要求 `reference/sources.md` 包含 `License:` 字段，并校验来源 URL 是否符合 `agents/configs/<domain>.yaml` 的 `source_policy` allow/deny domains。
+      - 新增 `--require-no-verbatim-copy --cache-dir <path>`：基于抓取缓存（默认 `.cache/web`）做“大段原文拷贝”检测（>=80 tokens 或 >=400 chars 窗口匹配，覆盖 skill/library/reference/*.md）。
+      - 加强 `--require-no-todo`：识别形如 `- Field: TODO` 的占位符。
+    - `agents/generator/linux_capture.js`：生成 `sources.md` 时写入 `License:` 字段；并在 capture 前按 domain 的 `source_policy` 阻断不允许的来源 URL。
+    - `agents/run_local.js`：解析 `agents/configs/<domain>.yaml` 的 `source_policy.allow_domains/deny_domains` 并传给 capture。
+    - `agents/configs/linux.yaml`、`agents/configs/productivity.yaml`：补齐 allowlist（按当前 sources 归纳的根域名）。
+    - `scripts/backfill-sources-license.js`：对现有 `skills/**/reference/sources.md` 批量补齐 `License: unknown` 的迁移脚本。
+    - `scripts/self-check.js`：`--with-capture` 路径追加 verbatim-copy 审计（使用临时 cache dir）。
+    - `docs/governance.md`：DoD 增加 License 字段与“禁止大段原文拷贝”的审计命令。
+    - `.github/workflows/ci.yml`：CI 改为运行 `node scripts/validate-skills.js --strict`。
+    - `.github/workflows/audit-capture.yml`：新增定时/手动 workflow，跑 `node scripts/self-check.js --with-capture --skip-remote`（含抓取与原文拷贝审计）。
+  - Next:
+    - `node scripts/validate-skills.js --strict`
+    - `node scripts/validate-skills.js --strict --require-no-verbatim-copy --cache-dir .cache/web`
+    - （可选，含网络抓取）`node scripts/self-check.js --with-capture --skip-remote`
+  - Verified:
+    - 2026-01-15: `node scripts/validate-skills.js --strict`
+    - 2026-01-15: `node scripts/validate-skills.js --skills-root /tmp/skill-llm-out --strict --require-no-verbatim-copy --cache-dir .cache/web`
+    - 2026-01-15: `node scripts/self-check.js --with-capture --skip-remote`
+
+- [x] Missing-003: 可连续运行数天/数星期的 runner（队列/断点续跑/去重/速率控制）（Q4）
+  - Location: `agents/` (new `runner/`), `docs/`
+  - Acceptance:
+    - 提供可恢复的状态文件（例如 `runs/<run-id>/state.json`），支持中断后继续
+    - 支持按 domain sources/队列持续迭代，不会“跑俩小时就结束”（除非显式设置上限）
+  - Evidence:
+    - 当前只有一次性生成脚本（`agents/run_local.js`），没有长期运行/持久化队列机制
+  - Notes: 对应 Q4
+  - Implementation:
+    - 新增 `agents/runner/run.js`：按 `agents/configs/<domain>.yaml` 的 topics 队列逐个执行 `agents/run_local.js`，并持久化 `runs/<run-id>/state.json`（cursor/cycle/每 topic 状态）；支持同 run-id 自动 resume；支持 `--loop`/`--sleep-ms`/`--cycle-sleep-ms`/`--max-topics`/`--max-cycles`。
+    - 新增 `agents/runner/README.md`：给出长跑/断点续跑示例与 state 字段说明。
+    - 更新 `.gitignore`：忽略 `runs/`（runner 状态产物默认不提交）。
+    - 更新 `agents/README.md`：补充 runner 入口说明。
+    - 更新 `scripts/self-check.js`：新增 runner smoke（state 文件存在 + 两次运行验证 resume）。
+  - Next:
+    - `node agents/runner/run.js --domain linux --out /tmp/runner-out --run-id linux-runner-demo --max-topics 2`
+    - `node agents/runner/run.js --domain linux --out /tmp/runner-out --run-id linux-runner-demo --max-topics 2`
+    - （长跑示例）`node agents/runner/run.js --domain linux --out skills --overwrite --capture --loop --sleep-ms 30000 --cycle-sleep-ms 600000`
+  - Verified:
+    - 2026-01-15: `rm -rf runs/linux-runner-demo /tmp/runner-out && node agents/runner/run.js --domain linux --out /tmp/runner-out --run-id linux-runner-demo --max-topics 2`
+    - 2026-01-15: `node agents/runner/run.js --domain linux --out /tmp/runner-out --run-id linux-runner-demo --max-topics 2`
+    - 2026-01-15: `rm -rf runs/linux-runner-loop-demo /tmp/runner-loop-out && node agents/runner/run.js --domain linux --topic filesystem/find-files --out /tmp/runner-loop-out --run-id linux-runner-loop-demo --loop --max-cycles 2`
+
+- [x] Missing-004: 机器人自动 git push / PR 流程（默认安全 + 可 dry-run）（Q5）
+  - Location: `scripts/` (new `git-automation` script), `.github/workflows/`
+  - Acceptance:
+    - 本地可 dry-run：展示将要提交的文件/分支/远端，不做实际推送
+    - 支持创建分支并推送（或创建 PR），失败可回滚/重试
+    - 自检脚本覆盖关键路径（至少 dry-run + 分支创建）
+  - Evidence:
+    - 之前 workflows 不包含 commit/push 步骤；代码里也没有 git push 自动化（见 `.github/workflows/*`，本项已补齐）
+  - Notes: 对应 Q5
+  - Implementation:
+    - 新增 `scripts/git-automation.js`：默认 dry-run；支持创建分支、add/commit、push（含重试）并默认恢复到起始分支/commit。
+    - 更新 `scripts/self-check.js`：新增 `git-automation` 检查（在临时 git repo + 本地 bare remote 中覆盖 dry-run + 分支推送）。
+    - 更新 `.github/workflows/agent-generate.yml`：增加可选 commit/push 步骤（`workflow_dispatch` 输入 `dry_run` 默认 `true`）。
+  - Next:
+    - `node scripts/self-check.js --skip-remote`
+    - （可选，真实推送前先看计划）`node scripts/git-automation.js --paths skills --branch bot/test --dry-run`
+  - Verified:
+    - 2026-01-15: `node scripts/self-check.js --skip-remote`
+
+- [x] Missing-005: 部署后爬取范围与可扩展内容源（seeds/allowlist/发现→入队）（Q6）
+  - Location: `agents/configs/*.yaml`, `docs/domains/*`, `agents/` (new crawler)
+  - Acceptance:
+    - 每个 domain 明确 seeds + allow/deny domains，并在代码中强制执行
+    - 支持“发现→去重→入队→生成→校验→发布”的可扩展流程
+  - Evidence:
+    - 已实现：新增 per-domain `seeds`，并提供 crawler 将 `seeds → 发现 → 去重 → 入队` 落盘为可恢复的 state/log；抓取缓存写入 `.cache/web`（默认不提交）
+  - Notes: 对应 Q6
+  - Implementation:
+    - `agents/configs/linux.yaml`、`agents/configs/productivity.yaml`：新增 `seeds:`，明确机器人抓取入口；与 `source_policy.allow_domains/deny_domains` 配套使用。
+    - 新增 `agents/crawler/run.js`：从 seeds 开始抓取并发现链接，按 `source_policy` 强制过滤；持久化 `runs/<run-id>/crawl_state.json`（cursor/queue/stats）与 `runs/<run-id>/crawl_log.jsonl`（每条 URL 的 bytes/sha256/cache hit/miss + enqueue/block 统计）。
+    - `scripts/self-check.js`：新增 crawler smoke（本地 seed + allowlist 阻断外域链接），确保“发现→入队”关键路径可回归。
+  - Next:
+    - `node scripts/self-check.js --skip-remote`
+    - （真实抓取示例）`node agents/crawler/run.js --domain linux --run-id linux-crawl-demo --max-pages 50 --max-depth 2`
+    - （长跑示例）`node agents/crawler/run.js --domain linux --run-id linux-crawl-weekly --max-pages 0 --loop --sleep-ms 3000 --cycle-sleep-ms 600000`
+  - Verified:
+    - 2026-01-15: `rg -n "^seeds:|^\\s+- https?://" agents/configs/*.yaml`
+    - 2026-01-15: `rm -rf /tmp/skill-verify-runs /tmp/skill-verify-cache && node agents/crawler/run.js --domain linux --runs-dir /tmp/skill-verify-runs --run-id verify-linux-config-seeds --cache-dir /tmp/skill-verify-cache --max-pages 1 --max-depth 0`
+    - 2026-01-15: `node scripts/self-check.js --skip-remote`
+
+## Ambiguous
+- [ ] Amb-001: “网页端的 integration” 的具体范围是什么？（Q2/Q6）
+  - Location: `docs/plan.md`, `docs/domains/`
+  - Question: 这里的 integration 是指（A）生成“集成类 skills”（Slack/Notion/Sheets API 等），还是（B）机器人执行浏览器/网页自动化（playwright 等），还是（C）网站/插件作为分发入口？
+  - Needed: 明确 A/B/C 哪些必须做（以及合规边界），优先级与验收方式。
+  - Proposed spec:
+    - 最小可交付：先支持 A（集成类 skills 的来源抓取 + 生成），B 作为后续可选。
+  - Notes: 未定会影响 Q2/Q6 的实现边界
+
+- [ ] Amb-002: “逐条检查 license” 的政策口径与允许范围（Q3）
+  - Location: `docs/governance.md`
+  - Question: 允许引用哪些 license（例如 CC BY/官方文档/政府文档/论文等），是否要求记录 license 文本或 URL？
+  - Needed: 一份明确的 license policy（允许/禁止/需人工复核），以及默认可接受的做法（只做引用+不拷贝原文 vs 允许少量引用）。
+  - Proposed spec:
+    - 强制：不包含大段原文拷贝；Sources 必须可达且记录抓取指纹；对未知 license 标记为 “needs review”。
+  - Notes: 需要业务决策
+
+- [ ] Amb-003: 自动 git push 的认证与分支/PR 策略（Q5）
+  - Location: `.github/workflows/`, `scripts/`
+  - Question: 目标是 push 到 `main` 还是只 push bot 分支 + PR？使用 GitHub Actions 的 `GITHUB_TOKEN` 还是 PAT/SSH？
+  - Needed: 目标仓库权限模型与 bot 身份策略。
+  - Proposed spec:
+    - 默认：创建分支 `bot/<domain>/<date>`，push 后由 CI 创建 PR（或输出 PR 指令）。
+  - Notes: 未定会影响实现与安全边界
+
+- [ ] Amb-004: “至少吃掉现有所有这些 library” 指的是哪些具体库/站点？（Q4/Q6）
+  - Location: `docs/plan.md`
+  - Question: 需要覆盖哪些已有 library（清单/链接/优先级）？是否允许抓取需要 JS 渲染/登录的站点？
+  - Needed: 初始 seeds 列表 + 每个 domain 的来源范围与合规边界。
+  - Proposed spec:
+    - 先从稳定公开源开始（man/官方 docs/发行版 docs/公开指南），逐步扩展。
+  - Notes: 未定会影响 crawler 与长期运行策略
+
+## Log
+- 2026-01-15: 初始化问题 2–6 的 Missing/Ambiguous 跟踪列表，并按优先级准备逐一修复。

@@ -1,0 +1,11 @@
+id: linux/filesystem/acl-basics
+title: "ACL 权限：getfacl/setfacl 做精细授权"
+domain: linux
+level: bronze
+risk_level: medium
+platforms: [linux]
+tools: []
+tags: []
+last_verified: ""
+owners: []
+aliases: []

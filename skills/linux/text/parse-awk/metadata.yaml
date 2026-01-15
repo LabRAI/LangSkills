@@ -1,0 +1,11 @@
+id: linux/text/parse-awk
+title: "结构化文本处理：awk 提取列、统计、聚合"
+domain: linux
+level: bronze
+risk_level: low
+platforms: [linux]
+tools: []
+tags: []
+last_verified: ""
+owners: []
+aliases: []

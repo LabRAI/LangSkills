@@ -1,0 +1,11 @@
+id: linux/systemd/systemctl-service-status
+title: "systemd 服务管理：systemctl 状态/启动/重启/自启"
+domain: linux
+level: bronze
+risk_level: high
+platforms: [linux]
+tools: []
+tags: []
+last_verified: ""
+owners: []
+aliases: []

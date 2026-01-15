@@ -1,0 +1,11 @@
+id: linux/process/tmux-session
+title: "会话保持：tmux（创建/分离/恢复）"
+domain: linux
+level: bronze
+risk_level: low
+platforms: [linux]
+tools: []
+tags: []
+last_verified: ""
+owners: []
+aliases: []

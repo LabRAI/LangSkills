@@ -1,0 +1,11 @@
+id: linux/process/background-nohup
+title: "后台任务：nohup、&、disown 与日志重定向"
+domain: linux
+level: bronze
+risk_level: medium
+platforms: [linux]
+tools: []
+tags: []
+last_verified: ""
+owners: []
+aliases: []

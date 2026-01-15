@@ -1,0 +1,11 @@
+id: linux/process/ps-top-kill
+title: "进程管理：ps/top/kill（含信号与优雅退出）"
+domain: linux
+level: bronze
+risk_level: high
+platforms: [linux]
+tools: []
+tags: []
+last_verified: ""
+owners: []
+aliases: []

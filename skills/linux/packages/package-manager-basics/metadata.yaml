@@ -1,0 +1,11 @@
+id: linux/packages/package-manager-basics
+title: "软件包管理（参数化）：apt/dnf/pacman 安装/更新/回滚思路"
+domain: linux
+level: bronze
+risk_level: high
+platforms: [linux]
+tools: []
+tags: []
+last_verified: ""
+owners: []
+aliases: []

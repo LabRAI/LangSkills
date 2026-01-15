@@ -1,0 +1,11 @@
+id: linux/filesystem/safe-delete
+title: "安全删除文件：rm 的正确姿势与先预览后删除"
+domain: linux
+level: bronze
+risk_level: high
+platforms: [linux]
+tools: []
+tags: []
+last_verified: ""
+owners: []
+aliases: []

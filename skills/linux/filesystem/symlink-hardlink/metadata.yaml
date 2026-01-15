@@ -1,0 +1,11 @@
+id: linux/filesystem/symlink-hardlink
+title: "创建与管理链接：符号链接 vs 硬链接（ln）"
+domain: linux
+level: bronze
+risk_level: low
+platforms: [linux]
+tools: []
+tags: []
+last_verified: ""
+owners: []
+aliases: []

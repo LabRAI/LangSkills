@@ -1,0 +1,11 @@
+id: linux/filesystem/find-files
+title: "用 find 精准查找文件与目录（按名称/时间/大小）"
+domain: linux
+level: bronze
+risk_level: medium
+platforms: [linux]
+tools: []
+tags: []
+last_verified: ""
+owners: []
+aliases: []

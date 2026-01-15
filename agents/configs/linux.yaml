@@ -1,0 +1,163 @@
+domain: linux
+owners: []
+
+sources:
+  primary:
+    - linux_tier1_web
+
+source_policy:
+  prefer:
+    - man pages
+    - official docs
+    - distro docs
+  allow_domains:
+    - archlinux.org
+    - man7.org
+    - debian.org
+    - gnu.org
+    - opengroup.org
+    - freedesktop.org
+    - curl.se
+    - readthedocs.io
+    - samba.org
+    - github.com
+    - githubusercontent.com
+  deny_domains: []
+
+seeds:
+  - https://man7.org/linux/man-pages/index.html
+  - https://www.gnu.org/software/coreutils/manual/coreutils.html
+  - https://wiki.archlinux.org/
+  - https://pubs.opengroup.org/onlinepubs/9699919799/
+
+topics:
+  - id: filesystem/find-files
+    title: 用 find 精准查找文件与目录（按名称/时间/大小）
+    risk_level: medium
+    level: bronze
+  - id: filesystem/locate-which-whereis
+    title: 用 locate/which/whereis/type 快速定位命令与路径
+    risk_level: low
+    level: bronze
+  - id: filesystem/safe-delete
+    title: 安全删除文件：rm 的正确姿势与先预览后删除
+    risk_level: high
+    level: bronze
+  - id: filesystem/symlink-hardlink
+    title: 创建与管理链接：符号链接 vs 硬链接（ln）
+    risk_level: low
+    level: bronze
+  - id: filesystem/permissions-chmod
+    title: 文件权限入门：chmod 数字/符号写法与常见坑
+    risk_level: medium
+    level: bronze
+  - id: filesystem/ownership-chown
+    title: 所有者与用户组：chown/chgrp 递归修改与安全边界
+    risk_level: medium
+    level: bronze
+  - id: filesystem/acl-basics
+    title: ACL 权限：getfacl/setfacl 做精细授权
+    risk_level: medium
+    level: bronze
+  - id: filesystem/disk-usage-du-df
+    title: 磁盘空间排查：df/du 找出占用最大的目录与文件
+    risk_level: medium
+    level: bronze
+  - id: filesystem/archive-tar
+    title: 打包与解包：tar（含 gzip/xz）最佳实践
+    risk_level: low
+    level: bronze
+
+  - id: text/view-files-less-tail
+    title: 查看文件与日志：less/head/tail -f 的实战用法
+    risk_level: low
+    level: bronze
+  - id: text/search-grep-ripgrep
+    title: 文本搜索：grep（或 rg）按关键字/正则定位问题
+    risk_level: low
+    level: bronze
+  - id: text/replace-sed
+    title: 批量替换：sed 常见替换、就地修改与备份策略
+    risk_level: medium
+    level: bronze
+  - id: text/parse-awk
+    title: 结构化文本处理：awk 提取列、统计、聚合
+    risk_level: low
+    level: bronze
+
+  - id: network/download-curl-wget
+    title: 下载与 HTTP 调试：curl/wget（header、重试、代理）
+    risk_level: low
+    level: bronze
+  - id: network/dns-dig-nslookup
+    title: DNS 排查：dig/nslookup 看解析链路与 TTL
+    risk_level: low
+    level: bronze
+  - id: network/connectivity-ping-traceroute
+    title: 连通性诊断：ping/traceroute（或 tracepath）
+    risk_level: low
+    level: bronze
+  - id: network/ports-ss-lsof
+    title: 端口与进程：ss/lsof 找出谁在监听哪个端口
+    risk_level: medium
+    level: bronze
+
+  - id: ssh/ssh-keys
+    title: SSH 密钥登录：ssh-keygen + authorized_keys + ssh-agent
+    risk_level: medium
+    level: bronze
+  - id: ssh/scp-rsync
+    title: 文件传输：scp vs rsync（增量、断点、权限保留）
+    risk_level: medium
+    level: bronze
+
+  - id: process/ps-top-kill
+    title: 进程管理：ps/top/kill（含信号与优雅退出）
+    risk_level: high
+    level: bronze
+  - id: process/background-nohup
+    title: 后台任务：nohup、&、disown 与日志重定向
+    risk_level: medium
+    level: bronze
+  - id: process/tmux-session
+    title: 会话保持：tmux（创建/分离/恢复）
+    risk_level: low
+    level: bronze
+
+  - id: system/system-info-uname-dmesg
+    title: 系统信息与启动排查：uname/lsb_release/dmesg
+    risk_level: low
+    level: bronze
+  - id: system/resources-free-vmstat
+    title: 资源诊断：free/vmstat/iostat 区分 CPU/内存/IO 瓶颈
+    risk_level: low
+    level: bronze
+
+  - id: systemd/systemctl-service-status
+    title: systemd 服务管理：systemctl 状态/启动/重启/自启
+    risk_level: high
+    level: bronze
+  - id: systemd/journalctl-logs
+    title: systemd 日志：journalctl 按服务/时间/级别过滤
+    risk_level: low
+    level: bronze
+
+  - id: scheduling/cron-basics
+    title: 定时任务：cron/crontab（环境差异与日志）
+    risk_level: medium
+    level: bronze
+
+  - id: packages/package-manager-basics
+    title: 软件包管理（参数化）：apt/dnf/pacman 安装/更新/回滚思路
+    risk_level: high
+    level: bronze
+
+  - id: users/user-group-management
+    title: 用户与组管理：useradd/usermod/groups（含 sudo 组）
+    risk_level: high
+    level: bronze
+
+  - id: security/sudoers-best-practice
+    title: sudo 最佳实践：visudo 编辑 sudoers、最小授权与审计
+    risk_level: high
+    level: bronze

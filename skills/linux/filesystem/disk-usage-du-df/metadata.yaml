@@ -1,0 +1,11 @@
+id: linux/filesystem/disk-usage-du-df
+title: "磁盘空间排查：df/du 找出占用最大的目录与文件"
+domain: linux
+level: bronze
+risk_level: medium
+platforms: [linux]
+tools: []
+tags: []
+last_verified: ""
+owners: []
+aliases: []

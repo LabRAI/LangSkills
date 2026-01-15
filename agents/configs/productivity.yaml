@@ -1,0 +1,75 @@
+domain: productivity
+owners: []
+
+sources:
+  primary:
+    - productivity_tier1_web
+
+source_policy:
+  prefer:
+    - university teaching/career centers
+    - funding agency docs
+    - peer-reviewed articles
+  allow_domains:
+    - nsf.gov
+    - mit.edu
+    - northwestern.edu
+    - washington.edu
+    - usgs.gov
+    - icmje.org
+    - hmc.edu
+    - frontiersin.org
+    - csusb.edu
+    - cmu.edu
+    - berkeley.edu
+    - sulab.org
+    - nih.gov
+    - purdue.edu
+    - plos.org
+    - cornell.edu
+    - stanford.edu
+    - ncsu.edu
+    - harvard.edu
+    - upenn.edu
+    - kennesaw.edu
+  deny_domains: []
+
+seeds:
+  - https://www.icmje.org/recommendations/
+  - https://www.nsf.gov/pubs/policydocs/pappg/index.jsp
+  - https://www.nih.gov/grants-funding
+  - https://owl.purdue.edu/
+
+topics:
+  - id: writing/respond-to-reviewers
+    title: 回应审稿意见：逐条回复 + 修改对照表
+    risk_level: low
+    level: bronze
+  - id: writing/research-statement
+    title: 写研究陈述（Research Statement）：结构与写作检查清单
+    risk_level: low
+    level: bronze
+  - id: writing/paper-submission-checklist
+    title: 论文投稿/提交前检查清单：从大纲到提交包
+    risk_level: low
+    level: bronze
+  - id: teaching/syllabus-design
+    title: 课程大纲（Syllabus）设计：目标对齐、评价透明与政策声明
+    risk_level: low
+    level: bronze
+  - id: grants/funding-opportunity-pipeline
+    title: 基金机会管线（pipeline）：搜集、筛选与年度提交节奏
+    risk_level: low
+    level: bronze
+  - id: grants/nsf-proposal-outline
+    title: NSF 风格项目申请书：合规清单 + 写作大纲（PAPPG）
+    risk_level: medium
+    level: bronze
+  - id: mentoring/weekly-1on1
+    title: 每周 1:1 导师会议：议程模板 + 跟踪行动项
+    risk_level: low
+    level: bronze
+  - id: management/lab-meetings
+    title: 高效组会/实验室会议：议程、角色与行动项闭环
+    risk_level: low
+    level: bronze

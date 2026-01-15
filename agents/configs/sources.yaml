@@ -1,0 +1,94 @@
+sources:
+  # Tier1: stable, official-ish docs that can run for days/weeks
+  - id: linux_tier1_web
+    type: http_seed_crawl
+    domain: linux
+    seeds:
+      - https://man7.org/linux/man-pages/index.html
+      - https://www.gnu.org/software/coreutils/manual/coreutils.html
+      - https://wiki.archlinux.org/
+      - https://pubs.opengroup.org/onlinepubs/9699919799/
+    refresh:
+      mode: ttl
+      interval: 7d
+    purpose: primary
+    allowlist: true
+    license_policy: "manual_review_per_page (record License field in sources.md; no verbatim copy)"
+
+  - id: productivity_tier1_web
+    type: http_seed_crawl
+    domain: productivity
+    seeds:
+      - https://www.icmje.org/recommendations/
+      - https://www.nsf.gov/pubs/policydocs/pappg/index.jsp
+      - https://www.nih.gov/grants-funding
+      - https://owl.purdue.edu/
+    refresh:
+      mode: ttl
+      interval: 14d
+    purpose: primary
+    allowlist: true
+    license_policy: "manual_review_per_page (record License field in sources.md; no verbatim copy)"
+
+  # Tier0: upstream “skills repos/spec” (reference-only ingest; do not verbatim copy)
+  - id: upstream_anthropic_skills
+    type: github_repo
+    repo: anthropics/skills
+    branch: main
+    include_globs:
+      - "skills/**/SKILL.md"
+      - "README.md"
+      - "docs/**"
+    purpose: reference_only
+    allowlist: true
+    license_policy: "check_repo_license + per-file scan; ingest as evidence + mapping, not copy"
+    refresh:
+      mode: git_commit
+      interval: 2d
+
+  - id: upstream_claude_scientific_skills
+    type: github_repo
+    repo: K-Dense-AI/claude-scientific-skills
+    branch: main
+    include_globs:
+      - "scientific-skills/**/SKILL.md"
+      - "README.md"
+      - "docs/**"
+      - "LICENSE.md"
+    purpose: reference_only
+    allowlist: true
+    license_policy: "check_repo_license + per-file scan; ingest as evidence + mapping, not copy"
+    refresh:
+      mode: git_commit
+      interval: 7d
+
+  - id: upstream_context_engineering_skills
+    type: github_repo
+    repo: muratcankoylan/Agent-Skills-for-Context-Engineering
+    branch: main
+    include_globs:
+      - "skills/**/SKILL.md"
+      - "README.md"
+      - "docs/**"
+      - "LICENSE"
+    purpose: reference_only
+    allowlist: true
+    license_policy: "check_repo_license + per-file scan; ingest as evidence + mapping, not copy"
+    refresh:
+      mode: git_commit
+      interval: 7d
+
+  - id: upstream_agentskills_spec
+    type: github_repo
+    repo: agentskills/agentskills
+    branch: main
+    include_globs:
+      - "README.md"
+      - "docs/**"
+      - "skills-ref/**"
+    purpose: reference_only
+    allowlist: true
+    license_policy: "check_repo_license + per-file scan; ingest as evidence + mapping, not copy"
+    refresh:
+      mode: git_commit
+      interval: 7d

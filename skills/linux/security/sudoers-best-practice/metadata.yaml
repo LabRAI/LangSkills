@@ -1,0 +1,11 @@
+id: linux/security/sudoers-best-practice
+title: "sudo 最佳实践：visudo 编辑 sudoers、最小授权与审计"
+domain: linux
+level: bronze
+risk_level: high
+platforms: [linux]
+tools: []
+tags: []
+last_verified: ""
+owners: []
+aliases: []

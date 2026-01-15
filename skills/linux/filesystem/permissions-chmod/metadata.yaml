@@ -1,0 +1,11 @@
+id: linux/filesystem/permissions-chmod
+title: "文件权限入门：chmod 数字/符号写法与常见坑"
+domain: linux
+level: bronze
+risk_level: medium
+platforms: [linux]
+tools: []
+tags: []
+last_verified: ""
+owners: []
+aliases: []
