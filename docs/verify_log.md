@@ -74,6 +74,20 @@
   - Notes: Tier0 `github_repo` ingest produced `repo_state.json` + `repo_docs.jsonl` (246 files across 4 upstream repos); include_globs enforced.
   - Artifacts: `runs/tier0-ingest-demo-2/repo_state.json`, `runs/tier0-ingest-demo-2/repo_docs.jsonl`, `runs/tier0-ingest-demo-2/candidates.jsonl`
 
+## Missing-008
+- 2026-01-16: `node scripts/build-site.js --out website/dist`
+  - Result: PASS
+  - Notes: `Skills indexed: 2050` (repo skills_count >= 2000).
+  - Artifacts: `website/dist/index.json`
+- 2026-01-16: `node scripts/validate-skills.js --strict --fail-on-license-review`
+  - Result: PASS
+  - Notes: Strict gate passed on 2050 skills (bronze `License: unknown` still warns).
+  - Artifacts: (n/a)
+- 2026-01-16: `node eval/harness/run.js --tasks eval/tasks/linux/smoke.json --out eval/reports/latest/report.json --out-md eval/reports/latest/report.md --fail-on-stale-gold`
+  - Result: PASS
+  - Notes: Local eval report generated; Release publishing requires a GitHub Actions run of `eval.yml`.
+  - Artifacts: `eval/reports/latest/report.json`, `eval/reports/latest/report.md`
+
 ## Amb-002
 - 2026-01-15: `node scripts/validate-skills.js --strict`
   - Result: PASS

@@ -29,3 +29,6 @@ build/
 
 # Runner state
 runs/
+
+# Eval output (generated)
+eval/reports/latest/

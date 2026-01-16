@@ -20,11 +20,13 @@ function parseArgs(argv) {
   const out = {
     out: null,
     overwrite: false,
+    append: false,
     count: 2000,
     silver: 200,
     gold: 50,
     domain: "linux",
     topic: "synth",
+    start: 1,
     now: null,
     tag: "synthetic",
   };
@@ -36,6 +38,8 @@ function parseArgs(argv) {
       i++;
     } else if (a === "--overwrite") {
       out.overwrite = true;
+    } else if (a === "--append") {
+      out.append = true;
     } else if (a === "--count") {
       out.count = mustFiniteInt(argv[i + 1], "--count");
       i++;
@@ -51,6 +55,9 @@ function parseArgs(argv) {
     } else if (a === "--topic") {
       out.topic = String(argv[i + 1] || out.topic).trim();
       i++;
+    } else if (a === "--start") {
+      out.start = mustFiniteInt(argv[i + 1], "--start");
+      i++;
     } else if (a === "--now") {
       out.now = String(argv[i + 1] || "").trim();
       i++;
@@ -60,7 +67,7 @@ function parseArgs(argv) {
     } else if (a === "-h" || a === "--help") {
       console.log(
         [
-          "Usage: node scripts/synth-skills.js [--out <dir>] [--count N] [--silver N] [--gold N] [--domain <name>] [--topic <name>] [--now YYYY-MM-DD] [--overwrite]",
+          "Usage: node scripts/synth-skills.js [--out <dir>] [--count N] [--silver N] [--gold N] [--domain <name>] [--topic <name>] [--start N] [--now YYYY-MM-DD] [--overwrite] [--append]",
           "",
           "Outputs the skills root path on stdout.",
         ].join("\n"),
@@ -71,6 +78,7 @@ function parseArgs(argv) {
 
   if (!out.domain) throw new Error("--domain is required");
   if (!out.topic) throw new Error("--topic is required");
+  if (out.start <= 0) throw new Error("--start must be > 0");
   if (out.count <= 0) throw new Error("--count must be > 0");
   if (out.silver < 0 || out.gold < 0) throw new Error("--silver/--gold must be >= 0");
   if (out.silver + out.gold > out.count) throw new Error("--silver + --gold must be <= --count");
@@ -103,7 +111,7 @@ function main() {
     ? path.resolve(process.cwd(), args.out)
     : fs.mkdtempSync(path.join(os.tmpdir(), "skill-synth-"));
 
-  if (fs.existsSync(skillsRoot) && !args.overwrite) {
+  if (fs.existsSync(skillsRoot) && !args.overwrite && !args.append) {
     const entries = fs.readdirSync(skillsRoot);
     if (entries.length > 0) throw new Error(`Refusing to write into non-empty dir without --overwrite: ${skillsRoot}`);
   }
@@ -139,13 +147,16 @@ function main() {
   for (let i = 0; i < bronze; i++) levels.push("bronze");
 
   for (let i = 0; i < args.count; i++) {
-    const n = i + 1;
+    const n = args.start + i;
     const slug = `s-${String(n).padStart(4, "0")}`;
     const topic = args.topic;
     const domain = args.domain;
     const id = `${domain}/${topic}/${slug}`;
 
     const skillDir = path.join(skillsRoot, domain, topic, slug);
+    if (fs.existsSync(skillDir) && !args.overwrite) {
+      throw new Error(`Refusing to overwrite existing skill dir without --overwrite: ${skillDir}`);
+    }
     const refDir = path.join(skillDir, "reference");
     ensureDir(refDir);
 

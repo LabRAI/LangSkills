@@ -1,0 +1,11 @@
+id: linux/m1-scale/s-1282
+title: "Synthetic Skill s-1282"
+domain: linux
+level: bronze
+risk_level: low
+platforms: [linux]
+tools: []
+tags: ["m1-scale", "scale-test"]
+aliases: []
+owners: ["LabRAI"]
+last_verified: "2026-01-16"

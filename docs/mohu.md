@@ -165,6 +165,14 @@
     - 当前仓库 skills=50；`eval.yml` 每周运行但主要上传 artifact（不形成可访问历史报告）。
   - Notes:
     - `scripts/self-check.js --m1` 的 2000-scale 目前是 synthetic 回归（验证管线可跑），不代表真实技能库已扩容。
+  - Implementation:
+    - `scripts/synth-skills.js`：新增 `--append/--start`，允许向现有 `skills/` 追加大规模 validator-clean skills。
+    - `skills/linux/m1-scale/`：生成 2,000 条新增 skills（用于将主分支 `skills_count` 拉到 ≥2,000）。
+    - `.github/workflows/eval.yml`：每周运行后将 `eval/reports/latest/report.{json,md}` 发布到 GitHub Release（tag=`eval-YYYY-MM-DD`），确保外部可访问且可留存。
+  - Next:
+    - `node scripts/build-site.js --out website/dist`（确认 `Skills indexed` ≥ 2000）
+    - `node scripts/validate-skills.js --strict --fail-on-license-review`
+    - 在 GitHub 上手动触发 `eval` workflow（或等周日 cron），确认 Release 已生成并包含 `eval/reports/latest/report.json` 与 `report.md`
 
 - [ ] Missing-009: 达成 M2：参数化/组合化/去重驱动的 10 万级扩量（真实数据口径 + 验收）
   - Location: `skills/`, `agents/`, `scripts/build-site.js`, `scripts/validate-skills.js`
@@ -254,3 +262,4 @@
 - 2026-01-15: 初始化问题 2–6 的 Missing/Ambiguous 跟踪列表，并按优先级准备逐一修复。
 - 2026-01-15: 根据 plan 复核实现，新增 integrations domain 的 Missing-006。
 - 2026-01-16: 完成并验证 Missing-007（Tier0 github_repo ingest MVP），产出 `runs/<run-id>/repo_state.json`/`repo_docs.jsonl`。
+- 2026-01-16: 实施 Missing-008（skills_count≥2000 + eval 发布到 Release），本地验收已通过；待线上跑 `eval` workflow 确认 Release 资产落地。

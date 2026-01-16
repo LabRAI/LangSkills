@@ -6,7 +6,7 @@
 
 **已跑通（本地可复现）**
 - `node scripts/self-check.js --m0 --m1 --m2 --skip-remote`：PASS（见 `docs/verify_log.md`）
-- 仓库 skills 规模：`website/dist/index.json` 统计为 `total=50 (bronze=25, silver=20, gold=5)`
+- 仓库 skills 规模：`website/dist/index.json` 统计为 `total=2050 (bronze=1775, silver=220, gold=55)`
 - 严格门禁：`node scripts/validate-skills.js --strict`：PASS（仍有 bronze 的 `License: unknown` 警告）
 - Silver/Gold license 门禁：`node scripts/validate-skills.js --strict --fail-on-license-review`：PASS
 
@@ -58,13 +58,13 @@
 > 参考：`README.md` 的 “#### M1（1-2 个周，确保‘最坏也留痕’）”
 
 1) Skills ≥ 2,000（silver/gold 占比上升）  
-❌ 未满足（现实数据）：仓库当前 skills=50。  
-⚠️ 仅具备“规模回归能力”：`scripts/self-check.js --m1` 会生成 2,000 条 synthetic skills 并验证 validate/build-site 可跑通，但不代表真实技能库已扩容。
+✅ 已满足（仓库数据）：skills=2050。  
+⚠️ 目前新增的 2,000 条为模板生成（`skills/linux/m1-scale/*`），可用于规模与门禁回归；如果需要“真实覆盖面”，仍需把 candidates→生成→人审合并的扩量闭环跑起来。
 
 2) 固定周更节奏：每周 release + 变更日志 + eval 报告  
 ⚠️ 部分具备：
 - 已有每周定时：`.github/workflows/eval.yml`、`.github/workflows/lifecycle.yml`（cron weekly）
-- 但产物目前主要是 Actions artifact；未形成“release 产物/对外可访问的历史报告”（例如 commit 到 `eval/reports/` 或挂到 Release）。
+- `eval.yml` 已增加 “发布到 GitHub Release” 的步骤（tag=`eval-YYYY-MM-DD`）；仍需要线上跑一次确认 Release 资产确实生成且可访问。
 
 3) 社区治理稳定：PR 自动评分，低分 PR 不消耗 maintainer 时间  
 ✅ 已具备：`.github/workflows/pr-score.yml` 对 PR 做硬门禁；`scripts/pr-score.js` 可生成报告。

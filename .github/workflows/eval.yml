@@ -5,6 +5,9 @@ on:
   schedule:
     - cron: "0 5 * * 0"
 
+permissions:
+  contents: write
+
 jobs:
   eval:
     runs-on: ubuntu-latest
@@ -34,7 +37,29 @@ jobs:
           path: |
             eval/reports/latest/report.json
             eval/reports/latest/report.md
+      - name: Publish weekly eval report to GitHub Release
+        if: always()
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          tag="eval-$(date -u +%Y-%m-%d)"
+          title="Weekly Eval ${tag}"
+          notes="Automated weekly eval report for ${tag}. Build: ${{ github.sha }}"
+
+          if gh release view "$tag" >/dev/null 2>&1; then
+            gh release upload "$tag" \
+              "eval/reports/latest/report.json" \
+              "eval/reports/latest/report.md" \
+              --clobber
+          else
+            gh release create "$tag" \
+              "eval/reports/latest/report.json" \
+              "eval/reports/latest/report.md" \
+              --title "$title" \
+              --notes "$notes"
+          fi
       - name: Gate
         if: steps.eval.outputs.exitcode != '0'
         run: exit 1
-
