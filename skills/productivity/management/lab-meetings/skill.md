@@ -42,5 +42,5 @@
 
 ## Sources
 - [1] PLOS Computational Biology: Ten simple rules for productive lab meetings: https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1008953
-- [2] The Su Lab Handbook: Progress meetings: https://sulab.org/handbook/progress-meetings
+- [2] PLOS Computational Biology: Ten Simple Rules for a Bioinformatics Journal Club: https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1004526
 - [3] U.S. Geological Survey: Ten simple rules for productive lab meetings: https://www.usgs.gov/publications/ten-simple-rules-productive-lab-meetings

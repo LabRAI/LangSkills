@@ -29,8 +29,11 @@
 # 默认：黑名单阻断；灰名单警告（不失败）
 node scripts/validate-skills.js --strict
 
-# 严格：灰名单也当失败（用于 silver/gold 升级或发布门禁）
+# 严格：将 silver/gold 的灰名单 License 当作失败（用于升级门禁）
 node scripts/validate-skills.js --strict --fail-on-license-review
+
+# 更严格：全仓库灰名单也当失败（用于发布门禁）
+node scripts/validate-skills.js --strict --fail-on-license-review-all
 ```
 
 ## 4) License 字段的写法（示例）

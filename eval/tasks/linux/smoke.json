@@ -1,0 +1,7 @@
+[
+  { "id": "linux/filesystem/find-files" },
+  { "id": "linux/filesystem/locate-which-whereis" },
+  { "id": "linux/network/dns-dig-nslookup" },
+  { "id": "linux/process/ps-top-kill" },
+  { "id": "linux/system/system-info-uname-dmesg" }
+]

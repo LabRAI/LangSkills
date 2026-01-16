@@ -1,0 +1,40 @@
+name: pr-score
+
+on:
+  pull_request:
+
+jobs:
+  score:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Generate PR score report (strict gate)
+        id: score
+        shell: bash
+        run: |
+          set +e
+          node scripts/pr-score.js \
+            --base "${{ github.event.pull_request.base.sha }}" \
+            --head "${{ github.event.pull_request.head.sha }}" \
+            --out-json "runs/pr-score/${{ github.run_id }}/report.json" \
+            --out-md "runs/pr-score/${{ github.run_id }}/report.md"
+          code=$?
+          echo "exitcode=$code" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr-score
+          path: |
+            runs/pr-score/${{ github.run_id }}/report.json
+            runs/pr-score/${{ github.run_id }}/report.md
+      - name: Gate
+        if: steps.score.outputs.exitcode != '0'
+        run: exit 1
+

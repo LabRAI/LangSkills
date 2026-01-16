@@ -4,6 +4,7 @@
     "Apache-2.0",
     "BSD-2-Clause",
     "BSD-3-Clause",
+    "BSD-4-Clause",
     "ISC",
     "MPL-2.0",
 
@@ -23,6 +24,8 @@
     "CC-BY-SA-4.0",
     "GFDL-1.3-only",
     "GFDL-1.3-or-later",
+
+    "curl",
 
     "Public-Domain"
   ],

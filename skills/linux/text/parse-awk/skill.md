@@ -38,6 +38,6 @@
 - See: reference/troubleshooting.md
 
 ## Sources
-- [1] POSIX awk specification: https://pubs.opengroup.org/onlinepubs/9699919799/utilities/awk.html
+- [1] GNU gawk manual (Getting Started): https://www.gnu.org/software/gawk/manual/html_node/Getting-Started.html
 - [2] GNU gawk manual: https://www.gnu.org/software/gawk/manual/gawk.html
 - [3] Arch man: awk(1): https://man.archlinux.org/man/awk.1.en.txt

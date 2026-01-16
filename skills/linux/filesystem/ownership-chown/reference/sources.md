@@ -8,7 +8,7 @@
 - Accessed: 2026-01-15
 - Summary: chown 的语法、递归选项（-R）与符号链接遍历策略（-H/-L/-P）。
 - Supports: Steps 3-5
-- License: unknown
+- License: GFDL-1.3-or-later
 - Fetch cache: hit
 - Fetch bytes: 17621
 - Fetch sha256: 0c6ba23f83e921ffa664d41010bbd699e4a1cba57858c6df041894d6833b6b7c
@@ -18,7 +18,7 @@
 - Accessed: 2026-01-15
 - Summary: chgrp 的语法与常用选项。
 - Supports: Steps 2-3
-- License: unknown
+- License: GFDL-1.3-or-later
 - Fetch cache: hit
 - Fetch bytes: 14587
 - Fetch sha256: e3746a285ac8055af7d891edc04675e957a96c9c6af4197dc00bd4c8e1ab301a
@@ -28,7 +28,7 @@
 - Accessed: 2026-01-15
 - Summary: chown(1) man page（user:group、-R、-h 等）。
 - Supports: Steps 1-5
-- License: unknown
+- License: GPL-3.0-or-later
 - Fetch cache: hit
 - Fetch bytes: 4486
 - Fetch sha256: db6a753ad1d6ee42c273dd9b9c39dba08a1b42851b383421c7dc47b3c109a28c

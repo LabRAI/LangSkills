@@ -2,6 +2,8 @@
 /* eslint-disable no-console */
 
 const fs = require("fs");
+const http = require("http");
+const https = require("https");
 
 function assertOk(condition, message) {
   if (!condition) throw new Error(message);
@@ -9,6 +11,7 @@ function assertOk(condition, message) {
 
 function parseArgs(argv) {
   const out = {
+    apiBaseUrl: process.env.GITHUB_API_BASE_URL || "https://api.github.com",
     repo: null, // owner/name
     head: null, // branch name or owner:branch
     base: "main",
@@ -21,7 +24,10 @@ function parseArgs(argv) {
 
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
-    if (a === "--repo") {
+    if (a === "--api-base-url") {
+      out.apiBaseUrl = argv[i + 1] || out.apiBaseUrl;
+      i++;
+    } else if (a === "--repo") {
       out.repo = argv[i + 1] || null;
       i++;
     } else if (a === "--head") {
@@ -88,43 +94,97 @@ function tokenFromEnv() {
   return t;
 }
 
-async function ghJson({ method, url, token, body }) {
-  const resp = await fetch(url, {
-    method,
-    headers: {
-      Authorization: `Bearer ${token}`,
-      Accept: "application/vnd.github+json",
-      "X-GitHub-Api-Version": "2022-11-28",
-      ...(body ? { "Content-Type": "application/json" } : {}),
-      "User-Agent": "skill-bot",
-    },
-    body: body ? JSON.stringify(body) : undefined,
-  });
-  const text = await resp.text();
-  const parsed = text ? (() => { try { return JSON.parse(text); } catch { return null; } })() : null;
-  if (!resp.ok) {
-    const msg = parsed && parsed.message ? parsed.message : text || `HTTP ${resp.status}`;
-    const details = parsed && parsed.errors ? `\nerrors: ${JSON.stringify(parsed.errors)}` : "";
-    throw new Error(`GitHub API ${resp.status} ${resp.statusText}: ${msg}${details}`);
-  }
-  return parsed;
+function normalizeApiBaseUrl(raw) {
+  const v = String(raw || "").trim().replace(/\/+$/, "");
+  assertOk(v, "Missing --api-base-url");
+  assertOk(/^https?:\/\//i.test(v), `Invalid --api-base-url '${v}' (expected http/https)`);
+  return v;
 }
 
-async function findExistingPr({ owner, repo, headFull, base, token }) {
+async function ghJson({ method, url, token, body, timeoutMs = 20000 }) {
+  const payload = body ? JSON.stringify(body) : null;
+  const u = new URL(url);
+  const lib = u.protocol === "https:" ? https : http;
+
+  const headers = {
+    Authorization: `Bearer ${token}`,
+    Accept: "application/vnd.github+json",
+    "X-GitHub-Api-Version": "2022-11-28",
+    "User-Agent": "skill-bot",
+    Connection: "close",
+  };
+  if (payload != null) {
+    headers["Content-Type"] = "application/json";
+    headers["Content-Length"] = String(Buffer.byteLength(payload));
+  }
+
+  return await new Promise((resolve, reject) => {
+    const req = lib.request(
+      {
+        protocol: u.protocol,
+        hostname: u.hostname,
+        port: u.port || undefined,
+        path: `${u.pathname}${u.search}`,
+        method,
+        headers,
+        agent: false,
+      },
+      (res) => {
+        const chunks = [];
+        res.on("data", (c) => chunks.push(c));
+        res.on("end", () => {
+          const text = Buffer.concat(chunks).toString("utf8");
+          let parsed = null;
+          if (text) {
+            try {
+              parsed = JSON.parse(text);
+            } catch {
+              parsed = null;
+            }
+          }
+
+          const code = res.statusCode || 0;
+          if (code < 200 || code >= 300) {
+            const msg = parsed && parsed.message ? parsed.message : text || `HTTP ${code}`;
+            const details = parsed && parsed.errors ? `\nerrors: ${JSON.stringify(parsed.errors)}` : "";
+            reject(new Error(`GitHub API ${code} ${res.statusMessage || ""}: ${msg}${details}`.trim()));
+            return;
+          }
+          resolve(parsed);
+        });
+      },
+    );
+
+    req.on("error", reject);
+    req.setTimeout(timeoutMs, () => req.destroy(new Error(`Timeout after ${timeoutMs}ms`)));
+    if (payload != null) req.write(payload);
+    req.end();
+  });
+}
+
+async function findExistingPr({ owner, repo, headFull, base, token, apiUrl }) {
+  const buildUrl =
+    typeof apiUrl === "function"
+      ? apiUrl
+      : (p) => `https://api.github.com${String(p || "").startsWith("/") ? "" : "/"}${String(p || "")}`;
   const url =
-    `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/pulls` +
+    buildUrl(`/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/pulls`) +
     `?state=open&base=${encodeURIComponent(base)}&head=${encodeURIComponent(headFull)}`;
   const list = await ghJson({ method: "GET", url, token });
   if (!Array.isArray(list) || list.length === 0) return null;
   return list[0];
 }
 
-async function addLabels({ owner, repo, issueNumber, labels, token }) {
+async function addLabels({ owner, repo, issueNumber, labels, token, apiUrl }) {
   const list = Array.isArray(labels) ? labels.map((x) => String(x || "").trim()).filter(Boolean) : [];
   if (list.length === 0) return;
-  const url = `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/issues/${encodeURIComponent(
-    String(issueNumber),
-  )}/labels`;
+  const buildUrl =
+    typeof apiUrl === "function"
+      ? apiUrl
+      : (p) => `https://api.github.com${String(p || "").startsWith("/") ? "" : "/"}${String(p || "")}`;
+  const url = buildUrl(
+    `/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/issues/${encodeURIComponent(String(issueNumber))}/labels`,
+  );
   await ghJson({ method: "POST", url, token, body: { labels: list } });
 }
 
@@ -132,6 +192,8 @@ async function main() {
   const args = parseArgs(process.argv.slice(2));
   const { owner, repo } = parseRepo(args.repo);
   const token = tokenFromEnv();
+  const apiBaseUrl = normalizeApiBaseUrl(args.apiBaseUrl);
+  const apiUrl = (p) => `${apiBaseUrl}${String(p || "").startsWith("/") ? "" : "/"}${String(p || "")}`;
 
   let body = args.body;
   if (args.bodyFile) body = fs.readFileSync(args.bodyFile, "utf8");
@@ -139,13 +201,20 @@ async function main() {
 
   const headFull = args.head.includes(":") ? args.head : `${owner}:${args.head}`;
 
-  const existing = await findExistingPr({ owner, repo, headFull, base: args.base, token });
+  const existing = await findExistingPr({
+    owner,
+    repo,
+    headFull,
+    base: args.base,
+    token,
+    apiUrl,
+  });
   if (existing) {
     console.log(`[create-pr] exists: ${existing.html_url}`);
     return;
   }
 
-  const createUrl = `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/pulls`;
+  const createUrl = apiUrl(`/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/pulls`);
   const pr = await ghJson({
     method: "POST",
     url: createUrl,
@@ -160,14 +229,23 @@ async function main() {
   });
 
   if (pr && pr.number) {
-    await addLabels({ owner, repo, issueNumber: pr.number, labels: args.labels, token });
+    await addLabels({
+      owner,
+      repo,
+      issueNumber: pr.number,
+      labels: args.labels,
+      token,
+      apiUrl,
+    });
   }
 
   console.log(`[create-pr] created: ${pr && pr.html_url ? pr.html_url : "(unknown url)"}`);
 }
 
-main().catch((e) => {
-  console.error(String(e && e.stack ? e.stack : e));
-  process.exit(1);
-});
+main()
+  .then(() => process.exit(0))
+  .catch((e) => {
+    console.error(String(e && e.stack ? e.stack : e));
+    process.exit(1);
+  });
 

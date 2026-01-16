@@ -142,8 +142,37 @@
     - 支持从 `agents/configs/sources.yaml` 读取 `type: github_repo` 的 source（例如 `upstream_anthropic_skills`）并完成：discover → fetch → parse → candidates
     - 产物至少包含：`runs/<run-id>/repo_state.json`（进度/断点续跑）与 `runs/<run-id>/repo_docs.jsonl`（每个文件一行，含 repo/commit/path/sha）
     - 能对 `include_globs` 生效（只 ingest 指定文件集合）
+  - Evidence:
+    - `agents/orchestrator/run.js` 目前只处理 `type: http_seed_crawl`（显式 filter），`github_repo` 会被忽略。
+    - `agents/adapters/github_repo.js` 仅覆盖“本地 repo 目录的文件枚举/读取”，尚未形成远端拉取/commit 增量/落盘（repo_state/repo_docs）闭环。
+  - Implementation:
+    - `agents/orchestrator/run.js`：新增 `github_repo` ingest 步骤（git clone/fetch → include_globs 枚举文件 → 计算 sha → 写入 `runs/<run-id>/repo_state.json` 与 `runs/<run-id>/repo_docs.jsonl`，并把每个文件写成 candidate 追加到 `runs/<run-id>/candidates.jsonl`）。
+    - `agents/adapters/github_repo.js`：遍历时跳过 `.git`/`node_modules`/`.cache`，避免扫描 repo 元数据目录导致极慢/爆量。
+  - Next:
+    - `rm -rf runs/tier0-ingest-demo && node agents/orchestrator/run.js --domain linux --run-id tier0-ingest-demo --crawl-max-pages 1 --crawl-max-depth 0 --extract-max-docs 0 --generate-max-topics 0`
+    - 期望产物：`runs/tier0-ingest-demo/repo_state.json`、`runs/tier0-ingest-demo/repo_docs.jsonl`（包含 `upstream_anthropic_skills` 等 sources 的 repo/commit/path/sha）
   - Notes:
     - 当前长跑闭环主要覆盖 `http_seed_crawl`；Tier0 的 repo ingest 仍缺“远端拉取/增量/解析”能力
+
+- [ ] Missing-008: 达成 M1：真实 skills ≥ 2,000 + 周更产物可访问（release/eval 报告落盘）
+  - Location: `skills/`, `eval/`, `.github/workflows/eval.yml`, `.github/workflows/build-site.yml`
+  - Acceptance:
+    - `node scripts/build-site.js --out website/dist` 后 `website/dist/index.json` 的 `skills_count >= 2000`
+    - 每周至少产出一份“可被外部访问/长期留存”的 eval 报告（例如提交到仓库 `eval/reports/` 或作为 GitHub Release 资产），而不只是 Actions artifact
+  - Evidence:
+    - 当前仓库 skills=50；`eval.yml` 每周运行但主要上传 artifact（不形成可访问历史报告）。
+  - Notes:
+    - `scripts/self-check.js --m1` 的 2000-scale 目前是 synthetic 回归（验证管线可跑），不代表真实技能库已扩容。
+
+- [ ] Missing-009: 达成 M2：参数化/组合化/去重驱动的 10 万级扩量（真实数据口径 + 验收）
+  - Location: `skills/`, `agents/`, `scripts/build-site.js`, `scripts/validate-skills.js`
+  - Acceptance:
+    - 明确“10 万级”的口径（Atomic/Composite/Parameterized 的统计口径、去重口径、silver/gold 占比目标）
+    - 有可执行验收：能在真实 `skills/` 上把 `website/dist/index.json` 的 `skills_count` 扩到目标规模，并保持 `validate-skills --strict` 通过
+  - Evidence:
+    - 当前仅有 100k synthetic index 的规模回归（`self-check --m2`），但真实 skills 数据仍为 50。
+  - Notes:
+    - 该项会依赖多 sources 扩展、去重策略与生成矩阵化；可拆分为更小的 Missing 项逐步落地（如需）。
 
 ## Ambiguous
 - [x] Amb-001: “网页端的 integration” 的具体范围是什么？（Q2/Q6）
@@ -169,16 +198,17 @@
     - 每条来源必须在 `skills/**/reference/sources.md` 的对应块里填写 `License:`。
     - License 取值按 `scripts/license-policy.json` 分类为 **allowed/review/denied**：
       - `denied`（黑名单）→ `node scripts/validate-skills.js --strict` 直接失败（阻断合并）。
-      - `review`（灰名单，例如 `unknown`/`custom`）→ 默认只警告；可用 `--fail-on-license-review` 将其升级为失败（用于 silver/gold 升级或发布门禁）。
+      - `review`（灰名单，例如 `unknown`/`custom`）→ 默认只警告；可用 `--fail-on-license-review` 将 **silver/gold** 的灰名单升级为失败；如需全仓库清零，用 `--fail-on-license-review-all`。
       - `allowed`（白名单）→ 通过。
     - 额外硬门禁仍保持：不允许大段原文拷贝（`--require-no-verbatim-copy`）+ Steps 必须做 `[[n]]` 来源绑定。
   - Implementation:
     - 新增 `scripts/license-policy.json`：白/灰/黑名单可配置。
-    - `scripts/validate-skills.js`：在 `--require-license-fields/--strict` 下加载 policy，对 `denied` 阻断、对 `review` 记录 warning；新增 `--fail-on-license-review`。
+    - `scripts/validate-skills.js`：在 `--require-license-fields/--strict` 下加载 policy，对 `denied` 阻断、对 `review` 记录 warning；支持 `--fail-on-license-review`（silver/gold）与 `--fail-on-license-review-all`（全仓库）。
     - 新增 `docs/license_policy.md`，并在 `docs/governance.md` 引用该政策与门禁命令。
   - Next:
     - `node scripts/validate-skills.js --strict`
     - `node scripts/validate-skills.js --strict --fail-on-license-review`
+    - `node scripts/validate-skills.js --strict --fail-on-license-review-all`
 
 - [x] Amb-003: 自动 git push 的认证与分支/PR 策略（Q5）
   - Location: `.github/workflows/`, `scripts/`

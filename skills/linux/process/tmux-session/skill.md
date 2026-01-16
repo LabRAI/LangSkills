@@ -40,5 +40,5 @@
 
 ## Sources
 - [1] Arch man: tmux(1): https://man.archlinux.org/man/tmux.1.en.txt
-- [2] tmux wiki: Getting Started: https://github.com/tmux/tmux/wiki/Getting-Started
+- [2] tmux repo: README: https://github.com/tmux/tmux/blob/master/README
 - [3] Debian man: tmux(1): https://manpages.debian.org/bookworm/tmux/tmux.1.en.html

@@ -8,5 +8,5 @@
     "default_popup": "popup.html"
   },
   "permissions": ["storage", "clipboardWrite", "tabs"],
-  "host_permissions": ["https://labrai.github.io/LangSkills/*", "http://127.0.0.1/*", "http://localhost/*"]
+  "host_permissions": ["https://*.github.io/*", "http://127.0.0.1/*", "http://localhost/*"]
 }

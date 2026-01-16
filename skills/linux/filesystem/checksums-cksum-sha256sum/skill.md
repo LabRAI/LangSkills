@@ -39,5 +39,5 @@
 
 ## Sources
 - [1] man7 sha256sum(1): https://man7.org/linux/man-pages/man1/sha256sum.1.html
-- [2] POSIX cksum: https://pubs.opengroup.org/onlinepubs/9699919799/utilities/cksum.html
+- [2] man7 cksum(1): https://man7.org/linux/man-pages/man1/cksum.1.html
 - [3] GNU coreutils manual (cksum/sha*sum): https://www.gnu.org/software/coreutils/manual/coreutils.html

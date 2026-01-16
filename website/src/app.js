@@ -70,14 +70,25 @@ async function main() {
   if (!indexResp.ok) throw new Error(`Failed to load index.json: ${indexResp.status}`);
   const index = await indexResp.json();
   const skills = Array.isArray(index.skills) ? index.skills : [];
+  for (const s of skills) {
+    s._haystack = normalize(`${s.id || ""} ${s.title || ""} ${s.domain || ""}`);
+  }
   count.textContent = String(skills.length);
+
+  const skillsById = new Map(skills.map((s) => [s.id, s]));
+  const contentCache = new Map(); // `${id}|${tab}` -> string
+
+  const MAX_RESULTS = 250;
 
   let currentId = null;
   let filtered = skills;
+  let loadSeq = 0;
 
   function renderList() {
     results.innerHTML = "";
-    for (const s of filtered) {
+    const frag = document.createDocumentFragment();
+    const shown = filtered.slice(0, MAX_RESULTS);
+    for (const s of shown) {
       const row = document.createElement("div");
       row.className = `row${s.id === currentId ? " active" : ""}`;
       row.dataset.id = s.id;
@@ -94,8 +105,17 @@ async function main() {
       row.appendChild(sub);
 
       row.addEventListener("click", () => selectSkill(s.id));
-      results.appendChild(row);
+      frag.appendChild(row);
     }
+    if (filtered.length > MAX_RESULTS) {
+      const more = document.createElement("div");
+      more.className = "row";
+      more.style.cursor = "default";
+      more.style.opacity = "0.8";
+      more.innerHTML = `<div class="row-title">Showing ${MAX_RESULTS} of ${filtered.length} matches</div><div class="row-sub">Refine your search to narrow results.</div>`;
+      frag.appendChild(more);
+    }
+    results.appendChild(frag);
   }
 
   function activateTab(name) {
@@ -107,11 +127,67 @@ async function main() {
     tabSkill.classList.toggle("hidden", name !== "skill");
     tabSources.classList.toggle("hidden", name !== "sources");
     copyBtn.disabled = name !== "library";
+    void ensureTabContent(name);
+  }
+
+  async function loadContent(s, tabName) {
+    const cacheKey = `${s.id}|${tabName}`;
+    if (contentCache.has(cacheKey)) return contentCache.get(cacheKey);
+
+    // Back-compat: older index.json may embed full markdown.
+    const embedded =
+      tabName === "library" ? s.library_md : tabName === "skill" ? s.skill_md : tabName === "sources" ? s.sources_md : null;
+    if (typeof embedded === "string" && embedded.length > 0) {
+      contentCache.set(cacheKey, embedded);
+      return embedded;
+    }
+
+    const fileKey = tabName === "library" ? "library" : tabName;
+    let filePath = s.files && s.files[fileKey] ? String(s.files[fileKey]) : "";
+    if (!filePath) {
+      const idPath = String(s.id || "").replace(/^\\/+/, "");
+      if (!idPath) throw new Error(`Missing id for ${tabName}`);
+      const base = `skills/${idPath}`;
+      if (tabName === "library") filePath = `${base}/library.md`;
+      else if (tabName === "skill") filePath = `${base}/skill.md`;
+      else if (tabName === "sources") filePath = `${base}/reference/sources.md`;
+    }
+    if (!filePath) throw new Error(`Missing file path for ${tabName}: ${s.id}`);
+
+    const resp = await fetch(`./${filePath.replace(/^\\/+/, "")}`, { cache: "no-store" });
+    if (!resp.ok) throw new Error(`Failed to load ${tabName} (${resp.status}): ${s.id}`);
+    const text = await resp.text();
+    contentCache.set(cacheKey, text);
+    return text;
+  }
+
+  async function ensureTabContent(tabName) {
+    if (!currentId) return;
+    const s = skillsById.get(currentId);
+    if (!s) return;
+
+    const seq = loadSeq;
+    const target =
+      tabName === "library" ? tabLibrary : tabName === "skill" ? tabSkill : tabName === "sources" ? tabSources : null;
+    if (!target) return;
+
+    if (!target.textContent) target.textContent = "Loading...";
+    copyBtn.disabled = tabName !== "library";
+
+    try {
+      const text = await loadContent(s, tabName);
+      if (seq !== loadSeq) return;
+      target.textContent = text;
+    } catch (e) {
+      if (seq !== loadSeq) return;
+      target.textContent = String(e && e.message ? e.message : e);
+    }
   }
 
   function selectSkill(id) {
-    const s = skills.find((x) => x.id === id);
+    const s = skillsById.get(id);
     if (!s) return;
+    loadSeq++;
     currentId = s.id;
     setHashId(s.id);
 
@@ -133,12 +209,8 @@ async function main() {
 
   q.addEventListener("input", () => {
     const v = normalize(q.value);
-    filtered = skills.filter(
-      (s) =>
-        normalize(s.id).includes(v) ||
-        normalize(s.title).includes(v) ||
-        normalize(s.domain).includes(v),
-    );
+    filtered = v ? skills.filter((s) => s._haystack.includes(v)) : skills;
+    count.textContent = String(filtered.length);
     renderList();
   });
 
@@ -147,9 +219,17 @@ async function main() {
   }
 
   copyBtn.addEventListener("click", async () => {
-    const s = skills.find((x) => x.id === currentId);
+    const s = currentId ? skillsById.get(currentId) : null;
     if (!s) return;
-    await copyText(s.library_md || "");
+    const seq = loadSeq;
+    try {
+      const text = await loadContent(s, "library");
+      if (seq !== loadSeq) return;
+      await copyText(text || "");
+    } catch (e) {
+      alert(String(e && e.message ? e.message : e));
+      return;
+    }
     copyBtn.textContent = "Copied";
     setTimeout(() => {
       copyBtn.textContent = "Copy Library";
@@ -159,7 +239,7 @@ async function main() {
   renderList();
 
   const initial = parseHashId();
-  if (initial && skills.some((x) => x.id === initial)) {
+  if (initial && skillsById.has(initial)) {
     selectSkill(initial);
   }
 }

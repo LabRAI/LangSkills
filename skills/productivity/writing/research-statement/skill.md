@@ -44,6 +44,6 @@
 - See: reference/troubleshooting.md
 
 ## Sources
-- [1] UPenn Career Services: Research statements for faculty job applications: https://careerservices.upenn.edu/application-materials-for-the-faculty-job-search/research-statements-for-faculty-job-applications/
-- [2] MIT EECS Communication Lab: Faculty Application: Research Statement: https://mitcommlab.mit.edu/eecs/commkit/faculty-application-research-statement/
-- [3] Purdue OWL: Writing a Research Statement: https://owl.purdue.edu/owl/general_writing/graduate_school_applications/writing_a_research_statement.html
+- [1] PLOS Computational Biology: Ten Simple Rules for Writing Research Papers: https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003453
+- [2] PLOS Computational Biology: Ten Simple (Empirical) Rules for Writing Science: https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1004205
+- [3] PLOS Computational Biology: Ten Simple Rules for Writing a Postdoctoral Fellowship: https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1004934

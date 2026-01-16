@@ -41,6 +41,6 @@
 - See: reference/troubleshooting.md
 
 ## Sources
-- [1] UW Research: Funding Opportunities: https://www.washington.edu/research/resources/funding-opportunities/
-- [2] Stanford University Corporate and Foundation Relations: Funding Search Tools: https://cfr.stanford.edu/faculty/funding-opportunities-resources/funding-search-tools
-- [3] CSUSB PI Handbook: Identifying Funding Opportunities: https://www.csusb.edu/academic-research/pi-handbook/chapter-identifying-funding-opportunities
+- [1] NSF: Funding: https://www.nsf.gov/funding
+- [2] NSF: Award Search: https://www.nsf.gov/awardsearch/
+- [3] NIH: Grants & Funding: https://www.nih.gov/grants-funding

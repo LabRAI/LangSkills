@@ -13,6 +13,6 @@ jobs:
         with:
           node-version: "20"
       - name: Validate skill structure
-        run: node scripts/validate-skills.js --strict
+        run: node scripts/validate-skills.js --strict --fail-on-license-review
       - name: Build static site (sanity)
         run: node scripts/build-site.js --out website/dist

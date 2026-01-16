@@ -36,5 +36,5 @@
 
 ## Sources
 - [1] GNU coreutils manual: ln invocation: https://www.gnu.org/software/coreutils/manual/html_node/ln-invocation.html
-- [2] POSIX ln specification: https://pubs.opengroup.org/onlinepubs/9699919799/utilities/ln.html
+- [2] man7 ln(1): https://man7.org/linux/man-pages/man1/ln.1.html
 - [3] Arch man: ln(1): https://man.archlinux.org/man/ln.1.en.txt

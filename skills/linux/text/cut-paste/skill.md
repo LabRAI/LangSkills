@@ -40,4 +40,4 @@
 ## Sources
 - [1] man7 cut(1): https://man7.org/linux/man-pages/man1/cut.1.html
 - [2] man7 paste(1): https://man7.org/linux/man-pages/man1/paste.1.html
-- [3] POSIX cut: https://pubs.opengroup.org/onlinepubs/9699919799/utilities/cut.html
+- [3] GNU coreutils manual (cut): https://www.gnu.org/software/coreutils/manual/html_node/cut-invocation.html

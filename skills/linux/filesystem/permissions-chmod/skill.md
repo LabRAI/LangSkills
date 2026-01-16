@@ -37,5 +37,5 @@
 
 ## Sources
 - [1] GNU coreutils manual: chmod invocation: https://www.gnu.org/software/coreutils/manual/html_node/chmod-invocation.html
-- [2] POSIX chmod specification: https://pubs.opengroup.org/onlinepubs/9699919799/utilities/chmod.html
+- [2] man7 chmod(1): https://man7.org/linux/man-pages/man1/chmod.1.html
 - [3] Arch man: chmod(1): https://man.archlinux.org/man/chmod.1.en.txt

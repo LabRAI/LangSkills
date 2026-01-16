@@ -41,6 +41,6 @@
 - See: reference/troubleshooting.md
 
 ## Sources
-- [1] Cornell HR: Preparing For Your First Mentorship Meeting: https://hr.cornell.edu/your-career/career-success-center/mentoring-coaching/mentoring/preparing-your-first-mentorship
-- [2] Kennesaw State University HR: Suggested Meeting Agendas: https://campus.kennesaw.edu/faculty-staff/human-resources/professional-development/mentoring-program/suggested-meeting-agendas.php
-- [3] NC State CCEE: Sample Agenda for Initial Mentor Meeting: https://ccee.ncsu.edu/about/alumni-2/sample-agenda-for-initial-mentor-meeting/
+- [1] PLOS Computational Biology: Ten simple rules for developing a mentor–mentee expectations document: https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1005709
+- [2] PLOS Computational Biology: Ten Simple Rules for Finishing Your PhD: https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003954
+- [3] PLOS Computational Biology: Ten simple rules for productive lab meetings: https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1008953

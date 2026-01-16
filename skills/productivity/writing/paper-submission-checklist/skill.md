@@ -43,6 +43,6 @@
 - See: reference/troubleshooting.md
 
 ## Sources
-- [1] MIT EECS Communication Lab: Journal or Conference Paper: Planning Your Paper: https://mitcommlab.mit.edu/eecs/commkit/journal-or-conference-paper/
-- [2] Harvard Catalyst: Developing Your Manuscript: https://catalyst.harvard.edu/writing-communication-center/developing-your-manuscript/
-- [3] ICMJE Recommendations: https://www.icmje.org/recommendations/
+- [1] PLOS Computational Biology: Ten Simple Rules for Writing Research Papers: https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003453
+- [2] PLOS Computational Biology: Ten Simple (Empirical) Rules for Writing Science: https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1004205
+- [3] PLOS Computational Biology: Ten Simple Rules for Writing a PLOS Ten Simple Rules Article: https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003858

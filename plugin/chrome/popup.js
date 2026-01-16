@@ -77,12 +77,44 @@ async function main() {
   let skills = [];
   let filtered = [];
   let current = null;
+  const contentCache = new Map(); // id -> library text
+
+  const MAX_RESULTS = 120;
+
+  async function loadLibrary(s) {
+    if (!s || !s.id) return "";
+    if (contentCache.has(s.id)) return contentCache.get(s.id);
+
+    // Back-compat: older index.json may embed full markdown.
+    if (typeof s.library_md === "string" && s.library_md.length > 0) {
+      contentCache.set(s.id, s.library_md);
+      return s.library_md;
+    }
+
+    let filePath = s.files && s.files.library ? String(s.files.library) : "";
+    if (!filePath) {
+      const idPath = String(s.id || "").replace(/^\\/+/, "");
+      if (!idPath) throw new Error("Missing id for library path");
+      filePath = `skills/${idPath}/library.md`;
+    }
+    if (!filePath) throw new Error(`Missing library path: ${s.id}`);
+
+    const url = `${baseUrl}${filePath.replace(/^\\/+/, "")}`;
+    const resp = await fetch(url, { cache: "no-store" });
+    if (!resp.ok) throw new Error(`Failed to load library (${resp.status}): ${s.id}`);
+    const text = await resp.text();
+    contentCache.set(s.id, text);
+    return text;
+  }
 
   async function reloadIndex() {
     setStatus("Loading index...");
     try {
       const { url, skills: next } = await fetchIndex(baseUrl);
       skills = next;
+      for (const s of skills) {
+        s._haystack = normalize(`${s.id || ""} ${s.title || ""} ${s.domain || ""}`);
+      }
       filtered = skills;
       count.textContent = String(skills.length);
       setStatus(`Loaded: ${url}`);
@@ -98,7 +130,8 @@ async function main() {
 
   function renderList() {
     results.innerHTML = "";
-    for (const s of filtered) {
+    const shown = filtered.slice(0, MAX_RESULTS);
+    for (const s of shown) {
       const item = document.createElement("div");
       item.className = "item";
 
@@ -115,9 +148,23 @@ async function main() {
       item.addEventListener("click", () => select(s.id));
       results.appendChild(item);
     }
+    if (filtered.length > MAX_RESULTS) {
+      const item = document.createElement("div");
+      item.className = "item";
+      item.style.opacity = "0.8";
+      const t = document.createElement("div");
+      t.className = "item-title";
+      t.textContent = `Showing ${MAX_RESULTS} of ${filtered.length} matches`;
+      const sub = document.createElement("div");
+      sub.className = "item-sub";
+      sub.textContent = "Refine your search to narrow results.";
+      item.appendChild(t);
+      item.appendChild(sub);
+      results.appendChild(item);
+    }
   }
 
-  function select(id) {
+  async function select(id) {
     const s = skills.find((x) => x.id === id);
     if (!s) return;
     current = s;
@@ -125,23 +172,30 @@ async function main() {
     detailTitle.textContent = s.title || s.id;
     setBadge(badgeRisk, s.risk_level || "low", `risk-${s.risk_level || "low"}`);
     setBadge(badgeLevel, s.level || "bronze", "");
-    library.textContent = s.library_md || "";
+    library.textContent = "Loading...";
+    try {
+      library.textContent = await loadLibrary(s);
+    } catch (e) {
+      library.textContent = String(e && e.message ? e.message : e);
+    }
   }
 
   q.addEventListener("input", () => {
     const v = normalize(q.value);
-    filtered = skills.filter(
-      (s) =>
-        normalize(s.id).includes(v) ||
-        normalize(s.title).includes(v) ||
-        normalize(s.domain).includes(v),
-    );
+    filtered = v ? skills.filter((s) => String(s._haystack || "").includes(v)) : skills;
+    count.textContent = String(filtered.length);
     renderList();
   });
 
   copyBtn.addEventListener("click", async () => {
     if (!current) return;
-    await copyText(current.library_md || "");
+    try {
+      const text = await loadLibrary(current);
+      await copyText(text || "");
+    } catch (e) {
+      setStatus(String(e && e.message ? e.message : e), "error");
+      return;
+    }
     copyBtn.textContent = "Copied";
     setTimeout(() => {
       copyBtn.textContent = "Copy";

@@ -42,6 +42,6 @@
 - See: reference/troubleshooting.md
 
 ## Sources
-- [1] Carnegie Mellon Eberly Center: Write or Revise Your Syllabus: https://www.cmu.edu/teaching/designteach/syllabus/
-- [2] UC Berkeley Center for Teaching & Learning: Syllabus Design: https://teaching.berkeley.edu/teaching-strategies/designing-your-course/syllabus-design
-- [3] Harvard Bok Center: Syllabus Design: https://bokcenter.harvard.edu/syllabus-design
+- [1] PLOS Computational Biology: Ten Simple Rules for Developing a Short Bioinformatics Training Course: https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1002245
+- [2] PLOS Computational Biology: Ten simple rules for collaborative lesson development: https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1005963
+- [3] PLOS Computational Biology: Ten Simple Rules for a Bioinformatics Journal Club: https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1004526

@@ -39,5 +39,5 @@
 
 ## Sources
 - [1] GNU sed manual: https://www.gnu.org/software/sed/manual/sed.html
-- [2] POSIX sed specification: https://pubs.opengroup.org/onlinepubs/9699919799/utilities/sed.html
+- [2] man7 sed(1): https://man7.org/linux/man-pages/man1/sed.1.html
 - [3] Arch man: sed(1): https://man.archlinux.org/man/sed.1.en.txt

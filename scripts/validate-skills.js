@@ -118,6 +118,7 @@ function parseArgs(argv) {
     requireLicenseFields: false,
     licensePolicy: "scripts/license-policy.json",
     failOnLicenseReview: false,
+    failOnLicenseReviewAll: false,
     requireNoDuplicates: false,
     requireRiskScan: false,
     requireSourcePolicy: false,
@@ -144,6 +145,8 @@ function parseArgs(argv) {
       i++;
     } else if (a === "--fail-on-license-review") {
       out.failOnLicenseReview = true;
+    } else if (a === "--fail-on-license-review-all") {
+      out.failOnLicenseReviewAll = true;
     } else if (a === "--require-no-duplicates") {
       out.requireNoDuplicates = true;
     } else if (a === "--require-risk-scan") {
@@ -171,7 +174,7 @@ function parseArgs(argv) {
       out.requireRiskScan = true;
     } else if (a === "-h" || a === "--help") {
       console.log(
-        "Usage: node scripts/validate-skills.js [--skills-root <path>] [--cache-dir <path>] [--require-citations] [--require-command-citations] [--require-source-evidence] [--require-license-fields] [--license-policy <path>] [--fail-on-license-review] [--require-no-duplicates] [--require-risk-scan] [--require-source-policy] [--require-no-verbatim-copy] [--require-no-todo] [--require-safety-notes] [--strict]",
+        "Usage: node scripts/validate-skills.js [--skills-root <path>] [--cache-dir <path>] [--require-citations] [--require-command-citations] [--require-source-evidence] [--require-license-fields] [--license-policy <path>] [--fail-on-license-review] [--fail-on-license-review-all] [--require-no-duplicates] [--require-risk-scan] [--require-source-policy] [--require-no-verbatim-copy] [--require-no-todo] [--require-safety-notes] [--strict]",
       );
       process.exit(0);
     }
@@ -597,7 +600,8 @@ for (const skillDir of skillDirs) {
               errors.push(`[${relPosix}] sources.md denied License for [${i}]: '${lic}'`);
             } else if (c.classification === "review") {
               const msg = `[${relPosix}] sources.md License needs review for [${i}]: '${lic}'`;
-              if (args.failOnLicenseReview) errors.push(msg);
+              const isNonBronze = metaLevel === "silver" || metaLevel === "gold";
+              if (args.failOnLicenseReviewAll || (args.failOnLicenseReview && isNonBronze)) errors.push(msg);
               else warnings.push(msg);
             }
           }

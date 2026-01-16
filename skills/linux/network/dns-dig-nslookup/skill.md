@@ -42,4 +42,4 @@
 ## Sources
 - [1] Arch man: dig(1): https://man.archlinux.org/man/dig.1.en.txt
 - [2] Arch man: nslookup(1): https://man.archlinux.org/man/nslookup.1.en.txt
-- [3] Arch man: resolv.conf(5): https://man.archlinux.org/man/resolv.conf.5.en.txt
+- [3] Arch Wiki: Resolv.conf: https://wiki.archlinux.org/title/Resolv.conf

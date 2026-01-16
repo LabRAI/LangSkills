@@ -30,6 +30,9 @@ node scripts/validate-skills.js --strict
 # 原文拷贝审计（需要抓取缓存；默认 cache 在 .cache/web）
 node scripts/validate-skills.js --strict --require-no-verbatim-copy --cache-dir .cache/web
 
-# 将灰名单 License 当作失败（用于 silver/gold 升级或发布门禁）
+# 将 silver/gold 的灰名单 License 当作失败（用于升级门禁）
 node scripts/validate-skills.js --strict --fail-on-license-review
+
+# 全仓库灰名单 License 当作失败（用于发布门禁）
+node scripts/validate-skills.js --strict --fail-on-license-review-all
 ```

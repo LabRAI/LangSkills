@@ -45,4 +45,4 @@
 ## Sources
 - [1] NSF: Preparing Your Proposal: https://www.nsf.gov/funding/preparing-proposal
 - [2] NSF PAPPG (NSF 24-1) Chapter II: Proposal Preparation Instructions: https://www.nsf.gov/policies/pappg/24-1/ch-2-proposal-preparation
-- [3] Harvey Mudd College: NSF Proposal Guide and Checklist: https://www.hmc.edu/research/grant-resources-administration/grant-proposal-preparations/nsf-proposal-preparation-checklist/
+- [3] NSF PAPPG (NSF 24-1) Chapter II Exhibit: Proposal preparation checklist: https://www.nsf.gov/policies/pappg/24-1/ch-2-exhibit-1

@@ -1,0 +1,40 @@
+name: eval
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 5 * * 0"
+
+jobs:
+  eval:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Run eval harness (offline)
+        id: eval
+        shell: bash
+        run: |
+          set +e
+          node eval/harness/run.js \
+            --tasks "eval/tasks/linux/smoke.json" \
+            --out "eval/reports/latest/report.json" \
+            --out-md "eval/reports/latest/report.md" \
+            --fail-on-stale-gold
+          code=$?
+          echo "exitcode=$code" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: eval-report
+          path: |
+            eval/reports/latest/report.json
+            eval/reports/latest/report.md
+      - name: Gate
+        if: steps.eval.outputs.exitcode != '0'
+        run: exit 1
+

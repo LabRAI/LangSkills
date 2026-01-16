@@ -40,5 +40,5 @@
 
 ## Sources
 - [1] man7 diff(1): https://man7.org/linux/man-pages/man1/diff.1.html
-- [2] POSIX diff: https://pubs.opengroup.org/onlinepubs/9699919799/utilities/diff.html
+- [2] GNU diffutils manual: https://www.gnu.org/software/diffutils/manual/diffutils.html
 - [3] man7 patch(1): https://man7.org/linux/man-pages/man1/patch.1.html

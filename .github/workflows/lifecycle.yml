@@ -1,0 +1,36 @@
+name: lifecycle
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 6 * * 0"
+
+jobs:
+  lifecycle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Generate lifecycle report
+        id: life
+        shell: bash
+        run: |
+          set +e
+          node scripts/lifecycle.js \
+            --out "runs/lifecycle/${{ github.run_id }}/report.json" \
+            --fail-on-stale-gold
+          code=$?
+          echo "exitcode=$code" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lifecycle
+          path: runs/lifecycle/${{ github.run_id }}/report.json
+      - name: Gate
+        if: steps.life.outputs.exitcode != '0'
+        run: exit 1
+

@@ -3,6 +3,8 @@
 const fs = require("fs");
 const path = require("path");
 
+const IGNORE_DIRS = new Set([".git", "node_modules", ".cache"]);
+
 function normalizePosix(p) {
   return String(p || "").replace(/\\/g, "/");
 }
@@ -48,7 +50,10 @@ function walkFiles(rootDir, onFile) {
   const entries = fs.readdirSync(rootDir, { withFileTypes: true });
   for (const entry of entries) {
     const full = path.join(rootDir, entry.name);
-    if (entry.isDirectory()) walkFiles(full, onFile);
+    if (entry.isDirectory()) {
+      if (IGNORE_DIRS.has(entry.name)) continue;
+      walkFiles(full, onFile);
+    }
     else if (entry.isFile()) onFile(full);
   }
 }

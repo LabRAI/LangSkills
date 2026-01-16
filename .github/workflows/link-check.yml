@@ -20,6 +20,6 @@ jobs:
             --no-progress
             --accept 200,429
             --max-retries 2
-            --timeout 20s
+            --timeout 20
             .
 

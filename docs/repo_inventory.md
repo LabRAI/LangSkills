@@ -5,17 +5,19 @@
 - agents/ (capture/generate/orchestrate pipelines + configs)
 - cli/ (skill search/show CLI)
 - docs/ (plan, governance, domains, repo inventory)
+- eval/ (eval harness + tasks + reports)
 - patterns/ (cross-skill patterns)
 - plugin/ (Chrome extension)
 - scripts/ (build, validate, automation, self-check)
 - skills/ (skill dataset)
 - website/ (static site sources)
 - .cache/ (local fetch cache, not committed)
-- runs/ (run state + metrics, not committed)
+- runs/ (run state + metrics; ignored except placeholders)
 - root docs: README.md, LICENSE, LICENSE-docs, SAFETY.md, SECURITY.md
 
 ## Entry Points
-- `scripts/self-check.js`: local end-to-end smoke (no network with `--skip-remote`).
+- `scripts/self-check.js`: local end-to-end regression (M0/M1/M2).
+- `scripts/self-check.ps1`: PowerShell wrapper for `scripts/self-check.js`.
 - `scripts/validate-skills.js`: strict skill gate (structure, citations, sources, license fields).
 - `scripts/build-site.js`: build `website/dist/index.json` + static assets.
 - `scripts/serve-site.js`: serve built site locally.
@@ -27,6 +29,7 @@
 - `agents/orchestrator/run.js`: looped scheduler for crawler/extractor/runner.
 - `cli/skill.js`: search/show skills from `website/dist/index.json`.
 - `plugin/chrome/manifest.json`: Chrome extension entry.
+- `eval/harness/run.js`: run eval tasks and emit JSON/Markdown reports.
 
 ## Core Modules
 - `agents/llm/`: LLM providers (`mock|ollama|openai`) and rewrite helper.
@@ -37,6 +40,7 @@
 - `agents/orchestrator/`: cycle scheduler + metrics.
 - `scripts/validate-skills.js`: repo-wide gate for skills format/evidence.
 - `scripts/build-site.js`: site index builder for web/CLI/plugin.
+- `eval/harness/`: task runner + metrics aggregation.
 
 ## Config & Data
 - `agents/configs/<domain>.yaml`: domain seeds + allow/deny + topics.
@@ -48,7 +52,12 @@
 
 ## How To Run
 ```bash
-# health check
+# Milestone regressions (recommended)
+node scripts/self-check.js --m0 --with-capture --skip-remote
+node scripts/self-check.js --m1
+node scripts/self-check.js --m2
+
+# baseline health check
 node scripts/self-check.js --skip-remote
 
 # strict gate
@@ -63,11 +72,15 @@ node agents/run_local.js --domain linux --topic filesystem/find-files --out /tmp
 
 # long-run scheduler
 node agents/orchestrator/run.js --domain linux --run-id linux-orch --loop --crawl-max-pages 200 --extract-max-docs 200
+
+# eval harness (example)
+node eval/harness/run.js --skills-root skills --tasks eval/tasks/linux/smoke.json --out runs/eval-report.json --out-md runs/eval-report.md
 ```
 
 ## Risks / Unknowns
 - `github_repo` sources are listed but not yet wired into orchestrator discovery.
 - Only `linux`/`productivity` domains are configured by default.
 - License policy allow/deny rules are incomplete (see `docs/mohu.md`).
-- Node runtime/version is not pinned; no package.json.
+- CI uses Node 20; local runtime is not pinned (no `package.json`).
 - No dedicated test framework beyond `scripts/self-check.js` and `scripts/validate-skills.js`.
+- Link checking in CI uses `lychee` GitHub Action; local `lychee` is not wired as a script.

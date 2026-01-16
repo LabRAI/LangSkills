@@ -43,4 +43,4 @@
 ## Sources
 - [1] man7 find(1): https://man7.org/linux/man-pages/man1/find.1.html
 - [2] GNU findutils manual (find): https://www.gnu.org/software/findutils/manual/html_mono/find.html
-- [3] POSIX find specification: https://pubs.opengroup.org/onlinepubs/9699919799/utilities/find.html
+- [3] Arch man: find(1): https://man.archlinux.org/man/find.1.en.txt

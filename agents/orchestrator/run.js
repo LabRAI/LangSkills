@@ -6,6 +6,8 @@ const childProcess = require("child_process");
 const fs = require("fs");
 const path = require("path");
 
+const { discoverLocalRepoFiles, readLocalRepoFile } = require("../adapters/github_repo");
+
 process.stdout.on("error", (err) => {
   if (err && err.code === "EPIPE") process.exit(0);
 });
@@ -86,13 +88,37 @@ function run(cmd, args, options = {}) {
   };
 }
 
+function runGit(args, options = {}) {
+  const env = { ...process.env, GIT_TERMINAL_PROMPT: "0" };
+  return run("git", args, { ...options, env });
+}
+
 function assertOk(condition, message) {
   if (!condition) throw new Error(message);
+}
+
+function sha256Hex(text) {
+  return crypto.createHash("sha256").update(String(text || ""), "utf8").digest("hex");
 }
 
 function stripBom(text) {
   if (!text) return text;
   return text.charCodeAt(0) === 0xfeff ? text.slice(1) : text;
+}
+
+function normalizeText(text) {
+  return String(text || "").replace(/\s+/g, " ").trim();
+}
+
+function extractMarkdownTitle(text) {
+  const lines = String(text || "").replace(/\r\n/g, "\n").split("\n");
+  for (const raw of lines) {
+    const line = String(raw || "").trim();
+    if (!line) continue;
+    const m = line.match(/^#{1,6}\s+(.+?)\s*$/);
+    if (m) return normalizeText(m[1]);
+  }
+  return "";
 }
 
 function unquoteScalar(value) {
@@ -406,6 +432,211 @@ function readJsonMaybe(filePath) {
   }
 }
 
+function repoRemoteUrl(repo) {
+  const r = String(repo || "").trim();
+  if (!r) return "";
+  if (/^https?:\/\//i.test(r) || /^git@/i.test(r)) return r;
+  return `https://github.com/${r}.git`;
+}
+
+function gitLsRemoteHead({ repo, branch, cwd }) {
+  const remote = repoRemoteUrl(repo);
+  const b = String(branch || "main").trim() || "main";
+  assertOk(remote, "gitLsRemoteHead: missing repo");
+  const r = runGit(["ls-remote", remote, `refs/heads/${b}`], { cwd });
+  assertOk(r.status === 0, r.stderr || r.stdout || `git ls-remote failed: ${remote}`);
+  const line = String(r.stdout || "")
+    .trim()
+    .split("\n")
+    .map((x) => x.trim())
+    .filter(Boolean)[0];
+  const sha = line ? String(line.split(/\s+/)[0] || "").trim() : "";
+  assertOk(/^[a-f0-9]{40}$/i.test(sha), `git ls-remote did not return a commit sha for ${remote} ${b}`);
+  return sha;
+}
+
+function ensureRepoCheckout({ repo, branch, checkoutDir, cwd }) {
+  const remote = repoRemoteUrl(repo);
+  const b = String(branch || "main").trim() || "main";
+  assertOk(remote, "ensureRepoCheckout: missing repo");
+  assertOk(checkoutDir, "ensureRepoCheckout: missing checkoutDir");
+
+  const gitDir = path.join(checkoutDir, ".git");
+  if (!exists(gitDir)) {
+    ensureDir(path.dirname(checkoutDir));
+    const r = runGit(["clone", "--depth", "1", "--branch", b, remote, checkoutDir], { cwd });
+    assertOk(r.status === 0, r.stderr || r.stdout || `git clone failed: ${remote}`);
+    return;
+  }
+
+  const fetch = runGit(["fetch", "--depth", "1", "origin", b], { cwd: checkoutDir });
+  assertOk(fetch.status === 0, fetch.stderr || fetch.stdout || `git fetch failed: ${remote}`);
+  const checkout = runGit(["checkout", "-f", "FETCH_HEAD"], { cwd: checkoutDir });
+  assertOk(checkout.status === 0, checkout.stderr || checkout.stdout || `git checkout failed: ${remote}`);
+  const reset = runGit(["reset", "--hard", "FETCH_HEAD"], { cwd: checkoutDir });
+  assertOk(reset.status === 0, reset.stderr || reset.stdout || `git reset failed: ${remote}`);
+  const clean = runGit(["clean", "-fdx"], { cwd: checkoutDir });
+  assertOk(clean.status === 0, clean.stderr || clean.stdout || `git clean failed: ${remote}`);
+}
+
+function gitRevParseHead({ cwd }) {
+  const r = runGit(["rev-parse", "HEAD"], { cwd });
+  assertOk(r.status === 0, r.stderr || r.stdout || "git rev-parse HEAD failed");
+  const sha = String(r.stdout || "").trim().split("\n")[0] || "";
+  assertOk(/^[a-f0-9]{40}$/i.test(sha), `git rev-parse returned invalid sha: ${sha}`);
+  return sha;
+}
+
+function truthy(raw) {
+  const v = String(raw || "").trim().toLowerCase();
+  return v === "true" || v === "1" || v === "yes";
+}
+
+function loadRepoIngestState({ statePath, runId, domain }) {
+  const st = readJsonMaybe(statePath);
+  if (
+    st &&
+    st &&
+    st.run_id === runId &&
+    st.domain === domain &&
+    st.sources &&
+    typeof st.sources === "object" &&
+    !Array.isArray(st.sources)
+  ) {
+    return st;
+  }
+  return { version: 1, run_id: runId, domain, updated_at: utcNowIso(), sources: {} };
+}
+
+function ingestGithubRepoSources({ repoRoot, runDir, runId, domain, repoSources }) {
+  const statePath = path.join(runDir, "repo_state.json");
+  const docsPath = path.join(runDir, "repo_docs.jsonl");
+  const candidatesPath = path.join(runDir, "candidates.jsonl");
+
+  const state = loadRepoIngestState({ statePath, runId, domain });
+  state.updated_at = utcNowIso();
+
+  const reposCacheDir = path.join(repoRoot, ".cache", "repos");
+  ensureDir(reposCacheDir);
+
+  const nowMs = Date.now();
+  for (const s of repoSources) {
+    const sourceId = String(s && s.id ? s.id : "").trim();
+    if (!sourceId) continue;
+
+    const repo = String(s && s.repo ? s.repo : "").trim();
+    const branch = String(s && s.branch ? s.branch : "main").trim() || "main";
+    const includeGlobs = Array.isArray(s && s.include_globs ? s.include_globs : null) ? s.include_globs : [];
+    const refreshMode = String(s && s.refresh && s.refresh.mode ? s.refresh.mode : "").trim();
+    const intervalMs = refreshMode === "git_commit" ? parseDurationToMs(s && s.refresh ? s.refresh.interval : null) : null;
+    const allowlisted = truthy(s && s.allowlist ? s.allowlist : "");
+
+    if (!allowlisted) continue;
+    if (!repo) continue;
+
+    const entryRaw = state.sources[sourceId] && typeof state.sources[sourceId] === "object" ? state.sources[sourceId] : null;
+    const entry = entryRaw
+      ? { ...entryRaw }
+      : {
+          id: sourceId,
+          repo,
+          branch,
+          created_at: utcNowIso(),
+        };
+
+    let headCommit = String(entry.head_commit || "").trim();
+    const lastCheckedMs = entry.last_checked_at ? Date.parse(entry.last_checked_at) : NaN;
+    const due = !headCommit || !Number.isFinite(lastCheckedMs) || intervalMs == null || nowMs - lastCheckedMs >= intervalMs;
+
+    if (due) {
+      headCommit = gitLsRemoteHead({ repo, branch, cwd: repoRoot });
+      entry.head_commit = headCommit;
+      entry.last_checked_at = utcNowIso();
+    }
+
+    const ingestedCommit = String(entry.ingested_commit || "").trim();
+    if (entry.completed && ingestedCommit && ingestedCommit === headCommit) {
+      entry.updated_at = utcNowIso();
+      state.sources[sourceId] = entry;
+      writeJsonAtomic(statePath, state);
+      continue;
+    }
+
+    if (ingestedCommit !== headCommit) {
+      entry.ingested_commit = headCommit;
+      entry.cursor = 0;
+      entry.files_total = 0;
+      entry.processed_files = 0;
+      entry.completed = false;
+      entry.started_at = utcNowIso();
+    }
+
+    const checkoutDir = path.join(reposCacheDir, sourceId);
+    ensureRepoCheckout({ repo, branch, checkoutDir, cwd: repoRoot });
+    entry.checked_out_commit = gitRevParseHead({ cwd: checkoutDir });
+
+    const files = discoverLocalRepoFiles({ repoDir: checkoutDir, include_globs: includeGlobs });
+    entry.files_total = files.length;
+    if (!Number.isFinite(Number(entry.cursor)) || Number(entry.cursor) < 0) entry.cursor = 0;
+
+    for (let idx = Number(entry.cursor); idx < files.length; idx++) {
+      const relPath = String(files[idx] || "").trim();
+      if (!relPath) continue;
+
+      const content = readLocalRepoFile({ repoDir: checkoutDir, relPath });
+      const sha = sha256Hex(content);
+      const bytes = Buffer.byteLength(content, "utf8");
+
+      appendJsonl(docsPath, {
+        ts: utcNowIso(),
+        run_id: runId,
+        domain,
+        source_id: sourceId,
+        repo,
+        branch,
+        commit: headCommit,
+        path: relPath,
+        sha,
+        bytes,
+      });
+
+      const title = extractMarkdownTitle(content) || relPath;
+      const kind = "repo_file";
+      const url = /^https?:\/\//i.test(repo) || /^git@/i.test(repo) ? null : `https://github.com/${repo}/blob/${headCommit}/${relPath}`;
+      const candId = `cand_${sha256Hex([repo, headCommit, relPath, kind, title].join("\n")).slice(0, 12)}`;
+      appendJsonl(candidatesPath, {
+        ts: utcNowIso(),
+        id: candId,
+        domain,
+        kind,
+        title,
+        source: {
+          repo,
+          branch,
+          commit: headCommit,
+          path: relPath,
+          sha256: sha,
+          url,
+        },
+      });
+
+      entry.cursor = idx + 1;
+      entry.processed_files = Number(entry.processed_files || 0) + 1;
+      entry.updated_at = utcNowIso();
+      state.updated_at = utcNowIso();
+      state.sources[sourceId] = entry;
+      writeJsonAtomic(statePath, state);
+    }
+
+    entry.completed = true;
+    entry.completed_at = utcNowIso();
+    entry.updated_at = utcNowIso();
+    state.updated_at = utcNowIso();
+    state.sources[sourceId] = entry;
+    writeJsonAtomic(statePath, state);
+  }
+}
+
 function computeMetrics({ repoRoot, runDir, domain, runId, startedAtIso }) {
   const out = {
     ts: utcNowIso(),
@@ -517,6 +748,7 @@ async function main() {
   const sources = exists(sourcesPath) ? parseSourcesRegistry(readText(sourcesPath)) : [];
   const primaryIds = (domainCfg.sources && Array.isArray(domainCfg.sources.primary) ? domainCfg.sources.primary : []).filter(Boolean);
   const primarySources = primaryIds.length > 0 ? sources.filter((s) => primaryIds.includes(s.id)) : [];
+  const githubRepoSources = sources.filter((s) => String(s && s.type ? s.type : "") === "github_repo" && truthy(s && s.allowlist ? s.allowlist : ""));
 
   if (primaryIds.length > 0 && primarySources.length === 0) {
     console.error(`[warn] domain has sources.primary but none found in sources.yaml: ${primaryIds.join(", ")}`);
@@ -526,6 +758,11 @@ async function main() {
   while (true) {
     cycle += 1;
     console.log(`[orchestrator] cycle=${cycle} domain=${args.domain} run_id=${runId}`);
+
+    // 0) Ingest Tier0 repos (github_repo sources)
+    if (githubRepoSources.length > 0) {
+      ingestGithubRepoSources({ repoRoot, runDir, runId, domain: args.domain, repoSources: githubRepoSources });
+    }
 
     // 1) Crawl (bounded per cycle)
     {

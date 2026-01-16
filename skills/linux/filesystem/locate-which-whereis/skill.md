@@ -37,8 +37,8 @@
 - See: reference/troubleshooting.md
 
 ## Sources
-- [1] POSIX command (command -v): https://pubs.opengroup.org/onlinepubs/9699919799/utilities/command.html
+- [1] GNU Bash manual (builtins: command/type): https://www.gnu.org/software/bash/manual/html_node/Bourne-Shell-Builtins.html
 - [2] GNU Bash manual: https://www.gnu.org/software/bash/manual/bash.html
 - [3] Arch man: which(1): https://man.archlinux.org/man/which.1.en.txt
 - [4] Arch man: whereis(1): https://man.archlinux.org/man/whereis.1.en.txt
-- [5] Arch man: plocate(1) (provides locate): https://man.archlinux.org/man/plocate.1.en.txt
+- [5] man7 locate(1): https://man7.org/linux/man-pages/man1/locate.1.html

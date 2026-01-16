@@ -18,7 +18,7 @@
 
 ## Steps (<= 12)
 1. 确认内核与架构：`uname -a`（或更简洁 `uname -srmo`）[[1]]
-2. 确认发行版：`lsb_release -a`（若无该命令，可改用 `/etc/os-release`）[[2]]
+2. 确认发行版：优先 `cat /etc/os-release`（若已安装 `lsb_release` 也可用 `lsb_release -a`）[[2]]
 3. 查看最近内核日志：`dmesg -T | tail -n 200`（带人类可读时间）[[3]]
 4. 按关键字过滤：`dmesg -T | grep -i 'error\|fail\|warn' | tail -n 50`[[3]]
 
@@ -36,5 +36,5 @@
 
 ## Sources
 - [1] Arch man: uname(1): https://man.archlinux.org/man/uname.1.en.txt
-- [2] Arch man: lsb_release(1): https://man.archlinux.org/man/lsb_release.1.en.txt
+- [2] systemd man: os-release(5): https://www.freedesktop.org/software/systemd/man/latest/os-release.html
 - [3] Arch man: dmesg(1): https://man.archlinux.org/man/dmesg.1.en.txt

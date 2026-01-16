@@ -8,17 +8,17 @@
 - Accessed: 2026-01-15
 - Summary: ln 的软链接/硬链接语义与常用选项。
 - Supports: Steps 1-3
-- License: unknown
+- License: GFDL-1.3-or-later
 - Fetch cache: hit
 - Fetch bytes: 20388
 - Fetch sha256: c9c87e67b101e5f3691d5f0f63c8fe037ddb78a6261f92c475706201652f1b30
 
 ## [2]
-- URL: https://pubs.opengroup.org/onlinepubs/9699919799/utilities/ln.html
+- URL: https://man7.org/linux/man-pages/man1/ln.1.html
 - Accessed: 2026-01-15
-- Summary: POSIX ln 规范（可移植语义）。
-- Supports: Steps 1-2
-- License: unknown
+- Summary: ln(1) 的选项与软/硬链接行为说明。
+- Supports: Steps 1-3
+- License: GPL-3.0-or-later
 - Fetch cache: hit
 - Fetch bytes: 18719
 - Fetch sha256: ef2e23dc575f443b7798ea43c3c589a16506ea8ba216dc62a67a1a2853566180
@@ -28,7 +28,7 @@
 - Accessed: 2026-01-15
 - Summary: ln(1) man page。
 - Supports: Steps 1-3
-- License: unknown
+- License: GPL-3.0-or-later
 - Fetch cache: hit
 - Fetch bytes: 3941
 - Fetch sha256: 16f1d37a3dd4020c1d77fc34c3f2aacb7a6435da1169eb340797a0e6672e4f8f

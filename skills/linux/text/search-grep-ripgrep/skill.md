@@ -40,7 +40,7 @@
 - See: reference/troubleshooting.md
 
 ## Sources
-- [1] POSIX grep specification: https://pubs.opengroup.org/onlinepubs/9699919799/utilities/grep.html
+- [1] GNU grep manual: https://www.gnu.org/software/grep/manual/grep.html
 - [2] Arch man: grep(1): https://man.archlinux.org/man/grep.1.en.txt
-- [3] ripgrep GUIDE (raw): https://raw.githubusercontent.com/BurntSushi/ripgrep/master/GUIDE.md
+- [3] ripgrep GUIDE: https://github.com/BurntSushi/ripgrep/blob/master/GUIDE.md
 - [4] Arch man: rg(1): https://man.archlinux.org/man/rg.1.en.txt

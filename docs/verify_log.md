@@ -73,3 +73,21 @@
   - Result: PASS
   - Notes: License policy loaded from `scripts/license-policy.json`; denied licenses fail, review licenses warn.
   - Artifacts: (n/a)
+
+## Milestones (M0/M1/M2)
+- 2026-01-16: `node scripts/self-check.js --m0 --m1 --m2 --skip-remote`
+  - Result: PASS
+  - Notes: Single-run offline milestone smoke; includes `validate-skills --strict --fail-on-license-review` gate.
+  - Artifacts: (see stdout for temp dirs and outputs)
+- 2026-01-16: `node scripts/self-check.js --m0 --with-capture --skip-remote`
+  - Result: PASS
+  - Notes: Covers generator/capture/validator/site/cli/plugin/git/create-pr (remote Pages skipped).
+  - Artifacts: `website/dist` (plus OS temp dirs printed in stdout)
+- 2026-01-16: `node scripts/self-check.js --m1`
+  - Result: PASS
+  - Notes: Covers M0 + eval + lifecycle + pr-score + 2000-scale synthetic skills (offline default).
+  - Artifacts: (see stdout for temp eval/lifecycle/pr-score outputs)
+- 2026-01-16: `node scripts/self-check.js --m2`
+  - Result: PASS
+  - Notes: Covers M1 + 100k-scale synthetic index generation (metadata-only).
+  - Artifacts: `website/dist/index.json` (plus OS temp dirs printed in stdout)

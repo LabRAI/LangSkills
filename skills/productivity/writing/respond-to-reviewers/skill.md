@@ -44,6 +44,6 @@
 - See: reference/troubleshooting.md
 
 ## Sources
-- [1] Frontiers: How to respond to reviewers’ comments: https://www.frontiersin.org/for-authors/submitting-research/how-to-respond-reviewer-comments
-- [2] Tips for Responding to Reviewers’ Comments–from an Editor’s or Reviewer’s Points of View (PMC): https://pmc.ncbi.nlm.nih.gov/articles/PMC6347010/
-- [3] Northwestern Writing Place: Maintaining an Appropriate Tone in Responding to Reviewers: https://www.writing.northwestern.edu/resources-maintaining-an-appropriate-tone-in-responding-to-reviewers/
+- [1] PLOS Computational Biology: Ten simple rules for writing a response to reviewers: https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1005730
+- [2] PLOS Computational Biology: Ten Simple Rules for Writing a Reply Paper: https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1004536
+- [3] PLOS Computational Biology: Ten Simple (Empirical) Rules for Writing Science: https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1004205

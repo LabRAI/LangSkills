@@ -53,8 +53,14 @@ skills/**  --> node scripts/validate-skills.js --strict  (CI gate)
 快速入口（推荐先跑一遍再看细节）：
 
 ```bash
-# 一键回归（不需要联网）
-node scripts/self-check.js --skip-remote
+# M0 一键回归（不需要联网；覆盖 generator/capture/validator/site/cli/plugin/git/create-pr）
+node scripts/self-check.js --m0 --with-capture --skip-remote
+
+# M1 一键回归（不需要联网；默认跳过 remote pages；覆盖 M0 + eval + lifecycle + pr-score + 2000 skills scale）
+node scripts/self-check.js --m1
+
+# M2 一键回归（不需要联网；覆盖 M1 + 100k 规模 index 生成回归）
+node scripts/self-check.js --m2
 
 # 对 repo skills/ 做严格门禁（结构/引用/来源域名/License 字段等）
 node scripts/validate-skills.js --strict
@@ -398,7 +404,7 @@ node scripts/validate-skills.js --strict
 - URL: https://man7.org/linux/man-pages/man1/find.1.html
 - Summary: find(1) 选项与表达式（-name/-type/-mtime/-size/-maxdepth/-exec 等）。
 - Supports: Steps 1-8
-- License: unknown
+- License: GPL-3.0-or-later
 - Fetch cache: hit
 - Fetch bytes: 109430
 - Fetch sha256: 834fca2923ce9fe3...
@@ -410,7 +416,7 @@ node scripts/validate-skills.js --strict
 
 - 当前实现要求每条来源都有：`URL` + `License:` + 抓取指纹（sha256/bytes/cache），并且用 `agents/configs/<domain>.yaml` 的 allow/deny 域名策略做第一道“越界阻断”。
 - 对于“license 自动判定（允许/禁止/需复核）”，本仓库已落成 **可执行 policy**：`scripts/license-policy.json`（白/灰/黑），由 `node scripts/validate-skills.js --strict` 加载并执行（文档：`docs/license_policy.md`）。
-  - `denied`（黑名单）→ 直接失败（阻断合并）；`review`（灰名单，如 `unknown/custom`）→ 默认只警告；可用 `--fail-on-license-review` 升级为失败（用于 silver/gold 升级或发布门禁）。
+  - `denied`（黑名单）→ 直接失败（阻断合并）；`review`（灰名单，如 `unknown/custom`）→ 默认只警告；可用 `--fail-on-license-review` 将 **silver/gold** 的 `review` 升级为失败；如需全仓库清零灰名单，用 `--fail-on-license-review-all`。
   - 示例（来自 policy 与文档）：allowed: `MIT`/`Apache-2.0`/`CC-BY-4.0`；denied: `proprietary`/`source-available`/`CC-BY-NC-4.0`/`CC-BY-ND-4.0`。
 
 如果你希望把“疑似大段原文拷贝”作为硬门禁（强烈建议），额外启用：

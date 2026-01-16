@@ -78,10 +78,6 @@ function loadSkills(skillsRoot) {
     const level = parseSimpleYamlScalar(metaText, "level") || "bronze";
     const riskLevel = parseSimpleYamlScalar(metaText, "risk_level") || "low";
 
-    const skillPath = path.join(dirPath, "skill.md");
-    const libraryPath = path.join(dirPath, "library.md");
-    const sourcesPath = path.join(dirPath, "reference", "sources.md");
-
     skills.push({
       id,
       title,
@@ -90,9 +86,6 @@ function loadSkills(skillsRoot) {
       slug,
       level,
       risk_level: riskLevel,
-      skill_md: exists(skillPath) ? readText(skillPath) : "",
-      library_md: exists(libraryPath) ? readText(libraryPath) : "",
-      sources_md: exists(sourcesPath) ? readText(sourcesPath) : "",
     });
   }
 
@@ -101,7 +94,7 @@ function loadSkills(skillsRoot) {
 }
 
 function parseArgs(argv) {
-  const out = { outDir: null, skillsRoot: null };
+  const out = { outDir: null, skillsRoot: null, noCopySkills: false, syntheticCount: 0 };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === "--out") {
@@ -110,9 +103,63 @@ function parseArgs(argv) {
     } else if (a === "--skills-root") {
       out.skillsRoot = argv[i + 1] || null;
       i++;
+    } else if (a === "--no-copy-skills") {
+      out.noCopySkills = true;
+    } else if (a === "--synthetic-count") {
+      out.syntheticCount = Number(argv[i + 1] || "0");
+      i++;
     }
   }
   return out;
+}
+
+function generateSyntheticSkills(count) {
+  const domains = ["linux", "web", "cloud", "data", "productivity", "travel", "integrations", "devtools"];
+  const topic = "synthetic";
+  const skills = [];
+
+  const total = Math.floor(Number(count));
+  if (!Number.isFinite(total) || total <= 0) throw new Error(`--synthetic-count must be a positive integer (got ${count})`);
+
+  for (let i = 0; i < total; i++) {
+    const domain = domains[i % domains.length];
+    const slug = `s-${String(i + 1).padStart(6, "0")}`;
+    const id = `${domain}/${topic}/${slug}`;
+    skills.push({
+      id,
+      title: `Synthetic Skill ${slug}`,
+      domain,
+      topic,
+      slug,
+      level: i % 50 === 0 ? "gold" : i % 10 === 0 ? "silver" : "bronze",
+      risk_level: "low",
+    });
+  }
+
+  return skills;
+}
+
+function copySkillContent(skillsRoot, outDir, skills) {
+  for (const s of skills) {
+    const domain = String(s.domain || "").trim();
+    const topic = String(s.topic || "").trim();
+    const slug = String(s.slug || "").trim();
+    if (!domain || !topic || !slug) continue;
+
+    const srcBase = path.join(skillsRoot, domain, topic, slug);
+    const dstBase = path.join(outDir, "skills", domain, topic, slug);
+
+    const pairs = [
+      { src: path.join(srcBase, "skill.md"), dst: path.join(dstBase, "skill.md") },
+      { src: path.join(srcBase, "library.md"), dst: path.join(dstBase, "library.md") },
+      { src: path.join(srcBase, "reference", "sources.md"), dst: path.join(dstBase, "reference", "sources.md") },
+    ];
+
+    for (const p of pairs) {
+      if (!exists(p.src)) continue;
+      copyFile(p.src, p.dst);
+    }
+  }
 }
 
 function main() {
@@ -122,23 +169,36 @@ function main() {
   const outDir = args.outDir ? path.resolve(repoRoot, args.outDir) : path.join(repoRoot, "website", "dist");
   const websiteSrc = path.join(repoRoot, "website", "src");
 
-  if (!exists(skillsRoot)) throw new Error(`Missing skills root: ${skillsRoot}`);
   if (!exists(websiteSrc)) throw new Error(`Missing website src: ${websiteSrc}`);
+  if (args.syntheticCount <= 0 && !exists(skillsRoot)) throw new Error(`Missing skills root: ${skillsRoot}`);
 
   ensureDir(outDir);
 
-  const skills = loadSkills(skillsRoot);
+  const skillsInternal = args.syntheticCount > 0 ? generateSyntheticSkills(args.syntheticCount) : loadSkills(skillsRoot);
+  const skills = skillsInternal.map((s) => ({
+    id: s.id,
+    title: s.title,
+    domain: s.domain,
+    level: s.level,
+    risk_level: s.risk_level,
+  }));
   const index = {
+    schema_version: 2,
     generated_at: new Date().toISOString(),
     skills_count: skills.length,
     skills,
   };
 
-  writeText(path.join(outDir, "index.json"), JSON.stringify(index, null, 2));
+  const pretty = skills.length <= 5000;
+  writeText(path.join(outDir, "index.json"), pretty ? JSON.stringify(index, null, 2) : JSON.stringify(index));
 
   copyFile(path.join(websiteSrc, "index.html"), path.join(outDir, "index.html"));
   copyFile(path.join(websiteSrc, "style.css"), path.join(outDir, "style.css"));
   copyFile(path.join(websiteSrc, "app.js"), path.join(outDir, "app.js"));
+
+  if (!args.noCopySkills && args.syntheticCount <= 0) {
+    copySkillContent(skillsRoot, outDir, skillsInternal);
+  }
 
   console.log(`Built site: ${outDir}`);
   console.log(`Skills indexed: ${skills.length}`);
