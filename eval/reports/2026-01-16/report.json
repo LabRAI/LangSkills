@@ -1,0 +1,49 @@
+{
+  "meta": {
+    "generated_at": "2026-01-16T15:01:03.182Z",
+    "now": "2026-01-16",
+    "skills_root": "skills",
+    "version": 1
+  },
+  "gate": {
+    "validator": {
+      "ran": true,
+      "ok": true,
+      "stdout": "OK: 2050 skills validated.",
+      "stderr": "Skill validation warnings (78):\n- [linux/filesystem/acl-basics] sources.md License needs review for [1]: 'unknown'\n- [linux/filesystem/acl-basics] sources.md License needs review for [2]: 'unknown'\n- [linux/filesystem/acl-basics] sources.md License needs review for [3]: 'unknown'\n- [linux/filesystem/compress-gzip-xz] sources.md License needs review for [1]: 'unknown'\n- [linux/filesystem/compress-gzip-xz] sources.md License needs review for [2]: 'unknown'\n- [linux/filesystem/compress-gzip-xz] sources.md License needs review for [3]: 'unknown'\n- [linux/filesystem/copy-move-cp-mv] sources.md License needs review for [1]: 'unknown'\n- [linux/filesystem/copy-move-cp-mv] sources.md License needs review for [2]: 'unknown'\n- [linux/filesystem/copy-move-cp-mv] sources.md License needs review for [3]: 'unknown'\n- [linux/filesystem/disk-usage-du-df] sources.md License needs review for [1]: 'unknown'\n- [linux/filesystem/disk-usage-du-df] sources.md License needs review for [2]: 'unknown'\n- [linux/filesystem/disk-usage-du-df] sources.md License needs review for [3]: 'unknown'\n- [linux/filesystem/mount-umount] sources.md License needs review for [1]: 'unknown'\n- [linux/filesystem/mount-umount] sources.md License needs review for [2]: 'unknown'\n- [linux/filesystem/mount-umount] sources.md License needs review for [3]: 'unknown'\n- [linux/filesystem/safe-delete] sources.md License needs review for [1]: 'unknown'\n- [linux/filesystem/safe-delete] sources.md License needs review for [2]: 'unknown'\n- [linux/filesystem/safe-delete] sources.md License needs review for [3]: 'unknown'\n- [linux/network/connectivity-ping-traceroute] sources.md License needs review for [1]: 'unknown'\n- [linux/network/connectivity-ping-traceroute] sources.md License needs review for [2]: 'unknown'\n- [linux/network/connectivity-ping-traceroute] sources.md License needs review for [3]: 'unknown'\n- [linux/network/ports-ss-lsof] sources.md License needs review for [1]: 'unknown'\n- [linux/network/ports-ss-lsof] sources.md License needs review for [2]: 'unknown'\n- [linux/network/ports-ss-lsof] sources.md License needs review for [3]: 'unknown'\n- [linux/packages/package-manager-basics] sources.md License needs review for [1]: 'unknown'\n- [linux/packages/package-manager-basics] sources.md License needs review for [2]: 'unknown'\n- [linux/packages/package-manager-basics] sources.md License needs review for [3]: 'unknown'\n- [linux/process/background-nohup] sources.md License needs review for [1]: 'unknown'\n- [linux/process/background-nohup] sources.md License needs review for [2]: 'unknown'\n- [linux/process/background-nohup] sources.md License needs review for [3]: 'unknown'\n- [linux/process/pkill-killall] sources.md License needs review for [1]: 'unknown'\n- [linux/process/pkill-killall] sources.md License needs review for [2]: 'unknown'\n- [linux/process/pkill-killall] sources.md License needs review for [3]: 'unknown'\n- [linux/process/ps-top-kill] sources.md License needs review for [1]: 'unknown'\n- [linux/process/ps-top-kill] sources.md License needs review for [2]: 'unknown'\n- [linux/process/ps-top-kill] sources.md License needs review for [3]: 'unknown'\n- [linux/process/ps-top-kill] sources.md License needs review for [4]: 'unknown'\n- [linux/scheduling/cron-basics] sources.md License needs review for [1]: 'unknown'\n- [linux/scheduling/cron-basics] sources.md License needs review for [2]: 'unknown'\n- [linux/scheduling/cron-basics] sources.md License needs review for [3]: 'unknown'\n- [linux/security/sudoers-best-practice] sources.md License needs review for [1]: 'unknown'\n- [linux/security/sudoers-best-practice] sources.md License needs review for [2]: 'unknown'\n- [linux/security/sudoers-best-practice] sources.md License needs review for [3]: 'unknown'\n- [linux/ssh/scp-rsync] sources.md License needs review for [1]: 'unknown'\n- [linux/ssh/scp-rsync] sources.md License needs review for [2]: 'unknown'\n- [linux/ssh/scp-rsync] sources.md License needs review for [3]: 'unknown'\n- [linux/ssh/ssh-keys] sources.md License needs review for [1]: 'unknown'\n- [linux/ssh/ssh-keys] sources.md License needs review for [2]: 'unknown'\n- [linux/ssh/ssh-keys] sources.md License needs review for [3]: 'unknown'\n- [linux/ssh/ssh-keys] sources.md License needs review for [4]: 'unknown'\n- [linux/system/date-time-tz] sources.md License needs review for [1]: 'unknown'\n- [linux/system/date-time-tz] sources.md License needs review for [2]: 'unknown'\n- [linux/system/date-time-tz] sources.md License needs review for [3]: 'unknown'\n- [linux/system/env-path] sources.md License needs review for [1]: 'unknown'\n- [linux/system/env-path] sources.md License needs review for [2]: 'unknown'\n- [linux/system/env-path] sources.md License needs review for [3]: 'unknown'\n- [linux/system/permissions-umask] sources.md License needs review for [1]: 'unknown'\n- [linux/system/permissions-umask] sources.md License needs review for [2]: 'unknown'\n- [linux/system/permissions-umask] sources.md License needs review for [3]: 'unknown'\n- [linux/system/resources-free-vmstat] sources.md License needs review for [1]: 'unknown'\n- [linux/system/resources-free-vmstat] sources.md License needs review for [2]: 'unknown'\n- [linux/system/resources-free-vmstat] sources.md License needs review for [3]: 'unknown'\n- [linux/systemd/journalctl-logs] sources.md License needs review for [1]: 'unknown'\n- [linux/systemd/journalctl-logs] sources.md License needs review for [2]: 'unknown'\n- [linux/systemd/journalctl-logs] sources.md License needs review for [3]: 'unknown'\n- [linux/systemd/systemctl-service-status] sources.md License needs review for [1]: 'unknown'\n- [linux/systemd/systemctl-service-status] sources.md License needs review for [2]: 'unknown'\n- [linux/systemd/systemctl-service-status] sources.md License needs review for [3]: 'unknown'\n- [linux/text/view-files-less-tail] sources.md License needs review for [1]: 'unknown'\n- [linux/text/view-files-less-tail] sources.md License needs review for [2]: 'unknown'\n- [linux/text/view-files-less-tail] sources.md License needs review for [3]: 'unknown'\n- [linux/text/xargs-basics] sources.md License needs review for [1]: 'unknown'\n- [linux/text/xargs-basics] sources.md License needs review for [2]: 'unknown'\n- [linux/text/xargs-basics] sources.md License needs review for [3]: 'unknown'\n- [linux/users/user-group-management] sources.md License needs review for [1]: 'unknown'\n- [linux/users/user-group-management] sources.md License needs review for [2]: 'unknown'\n- [linux/users/user-group-management] sources.md License needs review for [3]: 'unknown'\n- [linux/users/user-group-management] sources.md License needs review for [4]: 'unknown'"
+    }
+  },
+  "tasks": {
+    "total": 5,
+    "passed": 5,
+    "success_rate": 1,
+    "failures": []
+  },
+  "metrics": {
+    "skills": {
+      "total": 2050,
+      "by_level": {
+        "bronze": 1775,
+        "silver": 220,
+        "gold": 55
+      },
+      "by_risk": {
+        "low": 2026,
+        "medium": 16,
+        "high": 8
+      },
+      "by_domain": {
+        "productivity": 8,
+        "linux": 2042
+      }
+    },
+    "freshness": {
+      "stale_days": 90,
+      "stale_total": 0,
+      "stale_gold": 0
+    },
+    "steps": {
+      "median": 5
+    }
+  }
+}

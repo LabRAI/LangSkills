@@ -195,6 +195,9 @@ function main() {
   const args = parseArgs(process.argv.slice(2));
   const skillsRoot = path.resolve(repoRoot, args.skillsRoot);
   if (!exists(skillsRoot)) throw new Error(`Missing skills root: ${skillsRoot}`);
+  let skillsRootForReport = path.relative(repoRoot, skillsRoot).split(path.sep).join("/");
+  if (!skillsRootForReport || skillsRootForReport === ".") skillsRootForReport = args.skillsRoot;
+  if (skillsRootForReport.startsWith("..")) skillsRootForReport = path.basename(skillsRoot);
 
   const nowDt = parseYmd(args.now);
   if (!nowDt) throw new Error(`Invalid --now: ${args.now}`);
@@ -291,7 +294,7 @@ function main() {
     meta: {
       generated_at: new Date().toISOString(),
       now: args.now,
-      skills_root: skillsRoot,
+      skills_root: skillsRootForReport,
       version: 1,
     },
     gate: {

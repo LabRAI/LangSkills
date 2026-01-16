@@ -156,7 +156,7 @@
   - Notes:
     - 当前实现为 ingest MVP（clone/fetch + include_globs + file-level candidates）；下一步可按需做更深解析（例如对 `SKILL.md` 结构化抽取/映射到本仓库 taxonomy）。
 
-- [ ] Missing-008: 达成 M1：真实 skills ≥ 2,000 + 周更产物可访问（release/eval 报告落盘）
+- [x] Missing-008: 达成 M1：真实 skills ≥ 2,000 + 周更产物可访问（release/eval 报告落盘）
   - Location: `skills/`, `eval/`, `.github/workflows/eval.yml`, `.github/workflows/build-site.yml`
   - Acceptance:
     - `node scripts/build-site.js --out website/dist` 后 `website/dist/index.json` 的 `skills_count >= 2000`
@@ -168,11 +168,17 @@
   - Implementation:
     - `scripts/synth-skills.js`：新增 `--append/--start`，允许向现有 `skills/` 追加大规模 validator-clean skills。
     - `skills/linux/m1-scale/`：生成 2,000 条新增 skills（用于将主分支 `skills_count` 拉到 ≥2,000）。
+    - `eval/reports/YYYY-MM-DD/`：支持把 eval 报告按日期落盘并提交到仓库以长期留存（`eval/reports/latest/` 作为临时输出）。
     - `.github/workflows/eval.yml`：每周运行后将 `eval/reports/latest/report.{json,md}` 发布到 GitHub Release（tag=`eval-YYYY-MM-DD`），确保外部可访问且可留存。
   - Next:
     - `node scripts/build-site.js --out website/dist`（确认 `Skills indexed` ≥ 2000）
     - `node scripts/validate-skills.js --strict --fail-on-license-review`
-    - 在 GitHub 上手动触发 `eval` workflow（或等周日 cron），确认 Release 已生成并包含 `eval/reports/latest/report.json` 与 `report.md`
+    - （本地留存）`node eval/harness/run.js --tasks eval/tasks/linux/smoke.json --out eval/reports/<YYYY-MM-DD>/report.json --out-md eval/reports/<YYYY-MM-DD>/report.md --fail-on-stale-gold`
+    - （线上留存，可选）在 GitHub 上手动触发 `eval` workflow（或等周日 cron），确认 Release 已生成并包含 `eval/reports/latest/report.json` 与 `report.md`
+  - Verified:
+    - 2026-01-16: `node scripts/build-site.js --out website/dist`（Skills indexed: 2050）
+    - 2026-01-16: `node scripts/validate-skills.js --strict --fail-on-license-review`
+    - 2026-01-16: `node eval/harness/run.js --tasks eval/tasks/linux/smoke.json --out eval/reports/2026-01-16/report.json --out-md eval/reports/2026-01-16/report.md --fail-on-stale-gold`
 
 - [ ] Missing-009: 达成 M2：参数化/组合化/去重驱动的 10 万级扩量（真实数据口径 + 验收）
   - Location: `skills/`, `agents/`, `scripts/build-site.js`, `scripts/validate-skills.js`

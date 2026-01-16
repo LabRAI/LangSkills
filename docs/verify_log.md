@@ -87,6 +87,10 @@
   - Result: PASS
   - Notes: Local eval report generated; Release publishing requires a GitHub Actions run of `eval.yml`.
   - Artifacts: `eval/reports/latest/report.json`, `eval/reports/latest/report.md`
+- 2026-01-16: `node eval/harness/run.js --tasks eval/tasks/linux/smoke.json --out eval/reports/2026-01-16/report.json --out-md eval/reports/2026-01-16/report.md --fail-on-stale-gold`
+  - Result: PASS
+  - Notes: Dated report saved under `eval/reports/2026-01-16/` for retention (can be committed).
+  - Artifacts: `eval/reports/2026-01-16/report.json`, `eval/reports/2026-01-16/report.md`
 
 ## Amb-002
 - 2026-01-15: `node scripts/validate-skills.js --strict`
