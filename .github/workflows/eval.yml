@@ -44,6 +44,10 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
+          if [[ ! -f "eval/reports/latest/report.json" || ! -f "eval/reports/latest/report.md" ]]; then
+            echo "[warn] missing eval report files; skipping Release publish"
+            exit 0
+          fi
           tag="eval-$(date -u +%Y-%m-%d)"
           title="Weekly Eval ${tag}"
           notes="Automated weekly eval report for ${tag}. Build: ${{ github.sha }}"
