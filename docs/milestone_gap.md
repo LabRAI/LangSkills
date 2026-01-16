@@ -35,7 +35,7 @@
 ✅ 已满足：CI 使用 `node scripts/validate-skills.js --strict`；`pr-score` workflow 对 PR 做硬门禁。
 
 5) Skills ≥ 50：至少 20 silver、5 gold  
-✅ 已满足（当前仓库）：`total=50, silver=20, gold=5`（见上方 snapshot）。
+✅ 已满足（当前仓库）：`total=2050, silver=220, gold=55`（见上方 snapshot）。
 ⚠️ 自检门槛与 README 口径略不同：`self-check` 目前只断言 `silver+gold>=20`，但实际数据满足 README 的更严格口径。
 
 6) 官网 MVP：可搜索、可复制 library、显示等级与来源  
