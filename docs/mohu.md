@@ -136,7 +136,7 @@
   - Verified:
     - 2026-01-15: `node agents/orchestrator/run.js --domain integrations --run-id integrations-demo --crawl-max-pages 1 --extract-max-docs 1`
 
-- [ ] Missing-007: 将 `type: github_repo` sources 接入可运行的 ingest 管线（Tier0 must-ingest）（Q4/Q6）
+- [x] Missing-007: 将 `type: github_repo` sources 接入可运行的 ingest 管线（Tier0 must-ingest）（Q4/Q6）
   - Location: `agents/orchestrator/run.js`, `agents/adapters/github_repo.js`, `agents/configs/sources.yaml`
   - Acceptance:
     - 支持从 `agents/configs/sources.yaml` 读取 `type: github_repo` 的 source（例如 `upstream_anthropic_skills`）并完成：discover → fetch → parse → candidates
@@ -149,10 +149,12 @@
     - `agents/orchestrator/run.js`：新增 `github_repo` ingest 步骤（git clone/fetch → include_globs 枚举文件 → 计算 sha → 写入 `runs/<run-id>/repo_state.json` 与 `runs/<run-id>/repo_docs.jsonl`，并把每个文件写成 candidate 追加到 `runs/<run-id>/candidates.jsonl`）。
     - `agents/adapters/github_repo.js`：遍历时跳过 `.git`/`node_modules`/`.cache`，避免扫描 repo 元数据目录导致极慢/爆量。
   - Next:
-    - `rm -rf runs/tier0-ingest-demo && node agents/orchestrator/run.js --domain linux --run-id tier0-ingest-demo --crawl-max-pages 1 --crawl-max-depth 0 --extract-max-docs 0 --generate-max-topics 0`
-    - 期望产物：`runs/tier0-ingest-demo/repo_state.json`、`runs/tier0-ingest-demo/repo_docs.jsonl`（包含 `upstream_anthropic_skills` 等 sources 的 repo/commit/path/sha）
+    - `node agents/orchestrator/run.js --domain linux --run-id tier0-ingest-demo-<unique> --crawl-max-pages 1 --crawl-max-depth 0 --extract-max-docs 0 --generate-max-topics 0`
+    - 期望产物：`runs/tier0-ingest-demo-<unique>/repo_state.json`、`runs/tier0-ingest-demo-<unique>/repo_docs.jsonl`（包含 `upstream_anthropic_skills` 等 sources 的 repo/commit/path/sha）
+  - Verified:
+    - 2026-01-16: `node agents/orchestrator/run.js --domain linux --run-id tier0-ingest-demo-2 --crawl-max-pages 1 --crawl-max-depth 0 --extract-max-docs 0 --generate-max-topics 0`（PASS；产出 `repo_state.json`/`repo_docs.jsonl`；include_globs 校验通过）
   - Notes:
-    - 当前长跑闭环主要覆盖 `http_seed_crawl`；Tier0 的 repo ingest 仍缺“远端拉取/增量/解析”能力
+    - 当前实现为 ingest MVP（clone/fetch + include_globs + file-level candidates）；下一步可按需做更深解析（例如对 `SKILL.md` 结构化抽取/映射到本仓库 taxonomy）。
 
 - [ ] Missing-008: 达成 M1：真实 skills ≥ 2,000 + 周更产物可访问（release/eval 报告落盘）
   - Location: `skills/`, `eval/`, `.github/workflows/eval.yml`, `.github/workflows/build-site.yml`
@@ -251,3 +253,4 @@
 ## Log
 - 2026-01-15: 初始化问题 2–6 的 Missing/Ambiguous 跟踪列表，并按优先级准备逐一修复。
 - 2026-01-15: 根据 plan 复核实现，新增 integrations domain 的 Missing-006。
+- 2026-01-16: 完成并验证 Missing-007（Tier0 github_repo ingest MVP），产出 `runs/<run-id>/repo_state.json`/`repo_docs.jsonl`。

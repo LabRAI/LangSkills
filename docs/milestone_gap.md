@@ -12,7 +12,7 @@
 
 **仍未满足（按“现实发布门禁”理解）**
 - 全仓库清零灰名单：`node scripts/validate-skills.js --strict --fail-on-license-review-all`：FAIL（bronze 仍有 `unknown`）
-- Tier0 must-ingest（上游 github_repo）仍缺 ingest 闭环：见 `docs/mohu.md` 的 `Missing-007`
+- Tier0 must-ingest（上游 github_repo）已补齐 ingest MVP（见 `docs/mohu.md` 的 `Missing-007` 已验证）；但尚未形成“从 Tier0 candidates → 生成本仓库 skills”的扩量闭环
 
 ---
 
@@ -112,4 +112,3 @@
 
 3) M1/M2 的“真实数据扩量”口径与验收  
 - 明确：什么算 2k/100k（原子/组合/参数化）、去重口径、覆盖统计与质量门禁。
-

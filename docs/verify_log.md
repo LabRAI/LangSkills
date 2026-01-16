@@ -68,6 +68,12 @@
   - Notes: Orchestrator ran crawler+extractor for integrations and wrote state/metrics.
   - Artifacts: `runs/integrations-demo/crawl_state.json`, `runs/integrations-demo/candidates.jsonl`, `runs/integrations-demo/metrics.json`
 
+## Missing-007
+- 2026-01-16: `node agents/orchestrator/run.js --domain linux --run-id tier0-ingest-demo-2 --crawl-max-pages 1 --crawl-max-depth 0 --extract-max-docs 0 --generate-max-topics 0`
+  - Result: PASS
+  - Notes: Tier0 `github_repo` ingest produced `repo_state.json` + `repo_docs.jsonl` (246 files across 4 upstream repos); include_globs enforced.
+  - Artifacts: `runs/tier0-ingest-demo-2/repo_state.json`, `runs/tier0-ingest-demo-2/repo_docs.jsonl`, `runs/tier0-ingest-demo-2/candidates.jsonl`
+
 ## Amb-002
 - 2026-01-15: `node scripts/validate-skills.js --strict`
   - Result: PASS
