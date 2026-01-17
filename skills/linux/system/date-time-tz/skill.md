@@ -38,6 +38,6 @@
 - See: reference/troubleshooting.md
 
 ## Sources
-- [1] man7 date(1): https://man7.org/linux/man-pages/man1/date.1.html
-- [2] POSIX date: https://pubs.opengroup.org/onlinepubs/9699919799/utilities/date.html
-- [3] GNU coreutils manual (date): https://www.gnu.org/software/coreutils/manual/coreutils.html
+- [1] Arch man: date(1): https://man.archlinux.org/man/date.1.en.txt
+- [2] Arch Wiki: System time: https://wiki.archlinux.org/title/System_time
+- [3] Arch man: timedatectl(1): https://man.archlinux.org/man/timedatectl.1.en.txt

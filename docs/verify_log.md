@@ -92,6 +92,12 @@
   - Notes: Dated report saved under `eval/reports/2026-01-16/` for retention (can be committed).
   - Artifacts: `eval/reports/2026-01-16/report.json`, `eval/reports/2026-01-16/report.md`
 
+## Missing-010
+- 2026-01-17: `node scripts/validate-skills.js --strict --fail-on-license-review-all`
+  - Result: PASS
+  - Notes: Repo-wide license graylist cleared (0 `License needs review`).
+  - Artifacts: (n/a)
+
 ## Amb-002
 - 2026-01-15: `node scripts/validate-skills.js --strict`
   - Result: PASS
@@ -115,3 +121,49 @@
   - Result: PASS
   - Notes: Covers M1 + 100k-scale synthetic index generation (metadata-only).
   - Artifacts: `website/dist/index.json` (plus OS temp dirs printed in stdout)
+
+## Local Backend (serve-local)
+- 2026-01-17: `node scripts/test-serve-local.js`
+  - Result: PASS
+  - Notes: Validates `serve-local` (build+serve + --no-build), API endpoints (`/api/health|summary|search|skill`), `index.json` schema/headers, static assets, atomic skill markdown fetch (`library.md`/`skill.md`/`sources.md`), template placeholder presence, traversal/dir 404 behavior, and CLI online template rendering.
+  - Artifacts: (see stdout temp outDir/baseUrl)
+
+## Missing-011
+- 2026-01-17: `npm run e2e`
+  - Result: PASS
+  - Notes: Headless Playwright UI e2e for website + plugin (search/open/markdown fetch/template render/copy/open).
+  - Artifacts: (n/a; uses temp outDir/baseUrl printed in stdout)
+
+## Missing-012
+- 2026-01-17: `node scripts/validate-skills.js --strict`
+  - Result: PASS
+  - Notes: Added real skills for web/cloud/data/travel/devtools and expanded integrations topics; strict gate validates all skills.
+  - Artifacts: (n/a)
+- 2026-01-17: `node scripts/build-site.js --out website/dist`
+  - Result: PASS
+  - Notes: Site index built with new domains present (skills_count=102057 in this run).
+  - Artifacts: `website/dist/index.json`
+- 2026-01-17: `node -e "const fs=require('fs');const idx=JSON.parse(fs.readFileSync('website/dist/index.json','utf8'));const counts={};for(const s of (idx.skills||[])){counts[s.domain]=(counts[s.domain]||0)+1;}const want=['web','cloud','data','travel','devtools','integrations'];for(const d of want){console.log(d+': '+(counts[d]||0));}"`
+  - Result: PASS
+  - Notes: Domain counts are non-zero for each required domain/topic set.
+  - Artifacts: `website/dist/index.json`
+
+## Missing-014
+- 2026-01-17: `node scripts/self-check.js --skip-remote`
+  - Result: PASS
+  - Notes: Covers `run_local --overwrite-content` safety (markdown refresh without `metadata.yaml` clobber), plus existing local gates.
+  - Artifacts: (see stdout for temp dirs and outputs)
+- 2026-01-17: `node scripts/self-check.js --with-capture --skip-remote`
+  - Result: PASS
+  - Notes: Capture smoke uses `docs/fixtures/web-cache` (offline fixture cache) and enforces `validate-skills --strict --fail-on-license-review-all` on the captured output.
+  - Artifacts: (see stdout for temp dirs and outputs)
+
+## Missing-015
+- 2026-01-17: `node agents/orchestrator/run.js --domain linux --run-id curator-demo --crawl-max-pages 1 --extract-max-docs 10 --generate-max-topics 0`
+  - Result: PASS
+  - Notes: Produced `runs/curator-demo/candidates.jsonl` (includes Tier0 `repo_file` + web `doc_heading` candidates).
+  - Artifacts: `runs/curator-demo/candidates.jsonl`
+- 2026-01-17: `node agents/curator/run.js --domain linux --run-id curator-demo`
+  - Result: PASS
+  - Notes: Produced `runs/curator-demo/curation.json` with dedup stats, suggested topic/slug, evidence refs, and `auto|manual|ignore` classification; resumable state recorded.
+  - Artifacts: `runs/curator-demo/curation.json`

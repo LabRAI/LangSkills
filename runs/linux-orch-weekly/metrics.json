@@ -1,0 +1,9 @@
+{
+  "domain": "linux",
+  "run_id": "linux-orch-weekly",
+  "cycle": 3,
+  "timestamp": "2026-01-15T00:10:00.000Z",
+  "crawl": { "fetched": 180, "blocked": 5 },
+  "extract": { "processed": 160, "candidates_written": 420 }
+}
+

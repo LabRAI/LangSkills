@@ -39,5 +39,5 @@
 
 ## Sources
 - [1] Arch man: gzip(1): https://man.archlinux.org/man/gzip.1.en.txt
-- [2] GNU gzip manual: https://www.gnu.org/software/gzip/manual/gzip.html
+- [2] Arch Wiki: Archiving and compression: https://wiki.archlinux.org/title/Archiving_and_compression
 - [3] Arch man: xz(1): https://man.archlinux.org/man/xz.1.en.txt

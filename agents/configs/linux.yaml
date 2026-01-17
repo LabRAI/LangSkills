@@ -4,6 +4,7 @@ owners: []
 sources:
   primary:
     - linux_tier1_web
+    - linux_tier1_web_extra
 
 source_policy:
   prefer:
@@ -17,6 +18,7 @@ source_policy:
     - gnu.org
     - opengroup.org
     - freedesktop.org
+    - kernel.org
     - curl.se
     - readthedocs.io
     - samba.org
@@ -29,6 +31,12 @@ seeds:
   - https://www.gnu.org/software/coreutils/manual/coreutils.html
   - https://wiki.archlinux.org/
   - https://pubs.opengroup.org/onlinepubs/9699919799/
+  - https://man.archlinux.org/
+  - https://manpages.debian.org/
+  - https://wiki.debian.org/
+  - https://www.freedesktop.org/software/systemd/man/
+  - https://curl.se/docs/
+  - https://docs.kernel.org/
 
 topics:
   - id: filesystem/find-files

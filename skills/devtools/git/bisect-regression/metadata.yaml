@@ -1,0 +1,11 @@
+id: devtools/git/bisect-regression
+title: "git bisect：自动定位引入回归的提交（可回放/可复现）"
+domain: devtools
+level: bronze
+risk_level: medium
+platforms: []
+tools: []
+tags: []
+last_verified: ""
+owners: []
+aliases: []

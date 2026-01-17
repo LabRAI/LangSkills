@@ -31,3 +31,20 @@ node agents/run_local.js \
 - `--llm-base-url <url>`：Ollama 地址（默认 `http://127.0.0.1:11434`）
 - `--llm-timeout-ms <n>`：单次请求超时（默认 60000）
 
+### `openai`（远端 OpenAI-compatible）
+
+支持 OpenAI Chat Completions 兼容接口（`POST /v1/chat/completions`）。
+
+环境变量（可写入 repo root 的 `.env`；会被 best-effort 自动加载）：
+
+- `OPENAI_API_KEY`：API key
+- `OPENAI_BASE_URL`：可选；例如 `https://api.example.com`（若未带 `/v1` 会自动补齐）
+- `OPENAI_MODEL`：可选；不传 `--llm-model` 时使用
+
+```bash
+node agents/run_local.js \
+  --domain linux --topic filesystem/find-files \
+  --out /tmp/skill-llm-out --overwrite --capture \
+  --llm-provider openai --llm-model gpt-4o-mini
+```
+

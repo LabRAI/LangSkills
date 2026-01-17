@@ -27,8 +27,19 @@ build/
 # Local caches
 .cache/
 
-# Runner state
-runs/
+# Local secrets
+.env
+.env.*
+
+# Runner state (generated)
+/runs/*
+!/runs/README.md
+!/runs/integrations-weekly/
+!/runs/integrations-weekly/**
+!/runs/linux-crawl-demo/
+!/runs/linux-crawl-demo/**
+!/runs/linux-orch-weekly/
+!/runs/linux-orch-weekly/**
 
 # Eval output (generated)
 eval/reports/latest/

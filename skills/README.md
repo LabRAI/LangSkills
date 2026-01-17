@@ -2,6 +2,7 @@
 
 skills 按 domain/topic/slug 组织：
 
-- `skills/linux/`：Linux（已生成 30 个主题骨架）
+- `skills/linux/`：Linux（当前约 2k skills，主要内容库）
 - `skills/productivity/`：Productivity（助理教授/PI Track，5 个主题）
-- 其他 domain：web/cloud/data/travel/integrations/devtools（待填充）
+- `skills/integrations/`：Integrations（示例：Slack incoming webhooks，1 个 bronze）
+- 其他 domain：web/cloud/data/travel/devtools（待填充）

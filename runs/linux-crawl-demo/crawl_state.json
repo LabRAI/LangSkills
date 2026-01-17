@@ -1,0 +1,29 @@
+{
+  "domain": "linux",
+  "run_id": "linux-crawl-demo",
+  "created_at": "2026-01-15T00:00:00.000Z",
+  "docs": {
+    "https://man7.org/linux/man-pages/man1/find.1.html": {
+      "url": "https://man7.org/linux/man-pages/man1/find.1.html",
+      "state": "FETCHED",
+      "discovered_at": "2026-01-15T00:00:00.000Z",
+      "fetched_at": "2026-01-15T00:00:01.000Z",
+      "attempts": 1,
+      "fetch": {
+        "cache": "hit",
+        "status": 200,
+        "bytes": 109430,
+        "sha256": "834fca2923ce9fe3834fca2923ce9fe3834fca2923ce9fe3834fca2923ce9fe3",
+        "cache_file": "<url-sha>.txt"
+      }
+    },
+    "https://example.com/outside": {
+      "url": "https://example.com/outside",
+      "state": "BLOCKED",
+      "discovered_at": "2026-01-15T00:00:00.000Z",
+      "attempts": 1,
+      "error": "blocked by source_policy"
+    }
+  }
+}
+

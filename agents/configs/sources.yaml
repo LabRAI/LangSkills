@@ -15,6 +15,23 @@ sources:
     allowlist: true
     license_policy: "manual_review_per_page (record License field in sources.md; no verbatim copy)"
 
+  - id: linux_tier1_web_extra
+    type: http_seed_crawl
+    domain: linux
+    seeds:
+      - https://man.archlinux.org/
+      - https://manpages.debian.org/
+      - https://wiki.debian.org/
+      - https://www.freedesktop.org/software/systemd/man/
+      - https://curl.se/docs/
+      - https://docs.kernel.org/
+    refresh:
+      mode: ttl
+      interval: 14d
+    purpose: primary
+    allowlist: true
+    license_policy: "manual_review_per_page (record License field in sources.md; no verbatim copy)"
+
   - id: productivity_tier1_web
     type: http_seed_crawl
     domain: productivity
@@ -38,6 +55,86 @@ sources:
     refresh:
       mode: ttl
       interval: 7d
+    purpose: primary
+    allowlist: true
+    license_policy: "manual_review_per_page (record License field in sources.md; no verbatim copy)"
+
+  - id: integrations_github_docs
+    type: http_seed_crawl
+    domain: integrations
+    seeds:
+      - https://docs.github.com/en/rest/issues/issues
+      - https://docs.github.com/en/authentication
+      - https://docs.github.com/en/rest/using-the-rest-api
+    refresh:
+      mode: ttl
+      interval: 14d
+    purpose: primary
+    allowlist: true
+    license_policy: "manual_review_per_page (record License field in sources.md; no verbatim copy)"
+
+  - id: web_react_docs
+    type: http_seed_crawl
+    domain: web
+    seeds:
+      - https://react.dev/learn
+      - https://react.dev/reference/react
+    refresh:
+      mode: ttl
+      interval: 14d
+    purpose: primary
+    allowlist: true
+    license_policy: "manual_review_per_page (record License field in sources.md; no verbatim copy)"
+
+  - id: cloud_kubernetes_docs
+    type: http_seed_crawl
+    domain: cloud
+    seeds:
+      - https://kubernetes.io/docs/
+      - https://kubernetes.io/docs/reference/kubectl/
+    refresh:
+      mode: ttl
+      interval: 14d
+    purpose: primary
+    allowlist: true
+    license_policy: "manual_review_per_page (record License field in sources.md; no verbatim copy)"
+
+  - id: data_duckdb_docs
+    type: http_seed_crawl
+    domain: data
+    seeds:
+      - https://duckdb.org/docs/
+    refresh:
+      mode: ttl
+      interval: 14d
+    purpose: primary
+    allowlist: true
+    license_policy: "manual_review_per_page (record License field in sources.md; no verbatim copy)"
+
+  - id: travel_airport_codes_public
+    type: http_seed_crawl
+    domain: travel
+    seeds:
+      - https://ourairports.com/data/
+      - https://www.wikidata.org/wiki/Property:P238
+      - https://www.wikidata.org/wiki/Property:P239
+      - https://en.wikipedia.org/wiki/IATA_airport_code
+    refresh:
+      mode: ttl
+      interval: 30d
+    purpose: primary
+    allowlist: true
+    license_policy: "manual_review_per_page (record License field in sources.md; no verbatim copy)"
+
+  - id: devtools_git_docs
+    type: http_seed_crawl
+    domain: devtools
+    seeds:
+      - https://git-scm.com/docs
+      - https://www.kernel.org/pub/software/scm/git/docs/
+    refresh:
+      mode: ttl
+      interval: 30d
     purpose: primary
     allowlist: true
     license_policy: "manual_review_per_page (record License field in sources.md; no verbatim copy)"

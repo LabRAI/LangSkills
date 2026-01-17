@@ -4,7 +4,9 @@
 [![Link Check](https://github.com/LabRAI/LangSkills/actions/workflows/link-check.yml/badge.svg)](https://github.com/LabRAI/LangSkills/actions/workflows/link-check.yml)
 [![Build Site](https://github.com/LabRAI/LangSkills/actions/workflows/build-site.yml/badge.svg)](https://github.com/LabRAI/LangSkills/actions/workflows/build-site.yml)
 
-本仓库把“可执行的 Agent Skill”当作一种可治理的数据资产：每个技能以 `skills/<domain>/<topic>/<slug>/` 目录存储，拆分为 `skill.md`（≤12 步 SOP + Verification + Safety + Sources）、`library.md`（可复制的最小块）、`metadata.yaml`（索引/分级/过滤），并将来源证据与合规信息落到 `reference/`（每条来源记录 URL、License、抓取指纹 sha256/bytes/cache）。生成侧以 `agents/` 提供可长跑的抓取与候选生成链路：来源通过 `agents/configs/sources.yaml` 注册、`agents/configs/<domain>.yaml` 约束 allowlist/denylist；crawler 把抓取队列与每个 URL 的状态写入 `runs/<run-id>/crawl_state.json`（日志 `crawl_log.jsonl`），raw snapshot 缓存在 `.cache/web/`；extractor 从快照抽取 headings 形成 `runs/<run-id>/candidates.jsonl`；orchestrator 用 `--loop` 循环调度并在 `runs/<run-id>/metrics.json`/`metrics_log.jsonl` 输出吞吐与覆盖指标。合并门禁由 `node scripts/validate-skills.js --strict` 在 CI 强制执行（结构、引用绑定 `[[n]]`、来源域名策略、license 字段、可选原文拷贝审计），写入与发布侧提供 `scripts/git-automation.js` 的安全分支推送与 `scripts/build-site.js --out website/dist` 生成 `website/dist/index.json` 供网站/CLI/插件统一检索。这个组合解决了传统 prompt/脚本库常见的“不可治理（格式漂移/重复膨胀）、不可复现（无证据链/无法回归）、不可扩张（缺长跑队列与覆盖指标）、不可合规（license 不可审计）”问题。
+本仓库把“可执行的 Agent Skill”当作一种可治理的数据资产：每个技能以 `skills/<domain>/<topic>/<slug>/` 目录存储，拆分为 `skill.md`（≤12 步 SOP + Verification + Safety + Sources）、`library.md`（可复制的最小块）、`metadata.yaml`（索引/分级/过滤），并将来源证据与合规信息落到 `reference/`（每条来源记录 URL、License、抓取指纹 sha256/bytes/cache）。
+
+生成侧以 `agents/` 提供可长跑的“抓取→候选→整理→生成”链路：来源通过 `agents/configs/sources.yaml` 注册、`agents/configs/<domain>.yaml` 约束 allowlist/denylist；crawler 把抓取队列与每个 URL 的状态写入 `runs/<run-id>/crawl_state.json`（日志 `crawl_log.jsonl`），raw snapshot 缓存在 `.cache/web/`；extractor 从快照抽取 headings 形成 `runs/<run-id>/candidates.jsonl`；curator 把 candidates 聚合去重并整理为 `runs/<run-id>/curation.json`；skillgen 读取 curation 生成一批 skills，并把每次 LLM 的 prompt/response + token 用量落盘（可审计、可复现）。合并门禁由 `node scripts/validate-skills.js --strict` 在 CI 强制执行（结构、引用绑定 `[[n]]`、来源域名策略、license 字段、可选原文拷贝审计），写入与发布侧提供 `scripts/git-automation.js` 的安全分支推送与 `scripts/build-site.js --out website/dist` 生成 `website/dist/index.json` 供网站/CLI/插件统一检索。
 
 ![Demo](docs/assets/demo.gif)
 
@@ -26,10 +28,21 @@ agents/orchestrator/run.js --loop        (cycle scheduler)
   |      - candidates: runs/<run-id>/candidates.jsonl
   |      - state/log:  runs/<run-id>/extractor_state.json + extractor_log.jsonl
   |
-  +--> agents/runner/run.js (optional; --generate-max-topics)
-         - outputs: skills/<domain>/<topic>/<slug>/
-           - skill.md + library.md + metadata.yaml + reference/*
-         - state: runs/<run-id>/state.json
+  +--> agents/runner/run.js (optional; orchestrator: --generate-max-topics; runner: --max-topics)
+  |      - outputs: skills/<domain>/<topic>/<slug>/
+  |        - skill.md + library.md + metadata.yaml + reference/*
+  |      - state: runs/<run-id>/state.json
+
+runs/<run-id>/candidates.jsonl
+  v
+agents/curator/run.js                    (candidates → curation; optional LLM)
+  - curation: runs/<run-id>/curation.json
+  - llm capture: runs/<run-id>/llm/curate_proposals.json
+  v
+agents/skillgen/run.js                   (curation → skills; optional LLM)
+  - outputs: runs/<run-id>/skills/<domain>/<topic>/<slug>/
+  - per-skill materials: reference/materials/*
+  - per-skill llm capture: reference/llm/generate_skill.json
 
 skills/**  --> node scripts/validate-skills.js --strict  (CI gate)
   |
@@ -37,12 +50,15 @@ skills/**  --> node scripts/validate-skills.js --strict  (CI gate)
   |
   +--> node scripts/build-site.js --out website/dist
          - website/dist/index.json   --> website/ + cli/ + plugin/chrome/
+
+scripts/closed-loop.sh (one-command wrapper)
+  - orchestrator → curator → skillgen → validate → summary (with logs + token usage)
 ```
 
 ## Roadmap
 
-- v0.1-alpha（当前）：`skills/`≥50（20 silver、5 gold）、`agents/` 可生成并提 PR、`validate-skills --strict` 作为合并门禁、`website/cli/plugin` 可搜索与复制
-- Next：补齐 Tier0 `github_repo` ingest（见 `docs/mohu.md` 的 `Missing-007`），并扩展更多 domains 与 sources
+- v0.1-alpha（当前）：`skills/`≥2,000（~220 silver、~55 gold）、`agents/` 可生成并提 PR、`validate-skills --strict` 作为合并门禁、`website/` + `cli/` + `plugin/` 可搜索与复制
+- Next：推进 M2（真实 10 万级扩量口径 + 验收，见 `docs/mohu.md` 的 `Missing-009`），并对 Tier0 repo ingest 做更深解析/映射（而不只是 file-level candidates）
 
 任务与验收记录：`docs/plan.md`、`docs/mohu.md`、`docs/verify_log.md`。
 
@@ -53,7 +69,10 @@ skills/**  --> node scripts/validate-skills.js --strict  (CI gate)
 快速入口（推荐先跑一遍再看细节）：
 
 ```bash
-# M0 一键回归（不需要联网；覆盖 generator/capture/validator/site/cli/plugin/git/create-pr）
+# M0 一键回归（离线；覆盖 generator/validator/site、cli、plugin、git(create-pr)；跳过 remote pages）
+node scripts/self-check.js --m0 --skip-remote
+
+# M0 + capture（需要联网，或你已预热抓取缓存；覆盖抓取证据链 + verbatim audit）
 node scripts/self-check.js --m0 --with-capture --skip-remote
 
 # M1 一键回归（不需要联网；默认跳过 remote pages；覆盖 M0 + eval + lifecycle + pr-score + 2000 skills scale）
@@ -62,9 +81,133 @@ node scripts/self-check.js --m1
 # M2 一键回归（不需要联网；覆盖 M1 + 100k 规模 index 生成回归）
 node scripts/self-check.js --m2
 
-# 对 repo skills/ 做严格门禁（结构/引用/来源域名/License 字段等）
-node scripts/validate-skills.js --strict
+# 对 repo skills/ 做严格门禁（结构/引用/来源域名/License 字段等；与 CI 对齐）
+node scripts/validate-skills.js --strict --fail-on-license-review
+
+# 一键闭环生成（crawl/extract → curate → generate skills → validate → summary）
+# - smoke（离线：fixture cache + 不调用 LLM）
+CURATOR_LLM_PROVIDER="" SKILLGEN_LLM_PROVIDER="" bash scripts/closed-loop.sh \
+  --domain linux --run-id closedloop-smoke \
+  --cache-dir docs/fixtures/web-cache --crawl-max-pages 1 --extract-max-docs 1 \
+  --skip-repo-ingest --max-skills 1
+
+# 定向生成一个或多个 topic（基于 agents/configs/<domain>.yaml 里的 topics 列表；自动写 README + 可选 git push）
+node scripts/run-topic.js --domain linux --topic filesystem/find-files --run-id topic-run-linux-find
 ```
+
+### 0 - 一键闭环生成（推荐：`scripts/closed-loop.sh`）
+
+`scripts/closed-loop.sh` 把一次“从数据源到 skills”的端到端闭环跑通，并把每一步的 **进度、日志、产物路径、生成的 skill 标题、LLM token 用量**都落盘，方便排错与复现。
+
+它按 5 步执行：
+
+1) `agents/orchestrator/run.js`：crawl + extract，产出 `runs/<run-id>/candidates.jsonl`  
+2) `agents/curator/run.js`：candidates → `runs/<run-id>/curation.json`（可选 LLM 增强；可捕捉 prompt/response）  
+3) `agents/skillgen/run.js`：curation → 一批 skills（可选 LLM；每条 skill 都会保存原材料 + prompt/response + tokens）  
+4) `node scripts/validate-skills.js --strict`：结构/引用/来源域名策略/License 字段等门禁  
+5) `node scripts/closed-loop-summary.js`：汇总本轮生成的列表 + token 统计 → `runs/<run-id>/closed_loop_report.json`
+
+**常用命令：**
+
+```bash
+# smoke（离线/低成本）：使用 fixture cache + 不调用 LLM（仍会生成并过 validator）
+CURATOR_LLM_PROVIDER="" SKILLGEN_LLM_PROVIDER="" bash scripts/closed-loop.sh \
+  --domain linux --run-id closedloop-smoke \
+  --cache-dir docs/fixtures/web-cache --crawl-max-pages 1 --extract-max-docs 1 \
+  --skip-repo-ingest --max-skills 1
+
+# 正常跑（联网 + 调用 LLM）：把 OPENAI_* 写进 .env 后直接运行（见下方“LLM API 配置”）
+bash scripts/closed-loop.sh --domain linux --run-id linux-closedloop --max-skills 10
+```
+
+**本轮产物（默认都在 `runs/<run-id>/` 下）：**
+
+- `runs/<run-id>/logs/`：每一步 stdout/stderr（按 01..05 编号）
+- `runs/<run-id>/candidates.jsonl`：整理前原材料（网页 headings / Tier0 repo 文件等）
+- `runs/<run-id>/curation.json`：curator 整理后的提案队列（去重统计 + suggested topic/slug + 证据引用）
+- `runs/<run-id>/llm/curate_proposals.json`：curator LLM prompt/response + token（若启用）
+- `runs/<run-id>/reports/skillgen.json`：本轮生成列表（每条 skill 的 id/title/status/tokens/路径）
+- `runs/<run-id>/skills/<domain>/README.md`：本轮 domain README（带表格：每条 skill 的路径 + tokens）
+- `runs/<run-id>/closed_loop_report.json`：闭环总汇（最推荐打开的入口）
+
+每条生成的 skill 还会额外落盘“可审计原材料”：
+
+- `runs/<run-id>/skills/<domain>/<topic>/<slug>/reference/materials/`：proposal、sources、snippets
+- `runs/<run-id>/skills/<domain>/<topic>/<slug>/reference/llm/generate_skill.json`：该条 skill 的 prompt/response + token
+
+### LLM API 配置（`.env`）
+
+本仓库的 `openai` provider 走 **OpenAI-compatible** 接口（支持自建/代理），读取环境变量（优先）或 `.env`：
+
+```bash
+# repo root: .env（不要提交到 git）
+OPENAI_BASE_URL=https://api.example.com
+OPENAI_API_KEY=sk-...
+OPENAI_MODEL=gpt-4o-mini
+```
+
+说明：
+
+- `OPENAI_BASE_URL` 会自动补全为 `.../v1`（若你填写的是 host 根地址）。
+- `.env` 默认在 `.gitignore` 中（避免泄露）；脚本不会把 key 写进任何产物。
+
+Prompt 地址（你后续可以直接润色）：
+
+- curator：`agents/curator/prompts/curate_proposals_v1.system.md` + `agents/curator/prompts/curate_proposals_v1.user.md`
+- skillgen：`agents/skillgen/prompts/generate_skill_v1.system.md` + `agents/skillgen/prompts/generate_skill_v1.user.md`
+
+### 储存方式（输出/缓存/可复现）
+
+这套系统把“可发布内容”和“运行产物/缓存”分开存，避免把大文件/状态污染主库：
+
+```text
+skills/                         # canonical skills（建议提交/PR 流程治理）
+runs/<run-id>/                  # 每次运行的可审计产物（默认 gitignore；建议用 artifact repo 存档）
+  logs/                         # step logs（排错入口）
+  crawl_state.json              # crawler queue + doc states
+  candidates.jsonl              # extractor 输出（整理前原材料）
+  curation.json                 # curator 输出（整理后队列）
+  llm/curate_proposals.json     # curator LLM capture（prompt/response + tokens）
+  reports/skillgen.json         # skillgen 批次报告
+  skills/<domain>/...           # 本轮生成的 skills root（含每条 materials/llm capture）
+  closed_loop_report.json       # 闭环总汇（推荐打开）
+.cache/web/                     # 抓取快照缓存（默认 gitignore；用于 replay/审计/节省成本）
+docs/fixtures/web-cache/        # 最小离线 fixture cache（提交；用于 smoke/replay）
+```
+
+如果你希望把每轮 `runs/<run-id>/` 自动长期存档，推荐使用“artifact repo”模式：把 `--runs-dir` 指到另一个 git 仓库目录，并用 `scripts/run-topic.js --git-push` 做自动 commit+push（闭环脚本目前默认不自动 push，优先保证安全可控）。
+
+### 定向生成（已有 topic spec：`scripts/run-topic.js`）
+
+如果你只想生成配置里已有的 topics（例如 `agents/configs/linux.yaml`），用 `scripts/run-topic.js`：
+
+```bash
+# 单 topic
+node scripts/run-topic.js --domain linux --topic filesystem/find-files --run-id topic-run-linux-find
+
+# topic 前缀（自动展开为 prefix/*）
+node scripts/run-topic.js --domain linux --topic systemd --run-id topic-run-linux-systemd
+
+# 产物在 runs/<run-id>/skills/<domain>/README.md（每个 topic 一张表格）
+
+# （可选）把 runs/<run-id>/ 作为 artifact 存档并自动 push 到另一个 git 仓库（安全：支持 --git-dry-run）
+node scripts/run-topic.js --domain linux --topic filesystem/find-files --run-id skillrun-linux-find \
+  --runs-dir /path/to/artifact-repo/runs --no-clean-project --no-clean-cache \
+  --git-push --git-repo /path/to/artifact-repo --git-branch main
+```
+
+> 注意：`run-topic.js` 走的是 `agents/run_local.js --capture` 的“配置型 topic”路径；`closed-loop.sh` 则是“crawl/extract → candidates → curate → skillgen” 的“发现型 topic”路径。两者可并行存在。
+
+### 90 天长跑（抓取/候选/指标；可选）
+
+面向“连续跑 90 天、每天 500 页”的 long-run 入口是：
+
+```bash
+node scripts/run-longrun.js --domain linux --run-id linux-90d --days 90 --pages-per-day 500 --generate-per-day 0
+node scripts/verify-longrun.js --domain linux --run-id linux-90d --days 90 --pages-per-day 500 --strict
+```
+
+更多细节（扩展数据源、验收 checklist、排错）见：`docs/longrun_90d_runbook.md`。
 
 更多目录与模块说明：`docs/repo_inventory.md`。
 
@@ -83,10 +226,10 @@ node scripts/validate-skills.js --strict
 
 | Repo | 角色定位 | 结构例子（具体路径） | 许可/合规要点（要点） |
 | --- | --- | --- | --- |
-| [`anthropics/skills`](https://github.com/anthropics/skills) | 示例 skills 库 + spec/template + Claude 插件打包 | `skills/webapp-testing/SKILL.md` + `scripts/` + `examples/`（该 skill 目录里还有 `LICENSE.txt`） | README 明确 “open source 与 source-available 并存”（例如 `skills/docx|pdf|pptx|xlsx` 是 source-available）。因此“吃库”必须 **per-skill/per-file** 记录 license 并可阻断。 |
+| [`anthropics/skills`](https://github.com/anthropics/skills) | 示例 skills 库 + spec/template + Claude 插件打包 | [`webapp-testing (SKILL.md)`](https://github.com/anthropics/skills/blob/main/skills/webapp-testing/SKILL.md) + `scripts/` + `examples/`（该 skill 目录里还有 `LICENSE.txt`） | README 明确 “open source 与 source-available 并存”（例如 docx/pdf/pptx/xlsx 属于 source-available）。因此“吃库”必须 **per-skill/per-file** 记录 license 并可阻断。 |
 | [`agentskills/agentskills`](https://github.com/agentskills/agentskills) | Agent Skills 标准/文档/参考 SDK（更偏规范基准线） | `skills-ref/`（含 `LICENSE`=Apache-2.0、`src/`、`tests/`）+ `docs/`（规范与文档） | 更像“标准/SDK”；对接时关注的是 `SKILL.md` 规范与 `references/` 约定。 |
-| [`muratcankoylan/Agent-Skills-for-Context-Engineering`](https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering) | context engineering 主题 skills 库 | `skills/context-compression/SKILL.md` + `references/` + `scripts/` | 根目录 `LICENSE`=MIT（整体相对容易做 reference-only ingest）。 |
-| [`K-Dense-AI/claude-scientific-skills`](https://github.com/K-Dense-AI/claude-scientific-skills) | 科研方向 skills 库（含插件/文档） | `scientific-skills/biopython/SKILL.md` + `references/` | 根目录 `LICENSE.md`=MIT（整体相对容易做 reference-only ingest）。 |
+| [`muratcankoylan/Agent-Skills-for-Context-Engineering`](https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering) | context engineering 主题 skills 库 | [`context-compression (SKILL.md)`](https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering/blob/main/skills/context-compression/SKILL.md) + `references/` + `scripts/` | 根目录 `LICENSE`=MIT（整体相对容易做 reference-only ingest）。 |
+| [`K-Dense-AI/claude-scientific-skills`](https://github.com/K-Dense-AI/claude-scientific-skills) | 科研方向 skills 库（含插件/文档） | [`scientific-skills/biopython/SKILL.md`](https://github.com/K-Dense-AI/claude-scientific-skills/blob/main/scientific-skills/biopython/SKILL.md) + `references/` | 根目录 `LICENSE.md`=MIT（整体相对容易做 reference-only ingest）。 |
 
 #### 1.1 这些 repo 的 skills “具体怎么存”（目录树对比，直观看差异）
 
@@ -189,7 +332,7 @@ claude-scientific-skills/
   这么拆的原因是：要同时满足“高质量可读”与“机器可检索/可分发”。
 - **更强的门禁与证据链**（避免“机器人胡编/侵权/链接失效”）：`node scripts/validate-skills.js --strict` 会校验章节结构、Steps<=12、Sources>=3、步骤级引用绑定、来源域名 allow/deny、以及 `reference/sources.md` 的 `License:` 字段；可选 `--require-no-verbatim-copy` 做疑似大段原文拷贝审计。
 
-> 兼容性说明（很具体）：上游 repo 普遍是 `SKILL.md` + `references/`；本 repo 目前是 `skill.md` + `reference/`，并额外拆了 `library.md` 与 `metadata.yaml` 来支撑分发与索引。如果要对齐 Agent Skills 生态，建议新增一个 exporter/转换层输出 `SKILL.md`（不影响现有 `website/cli/plugin` 的消费格式）。
+> 兼容性说明（很具体）：上游 repo 普遍是 `SKILL.md` + `references/`；本 repo 目前是 `skill.md` + `reference/`，并额外拆了 `library.md` 与 `metadata.yaml` 来支撑分发与索引。如果要对齐 Agent Skills 生态，建议新增一个 exporter/转换层输出 `SKILL.md`（不影响现有 `website/` + `cli/` + `plugin/` 的消费格式）。
 
 #### 例子：本 repo 的一个 skill 目录“长什么样”
 
@@ -230,7 +373,7 @@ node scripts/build-site.js --out website/dist
 
 ```json
 {
-  "skills_count": 50,
+  "skills_count": 2051,
   "skills": [
     { "id": "linux/filesystem/find-files", "level": "gold", "risk_level": "medium" }
   ]
@@ -243,7 +386,7 @@ node scripts/build-site.js --out website/dist
 
 - 网页端检索与分发：构建后产出 `website/dist/index.json`，网站/CLI/插件统一读取（见 2.1）。
 - 本地开源模型参与生成/提质：`agents/run_local.js` 支持 `mock|ollama|openai`，可在本机用 Ollama 做 rewrite（见 2.2）。
-- 第三方 integrations（Slack/Notion 等）内容生产：通过 “sources registry → crawler/extractor 产候选 → writer/runner 生成 skills” 的流水线接入；当前 repo 已内置 `integrations` domain，并在 `agents/configs/sources.yaml` 中配置 `integrations_slack_docs`（Slack API docs）作为示例来源（例子见 2.3）。
+- 第三方 integrations（Slack/Notion 等）内容生产：通过 “sources registry → crawler/extractor 产候选 →（可选）curate topics → runner/capture 生成 skills” 的流水线接入；当前 repo 已内置 `integrations` domain，并在 `agents/configs/sources.yaml` 中配置 `integrations_slack_docs`（Slack API docs）作为示例来源（例子见 2.3；已内置 1 个可 capture 的 topic：`slack/incoming-webhooks`）。
 
 > 安全边界：本 repo 不做“登录网页/代操作账号”的浏览器自动化（见 `SAFETY.md`）。
 
@@ -257,14 +400,23 @@ node scripts/build-site.js --out website/dist
 
 产物：
 
-- `website/dist/index.json`（搜索索引 + 每条 skill 的可渲染内容）
+- `website/dist/index.json`（搜索索引；默认是 metadata-only，正文按 `website/dist/skills/<id>/*` 单独加载）
 - `website/dist/index.html`、`website/dist/app.js`、`website/dist/style.css`
+- `website/dist/skills/**`（每条 skill 的 `skill.md`/`library.md`/`reference/sources.md`）
+
+> 注：`website/dist/` 为生成目录，默认被 `.gitignore` 忽略（不提交 git）。
 
 本地预览：
 
 ```bash
 node scripts/serve-site.js --dir website/dist --port 4173
 # 打开 http://127.0.0.1:4173/ 或 http://127.0.0.1:4173/index.json
+```
+
+一键（构建 + 启动本地服务，替代 GitHub Pages）：
+
+```bash
+node scripts/serve-local.js --out website/dist --host 127.0.0.1 --port 4173
 ```
 
 CLI 例子：
@@ -277,7 +429,7 @@ node cli/skill.js show linux/filesystem/find-files --file library
 Chrome 插件（`plugin/chrome/`）例子：
 
 - `plugin/chrome/manifest.json` 已包含 `http://127.0.0.1/*` host permission（配合本地 `serve-site` 直接读 `index.json`）。
-- 插件会从 `<baseUrl>/index.json` 读取 `library_md`，用户点击即可复制。
+- 插件会从 `<baseUrl>/index.json` 读取列表，再按 `skills/<id>/library.md` 拉取正文并复制（也兼容旧格式：若 index 里内嵌 `library_md` 则直接使用）。
 
 #### 2.2 本地开源模型（Ollama）怎么接（例子）
 
@@ -322,7 +474,7 @@ node agents/run_local.js \
   license_policy: "manual_review_per_page (record License field in sources.md; no verbatim copy)"
 ```
 
-2) 配置 `agents/configs/integrations.yaml`（最小可运行形态：白名单 + source 选择；topics 可先空或先人工挑选）：
+2) 配置 `agents/configs/integrations.yaml`（最小可运行形态：白名单 + source 选择；可只跑 crawl/extract，也可加少量 curated topics 供 runner/capture 使用）：
 
 ```yaml
 domain: integrations
@@ -333,12 +485,19 @@ sources:
     - integrations_slack_docs
 
 source_policy:
+  prefer:
+    - official docs
+    - api reference
   allow_domains:
     - slack.com
   deny_domains: []
 
 seeds: []
-topics: []
+topics:
+  - id: slack/incoming-webhooks
+    title: "Slack Incoming Webhooks：安全发送消息（无需 bot token）"
+    level: bronze
+    risk_level: medium
 ```
 
 3) 运行抓取 + 候选生成（长跑用 `--loop`）：
@@ -349,7 +508,7 @@ node agents/orchestrator/run.js \
   --loop --crawl-max-pages 200 --crawl-max-depth 2 --extract-max-docs 200
 ```
 
-产物会落在 `runs/integrations-weekly/`（例如 `crawl_state.json`、`candidates.jsonl`、`metrics.json`）；`candidates.jsonl` 是后续生成 integrations skills 的输入队列。
+产物会落在 `runs/integrations-weekly/`（一般路径是 `runs/<run-id>/`；例如 `crawl_state.json`、`candidates.jsonl`、`metrics.json`；本仓库提交了少量示例 run 产物用于离线查看，见 `runs/README.md`）；`candidates.jsonl` 是后续生成 integrations skills 的输入队列。
 
 > 注意：`--capture` 会抓取公开来源写入证据（需要联网）；LLM 这一步可以本地跑（Ollama）或离线固定输出（mock）。
 
@@ -357,7 +516,7 @@ node agents/orchestrator/run.js \
 
 这里把“质量”拆成两层：①结构与证据（自动化硬门禁）；②内容正确性与精炼度（靠模板约束 + 来源绑定 + 抽检/评审迭代）。license 同理：先把证据链与阻断点做成强制流程，再逐步把“可自动判定的部分”工程化。
 
-- CI 硬门禁：`.github/workflows/ci.yml` 会跑 `node scripts/validate-skills.js --strict`，对 `skills/**` 强制检查结构、Steps<=12、Sources>=3、步骤级引用绑定（`[[n]]`）、来源域名 allow/deny、`reference/sources.md` 的抓取指纹（bytes/sha256/cache）与 `License:` 字段。
+- CI 硬门禁：`.github/workflows/ci.yml` 会跑 `node scripts/validate-skills.js --strict --fail-on-license-review`，对 `skills/**` 强制检查结构、Steps<=12、Sources>=3、步骤级引用绑定（`[[n]]`）、来源域名 allow/deny、`reference/sources.md` 的抓取指纹（bytes/sha256/cache）与 `License:` 字段（并对 silver/gold 的 `License: review` 升级为失败）。
 - 原文拷贝审计：`node scripts/validate-skills.js --strict --require-no-verbatim-copy --cache-dir .cache/web` 会把产物与抓取快照做近似重复检测；对应自动化入口见 `.github/workflows/audit-capture.yml`。
 - 提质（可选）：`agents/run_local.js` 支持 `mock|ollama|openai`，可以把“机器初稿”rewrite 成更精炼的 SOP，然后再过同一套 validator（例子见 2.2）。
 
@@ -410,7 +569,7 @@ node scripts/validate-skills.js --strict
 - Fetch sha256: 834fca2923ce9fe3...
 ```
 
-抓取缓存（用于审计/复现）默认写到 `.cache/web/`，按 URL 哈希命名，例如该 URL 的缓存文件会是：`.cache/web/a43c2ddf19e3ceaa.txt`（默认不提交 git）。
+抓取缓存（用于审计/复现）默认写到 `.cache/web/`，按 URL 哈希命名，例如该 URL 的缓存文件会是：`.cache/web/<url-sha>.txt`（默认不提交 git）。
 
 #### 3.3 License 记录与审计（具体）
 
@@ -435,7 +594,7 @@ node scripts/validate-skills.js --strict --require-no-verbatim-copy --cache-dir 
 
 #### 4.1 数据源是否“够大且稳定”（例子）
 
-数据源入口统一登记在：`agents/configs/sources.yaml`（Tier1: 官方/权威 docs；Tier0: 上游 skills/spec，reference-only）。
+数据源入口统一登记在：`agents/configs/sources.yaml`（Tier1: 官方/权威 docs；Tier0: 上游 repo 的 skills + spec（reference-only））。
 
 例如 `linux_tier1_web`（Tier1 seeds）包含：
 
@@ -456,10 +615,11 @@ node scripts/validate-skills.js --strict --require-no-verbatim-copy --cache-dir 
   node agents/crawler/run.js --domain linux --run-id linux-crawl-demo --max-pages 50 --max-depth 2
   ```
 
-- 产物：
+- 产物（写入 `runs/<run-id>/`；本例 `run-id=linux-crawl-demo`）：
   - `runs/linux-crawl-demo/crawl_state.json`（队列 + 每个 URL 的 doc 状态）
   - `runs/linux-crawl-demo/crawl_log.jsonl`（每个 URL 一行日志，可审计）
   - `.cache/web/*.txt`（raw snapshot 缓存，默认不提交 git）
+  - 示例目录（已提交）：`runs/linux-crawl-demo/`
 
 - doc 状态机字段（真实字段名；值仅示意）：
 
@@ -470,7 +630,7 @@ node scripts/validate-skills.js --strict --require-no-verbatim-copy --cache-dir 
     "discovered_at": "2026-01-15T00:00:00.000Z",
     "fetched_at": "2026-01-15T00:00:01.000Z",
     "attempts": 1,
-    "fetch": { "cache": "hit", "status": 200, "bytes": 109430, "sha256": "834fca29...", "cache_file": "a43c2ddf19e3ceaa.txt" }
+    "fetch": { "cache": "hit", "status": 200, "bytes": 109430, "sha256": "834fca29...", "cache_file": "<url-sha>.txt" }
   }
   ```
 
@@ -488,9 +648,9 @@ node scripts/validate-skills.js --strict --require-no-verbatim-copy --cache-dir 
   node agents/extractor/run.js --domain linux --run-id linux-crawl-demo --max-docs 50
   ```
 
-- 产物：
+- 产物（写入 `runs/<run-id>/`；本例 `run-id=linux-crawl-demo`）：
   - `runs/linux-crawl-demo/candidates.jsonl`（每行一个 candidate）
-  - `runs/linux-crawl-demo/extractor_state.json`（记录 URL+sha 已处理，用于长期迭代）
+  - `runs/linux-crawl-demo/extractor_state.json`（记录 URL+sha 已处理）
   - `runs/linux-crawl-demo/extractor_log.jsonl`（处理日志）
 
 - candidate 行结构示例（真实字段名；值仅示意）：
@@ -510,10 +670,11 @@ node scripts/validate-skills.js --strict --require-no-verbatim-copy --cache-dir 
     --cycle-sleep-ms 600000
   ```
 
-- 产物（都在 `runs/linux-orch-weekly/`）：
-  - `metrics.json`（最新快照）
-  - `metrics_log.jsonl`（每个 cycle 追加一行，适合做 dashboard）
+- 产物（都在 `runs/<run-id>/`；本例 `run-id=linux-orch-weekly`）：
+  - `runs/linux-orch-weekly/metrics.json`（最新快照）
+  - `runs/linux-orch-weekly/metrics_log.jsonl`（每个 cycle 追加一行）
   - 以及 crawler/extractor 的所有落盘文件（`crawl_state.json`、`candidates.jsonl` 等）
+  - 示例目录（已提交）：`runs/linux-orch-weekly/`
 
 #### 4.3 “至少吃掉现有所有这些 library”——目前做到哪、还缺哪（不含糊）
 
@@ -522,9 +683,8 @@ node scripts/validate-skills.js --strict --require-no-verbatim-copy --cache-dir 
   - `upstream_agentskills_spec` → https://github.com/agentskills/agentskills
   - `upstream_context_engineering_skills` → https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering
   - `upstream_claude_scientific_skills` → https://github.com/K-Dense-AI/claude-scientific-skills
-- 下一步：把这些 GitHub repos 真正接入“discover/fetch/parse/extract”流水线（让 crawler/extractor 能像处理 docs 站点一样处理 repo 文件）。
-  - 目前已有 adapter 雏形：`agents/adapters/github_repo.js`（只支持本地目录扫描）、`agents/adapters/sitemap.js`、`agents/adapters/openapi.js`、`agents/adapters/manpage.js`（占位）。
-  - 所以现阶段“长跑闭环”主要覆盖 `http_seed_crawl`（公开 docs 站点）；repo 型 sources 需要下一步工程化（远端拉取/增量/解析）。
+- 已做到：Tier0 `github_repo` ingest MVP 已接入 orchestrator：对 `type: github_repo` 做 `git clone/fetch` + `include_globs` 枚举文件，并写入 `runs/<run-id>/repo_state.json`（进度/断点续跑）与 `runs/<run-id>/repo_docs.jsonl`（每个文件一行，含 repo/commit/path/sha），同时把 repo 文件追加为 `kind=repo_file` 的 candidates。
+- 下一步：对 repo 文件做更深解析/映射（例如把上游 `SKILL.md` 结构化抽取并映射到本仓库 taxonomy），以及补齐 sitemap/OpenAPI/manpage 等 adapter（见 `agents/adapters/*`）。
 
 ### 5 - 机器人的自动 git push 是否经过了调试确保没问题？
 
@@ -632,7 +792,7 @@ node agents/crawler/run.js --domain linux --run-id local-crawl --seeds http://12
 node agents/orchestrator/run.js --domain integrations --run-id integrations-weekly --loop --cycle-sleep-ms 600000
 ```
 
-> 当前 crawler 是纯 HTML `href=` 发现（不做 JS 渲染/登录站点）。如果来源是 SPA/需要登录，建议改用 sitemap/OpenAPI/或专门 adapter。repo 已放了 adapter 雏形：`agents/adapters/sitemap.js`、`agents/adapters/openapi.js`、`agents/adapters/manpage.js`（部分仍是 scaffolding）。
+> 当前 crawler 是纯 HTML `href=` 发现（不做 JS 渲染/登录站点）。如果来源是 SPA/需要登录，建议改用 sitemap/OpenAPI/或专门 adapter；repo 型来源已支持 `github_repo` ingest MVP（clone/fetch + file-level candidates），更深解析仍可继续扩展（见 `agents/adapters/*`）。
 
 ---
 
@@ -869,8 +1029,8 @@ skills/<domain>/<topic>/<skill_slug>/
 
 **自动降级**（生命周期）：
 
-* link-check 大面积失效 / gold 回归失败 / 关键步骤来源不可用 → 自动降级 level 或标记 `stale`
-* 长期无人维护 → 归档 `archived`（保留历史但不推荐）
+* 通过 `scripts/lifecycle.js` 基于 `metadata.yaml:last_verified` 对 silver/gold 标记 `stale`/`archived`，并可选做等级降级（gold→silver，silver→bronze；见 `docs/lifecycle.md`）。
+* 写回与落地建议通过 PR 执行：可用 `.github/workflows/lifecycle-apply.yml` 自动提交到 `bot/lifecycle/<run_id>` 并创建 PR（不直接改 main）。
 
 ### 5.4 自动化生命周期任务（建议频率）
 
@@ -913,7 +1073,7 @@ skills/<domain>/<topic>/<skill_slug>/
 * **Topic Registry**：主题清单与覆盖度（已生成/已审/已验证/待更新）
 * **Persistent Queue**：待处理任务队列（支持重试、幂等、断点续跑）
 * **Artifact Cache**：抓取内容缓存（用于 replay 与回归、节省成本）
-* **Dedup Index**：标题/slug/内容向量/哈希去重索引
+* **Dedup Index**：当前实现为 `validate-skills --require-no-duplicates` 的哈希去重（`library.md` exact match + metadata id 重复）；可在此基础上扩展标题近似/向量去重
 
 **迭代策略**：
 
@@ -923,7 +1083,7 @@ skills/<domain>/<topic>/<skill_slug>/
 
 **并发与容器化**：
 
-* 支持 docker 并发运行多个 bot（每方向一容器/进程）
+* 支持 docker 并发运行多个 bot（每方向一容器/进程；见 `docs/docker.md` 与 `docker-compose.yml`）
 * 限流与礼貌抓取（遵守 robots.txt/站点政策，优先官方镜像与文档站）
 * 幂等写入：同一 topic 多次运行不会产生重复目录或破坏 canonical
 
@@ -939,7 +1099,7 @@ skills/<domain>/<topic>/<skill_slug>/
 
 提供本地调试入口：
 
-* `agents/run_local`：对单 topic 生成一次
+* `agents/run_local.js`：对单 topic 生成一次
 * fixture 缓存与 replay（无网复现）
 * golden tests：标杆主题回归（防止提示词或解析器变更导致质量漂移）
 
@@ -954,7 +1114,7 @@ Validator 必须至少覆盖以下检查（作为 CI 门禁）：
 3. **Sources 下限**：>= 3（且为公开可访问来源）
 4. **关键步骤引用绑定**：命令/参数/关键决策必须有 `[[n]]`（步骤级引用绑定）
 5. **链接可达**：link-check（失败则阻止合并或自动降级/标记）
-6. **重复检测**：slug 冲突、标题近似、内容高相似度候选（给出 canonical 建议）
+6. **重复检测**：`--require-no-duplicates`（`library.md` exact match + `metadata.yaml:id` 重复）
 7. **风险词/敏感行为扫描**：触发 `SAFETY_REVIEW` 标签与高风险 reviewer
 8. **metadata schema 校验**：字段完整、枚举合法、日期格式正确
 9. **版权与复制粘贴风险提示**：检测大段原文（超过阈值提示人工确认）
@@ -970,7 +1130,7 @@ Validator 必须至少覆盖以下检查（作为 CI 门禁）：
 * **不可逆操作**（删除、权限变更、服务停止、账号变更、生产发布等）：
 
   * `skill.md` 必须包含强警告与“先预览后执行”步骤
-  * CLI/执行框架必须强确认（交互确认或显式 `--yes`）
+  * 如果未来增加“执行能力”，CLI/执行框架必须强确认（交互确认或显式 `--yes`）；当前仓库的 CLI/插件仅检索与复制，不执行
   * 插件默认只提供复制/跳转，不提供自动执行
 
 ### 8.2 SAFETY.md 禁止收录范围（必须写死）
@@ -1019,7 +1179,7 @@ Validator 必须至少覆盖以下检查（作为 CI 门禁）：
 * skill 页面：渲染 `skill.md` + `library.md` 一键复制 + sources 展示
 * 质量标识：gold/silver/bronze + risk_level
 * 最近更新/新增列表（制造活跃度与可信度）
-* 自动发布：GitHub Actions → GitHub Pages / 静态托管
+* 本地分发：`build-site` 产出 `website/dist/`，通过 CLI 离线检索或 `serve-site` 本地访问（不使用 GitHub Pages）
 
 ### 10.2 CLI（主入口）
 

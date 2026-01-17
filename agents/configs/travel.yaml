@@ -1,0 +1,28 @@
+domain: travel
+owners: []
+
+sources:
+  primary:
+    - travel_airport_codes_public
+
+source_policy:
+  prefer:
+    - official datasets
+    - wikidata/wikipedia
+  allow_domains:
+    - ourairports.com
+    - wikidata.org
+    - wikipedia.org
+  deny_domains: []
+
+seeds:
+  - https://ourairports.com/data/
+  - https://www.wikidata.org/wiki/Property:P238
+  - https://www.wikidata.org/wiki/Property:P239
+  - https://en.wikipedia.org/wiki/IATA_airport_code
+
+topics:
+  - id: planning/airport-codes-iata-icao
+    title: "机场代码 IATA/ICAO：用公开数据集避免订票/行程混淆"
+    level: bronze
+    risk_level: low

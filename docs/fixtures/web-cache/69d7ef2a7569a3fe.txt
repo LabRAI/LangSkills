@@ -1,0 +1,1534 @@
+<!DOCTYPE html>
+<html class="client-nojs vector-feature-language-in-header-enabled vector-feature-language-in-main-page-header-disabled vector-feature-page-tools-pinned-disabled vector-feature-toc-pinned-clientpref-1 vector-feature-main-menu-pinned-disabled vector-feature-limited-width-clientpref-1 vector-feature-limited-width-content-enabled vector-feature-custom-font-size-clientpref-0 vector-feature-appearance-pinned-clientpref-1 vector-feature-night-mode-enabled skin-theme-clientpref-os vector-sticky-header-enabled vector-toc-available" lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<title>Core utilities - ArchWiki</title>
+<script>(function(){var className="client-js vector-feature-language-in-header-enabled vector-feature-language-in-main-page-header-disabled vector-feature-page-tools-pinned-disabled vector-feature-toc-pinned-clientpref-1 vector-feature-main-menu-pinned-disabled vector-feature-limited-width-clientpref-1 vector-feature-limited-width-content-enabled vector-feature-custom-font-size-clientpref-0 vector-feature-appearance-pinned-clientpref-1 vector-feature-night-mode-enabled skin-theme-clientpref-os vector-sticky-header-enabled vector-toc-available";var cookie=document.cookie.match(/(?:^|; )archwikimwclientpreferences=([^;]+)/);if(cookie){cookie[1].split('%2C').forEach(function(pref){className=className.replace(new RegExp('(^| )'+pref.replace(/-clientpref-\w+$|[^\w-]+/g,'')+'-clientpref-\\w+( |$)'),'$1'+pref+'$2');});}document.documentElement.className=className;}());RLCONF={"wgBreakFrames":false,"wgSeparatorTransformTable":["",""],"wgDigitTransformTable":["",""],"wgDefaultDateFormat":"dmy","wgMonthNames":["","January","February","March","April","May","June","July","August","September","October","November","December"],"wgRequestId":"9e849a01a96fd431dfb516d4","wgCanonicalNamespace":"","wgCanonicalSpecialPageName":false,"wgNamespaceNumber":0,"wgPageName":"Core_utilities","wgTitle":"Core utilities","wgCurRevisionId":857740,"wgRevisionId":857740,"wgArticleId":8642,"wgIsArticle":true,"wgIsRedirect":false,"wgAction":"view","wgUserName":null,"wgUserGroups":["*"],"wgCategories":["Pages or sections flagged with Template:Move","Pages or sections flagged with Template:Expansion","Command-line","Lists of software"],"wgPageViewLanguage":"en","wgPageContentLanguage":"en","wgPageContentModel":"wikitext","wgRelevantPageName":"Core_utilities","wgRelevantArticleId":8642,"wgIsProbablyEditable":false,"wgRelevantPageIsProbablyEditable":false,"wgRestrictionEdit":[],"wgRestrictionMove":[],"wgVisualEditor":{"pageLanguageCode":"en","pageLanguageDir":"ltr","pageVariantFallbacks":"en"},"wgCheckUserClientHintsHeadersJsApi":["brands","architecture","bitness","fullVersionList","mobile","model","platform","platformVersion"],"wgEditSubmitButtonLabelPublish":false};
+RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.options":"loading","skins.vector.search.codex.styles":"ready","skins.vector.styles":"ready","skins.vector.icons":"ready","zzz.ext.archLinux.styles":"ready","ext.visualEditor.desktopArticleTarget.noscript":"ready"};RLPAGEMODULES=["site","mediawiki.page.ready","mediawiki.toc","skins.vector.js","ext.checkUser.clientHints","ext.visualEditor.desktopArticleTarget.init","ext.visualEditor.targetLoader"];</script>
+<script>(RLQ=window.RLQ||[]).push(function(){mw.loader.impl(function(){return["user.options@12s5i",function($,jQuery,require,module){mw.user.tokens.set({"patrolToken":"+\\","watchToken":"+\\","csrfToken":"+\\"});
+}];});});</script>
+<link rel="stylesheet" href="/load.php?lang=en&amp;modules=ext.visualEditor.desktopArticleTarget.noscript%7Cskins.vector.icons%2Cstyles%7Cskins.vector.search.codex.styles%7Czzz.ext.archLinux.styles&amp;only=styles&amp;skin=vector-2022">
+<script async="" src="/load.php?lang=en&amp;modules=startup&amp;only=scripts&amp;raw=1&amp;skin=vector-2022"></script>
+<meta name="ResourceLoaderDynamicStyles" content="">
+<link rel="stylesheet" href="/load.php?lang=en&amp;modules=site.styles&amp;only=styles&amp;skin=vector-2022">
+<meta name="generator" content="MediaWiki 1.45.1">
+<meta name="referrer" content="no-referrer-when-downgrade">
+<meta name="robots" content="max-image-preview:standard">
+<meta name="format-detection" content="telephone=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, minimum-scale=0.25, maximum-scale=5.0">
+<link rel="search" type="application/opensearchdescription+xml" href="/rest.php/v1/search" title="ArchWiki (en)">
+<link rel="EditURI" type="application/rsd+xml" href="https://wiki.archlinux.org/api.php?action=rsd">
+<link rel="license" href="https://www.gnu.org/copyleft/fdl.html">
+<link rel="alternate" type="application/atom+xml" title="ArchWiki Atom feed" href="/index.php?title=Special:RecentChanges&amp;feed=atom">
+</head>
+<body class="skin--responsive skin-vector skin-vector-search-vue mediawiki ltr sitedir-ltr mw-hide-empty-elt ns-0 ns-subject page-Core_utilities rootpage-Core_utilities skin-vector-2022 action-view"><div id="archnavbar" class="noprint mw-no-invert">
+    <div id="archnavbarlogo">
+        <p><a id="logo" href="https://archlinux.org/"></a></p>
+    </div>
+    <div id="archnavbarmenu">
+        <ul id="archnavbarlist">
+                        <li id="anb-home"><a href="https://archlinux.org/">Home</a></li>            <li id="anb-packages"><a href="https://archlinux.org/packages/">Packages</a></li>            <li id="anb-forums"><a href="https://bbs.archlinux.org/">Forums</a></li>            <li id="anb-wiki" class="anb-selected"><a href="https://wiki.archlinux.org/">Wiki</a></li>            <li id="anb-gitlab"><a href="https://gitlab.archlinux.org/archlinux">GitLab</a></li>            <li id="anb-security"><a href="https://security.archlinux.org/">Security</a></li>            <li id="anb-aur"><a href="https://aur.archlinux.org/">AUR</a></li>            <li id="anb-download"><a href="https://archlinux.org/download/">Download</a></li>        </ul>
+    </div>
+</div>
+<a class="mw-jump-link" href="#bodyContent">Jump to content</a>
+<div class="vector-header-container">
+	<header class="vector-header mw-header no-font-mode-scale">
+		<div class="vector-header-start">
+			<nav class="vector-main-menu-landmark" aria-label="Site">
+				
+<div id="vector-main-menu-dropdown" class="vector-dropdown vector-main-menu-dropdown vector-button-flush-left vector-button-flush-right"  title="Main menu" >
+	<input type="checkbox" id="vector-main-menu-dropdown-checkbox" role="button" aria-haspopup="true" data-event-name="ui.dropdown-vector-main-menu-dropdown" class="vector-dropdown-checkbox "  aria-label="Main menu"  >
+	<label id="vector-main-menu-dropdown-label" for="vector-main-menu-dropdown-checkbox" class="vector-dropdown-label cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet cdx-button--icon-only " aria-hidden="true"  ><span class="vector-icon mw-ui-icon-menu mw-ui-icon-wikimedia-menu"></span>
+
+<span class="vector-dropdown-label-text">Main menu</span>
+	</label>
+	<div class="vector-dropdown-content">
+
+
+				<div id="vector-main-menu-unpinned-container" class="vector-unpinned-container">
+		
+<div id="vector-main-menu" class="vector-main-menu vector-pinnable-element">
+	<div
+	class="vector-pinnable-header vector-main-menu-pinnable-header vector-pinnable-header-unpinned"
+	data-feature-name="main-menu-pinned"
+	data-pinnable-element-id="vector-main-menu"
+	data-pinned-container-id="vector-main-menu-pinned-container"
+	data-unpinned-container-id="vector-main-menu-unpinned-container"
+>
+	<div class="vector-pinnable-header-label">Main menu</div>
+	<button class="vector-pinnable-header-toggle-button vector-pinnable-header-pin-button" data-event-name="pinnable-header.vector-main-menu.pin">move to sidebar</button>
+	<button class="vector-pinnable-header-toggle-button vector-pinnable-header-unpin-button" data-event-name="pinnable-header.vector-main-menu.unpin">hide</button>
+</div>
+
+	
+<div id="p-navigation" class="vector-menu mw-portlet mw-portlet-navigation"  >
+	<div class="vector-menu-heading">
+		Navigation
+	</div>
+	<div class="vector-menu-content">
+		
+		<ul class="vector-menu-content-list">
+			
+			<li id="n-mainpage-description" class="mw-list-item"><a href="/title/Main_page" title="Visit the main page [z]" accesskey="z"><span>Main page</span></a></li><li id="n-Table-of-contents" class="mw-list-item"><a href="/title/Table_of_contents"><span>Table of contents</span></a></li><li id="n-portal" class="mw-list-item"><a href="/title/Getting_involved" title="Various ways Archers can contribute to the community"><span>Getting involved</span></a></li><li id="n-currentevents" class="mw-list-item"><a href="/title/ArchWiki:News" title="The latest lowdown on the wiki"><span>Wiki news</span></a></li><li id="n-randompage" class="mw-list-item"><a href="/title/Special:Random" title="Load a random page [x]" accesskey="x"><span>Random page</span></a></li>
+		</ul>
+		
+	</div>
+</div>
+
+	
+<div id="p-Interaction" class="vector-menu mw-portlet mw-portlet-Interaction"  >
+	<div class="vector-menu-heading">
+		Interaction
+	</div>
+	<div class="vector-menu-content">
+		
+		<ul class="vector-menu-content-list">
+			
+			<li id="n-help" class="mw-list-item"><a href="/title/Category:Help" title="Wiki navigation, reading, and editing help"><span>Help</span></a></li><li id="n-Contributing" class="mw-list-item"><a href="/title/ArchWiki:Contributing"><span>Contributing</span></a></li><li id="n-recentchanges" class="mw-list-item"><a href="/title/Special:RecentChanges" title="A list of recent changes in the wiki [r]" accesskey="r"><span>Recent changes</span></a></li><li id="n-Recent-talks" class="mw-list-item"><a rel="nofollow" href="https://wiki.archlinux.org/index.php?title=Special:RecentChanges&amp;namespace=all-discussions"><span>Recent talks</span></a></li><li id="n-newpages" class="mw-list-item"><a href="/title/Special:NewPages"><span>New pages</span></a></li><li id="n-Statistics" class="mw-list-item"><a href="/title/ArchWiki:Statistics"><span>Statistics</span></a></li><li id="n-Requests" class="mw-list-item"><a href="/title/ArchWiki_talk:Requests"><span>Requests</span></a></li>
+		</ul>
+		
+	</div>
+</div>
+
+</div>
+
+				</div>
+
+	</div>
+</div>
+
+		</nav>
+			
+<a href="/title/Main_page" class="mw-logo">
+	<span class="mw-logo-container skin-invert">
+		<strong class="mw-logo-wordmark">ArchWiki</strong>
+	</span>
+</a>
+
+		</div>
+		<div class="vector-header-end">
+			
+<div id="p-search" role="search" class="vector-search-box-vue  vector-search-box-collapses vector-search-box-show-thumbnail vector-search-box-auto-expand-width vector-search-box">
+	<a href="/title/Special:Search" class="cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet cdx-button--icon-only search-toggle" title="Search ArchWiki [f]" accesskey="f"><span class="vector-icon mw-ui-icon-search mw-ui-icon-wikimedia-search"></span>
+
+<span>Search</span>
+	</a>
+	<div class="vector-typeahead-search-container">
+		<div class="cdx-typeahead-search cdx-typeahead-search--show-thumbnail cdx-typeahead-search--auto-expand-width">
+			<form action="/index.php" id="searchform" class="cdx-search-input cdx-search-input--has-end-button">
+				<div id="simpleSearch" class="cdx-search-input__input-wrapper"  data-search-loc="header-moved">
+					<div class="cdx-text-input cdx-text-input--has-start-icon">
+						<input
+							class="cdx-text-input__input mw-searchInput" autocomplete="off"
+							 type="search" name="search" placeholder="Search ArchWiki" aria-label="Search ArchWiki" autocapitalize="sentences" spellcheck="false" title="Search ArchWiki [f]" accesskey="f" id="searchInput"
+							>
+						<span class="cdx-text-input__icon cdx-text-input__start-icon"></span>
+					</div>
+					<input type="hidden" name="title" value="Special:Search">
+				</div>
+				<button class="cdx-button cdx-search-input__end-button">Search</button>
+			</form>
+		</div>
+	</div>
+</div>
+
+			<nav class="vector-user-links vector-user-links-wide" aria-label="Personal tools">
+	<div class="vector-user-links-main">
+	
+<div id="p-vector-user-menu-preferences" class="vector-menu mw-portlet emptyPortlet"  >
+	<div class="vector-menu-content">
+		
+		<ul class="vector-menu-content-list">
+			
+			
+		</ul>
+		
+	</div>
+</div>
+
+	
+<div id="p-vector-user-menu-userpage" class="vector-menu mw-portlet emptyPortlet"  >
+	<div class="vector-menu-content">
+		
+		<ul class="vector-menu-content-list">
+			
+			
+		</ul>
+		
+	</div>
+</div>
+
+	<nav class="vector-appearance-landmark" aria-label="Appearance">
+		
+<div id="vector-appearance-dropdown" class="vector-dropdown "  title="Change the appearance of the page&#039;s font size, width, and color" >
+	<input type="checkbox" id="vector-appearance-dropdown-checkbox" role="button" aria-haspopup="true" data-event-name="ui.dropdown-vector-appearance-dropdown" class="vector-dropdown-checkbox "  aria-label="Appearance"  >
+	<label id="vector-appearance-dropdown-label" for="vector-appearance-dropdown-checkbox" class="vector-dropdown-label cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet cdx-button--icon-only " aria-hidden="true"  ><span class="vector-icon mw-ui-icon-appearance mw-ui-icon-wikimedia-appearance"></span>
+
+<span class="vector-dropdown-label-text">Appearance</span>
+	</label>
+	<div class="vector-dropdown-content">
+
+
+			<div id="vector-appearance-unpinned-container" class="vector-unpinned-container">
+				
+			</div>
+		
+	</div>
+</div>
+
+	</nav>
+	
+<div id="p-vector-user-menu-notifications" class="vector-menu mw-portlet emptyPortlet"  >
+	<div class="vector-menu-content">
+		
+		<ul class="vector-menu-content-list">
+			
+			
+		</ul>
+		
+	</div>
+</div>
+
+	
+<div id="p-vector-user-menu-overflow" class="vector-menu mw-portlet"  >
+	<div class="vector-menu-content">
+		
+		<ul class="vector-menu-content-list">
+			<li id="pt-createaccount-2" class="user-links-collapsible-item mw-list-item user-links-collapsible-item"><a data-mw="interface" href="/index.php?title=Special:CreateAccount&amp;returnto=Core+utilities" title="You are encouraged to create an account and log in; however, it is not mandatory" class=""><span>Create account</span></a>
+</li>
+<li id="pt-login-2" class="user-links-collapsible-item mw-list-item user-links-collapsible-item"><a data-mw="interface" href="/index.php?title=Special:UserLogin&amp;returnto=Core+utilities" title="You are encouraged to log in; however, it is not mandatory [o]" accesskey="o" class=""><span>Log in</span></a>
+</li>
+
+			
+		</ul>
+		
+	</div>
+</div>
+
+	</div>
+	
+<div id="vector-user-links-dropdown" class="vector-dropdown vector-user-menu vector-button-flush-right vector-user-menu-logged-out user-links-collapsible-item"  title="More options" >
+	<input type="checkbox" id="vector-user-links-dropdown-checkbox" role="button" aria-haspopup="true" data-event-name="ui.dropdown-vector-user-links-dropdown" class="vector-dropdown-checkbox "  aria-label="Personal tools"  >
+	<label id="vector-user-links-dropdown-label" for="vector-user-links-dropdown-checkbox" class="vector-dropdown-label cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet cdx-button--icon-only " aria-hidden="true"  ><span class="vector-icon mw-ui-icon-ellipsis mw-ui-icon-wikimedia-ellipsis"></span>
+
+<span class="vector-dropdown-label-text">Personal tools</span>
+	</label>
+	<div class="vector-dropdown-content">
+
+
+		
+<div id="p-personal" class="vector-menu mw-portlet mw-portlet-personal user-links-collapsible-item"  title="User menu" >
+	<div class="vector-menu-content">
+		
+		<ul class="vector-menu-content-list">
+			
+			<li id="pt-createaccount" class="user-links-collapsible-item mw-list-item"><a href="/index.php?title=Special:CreateAccount&amp;returnto=Core+utilities" title="You are encouraged to create an account and log in; however, it is not mandatory"><span class="vector-icon mw-ui-icon-userAdd mw-ui-icon-wikimedia-userAdd"></span> <span>Create account</span></a></li><li id="pt-login" class="user-links-collapsible-item mw-list-item"><a href="/index.php?title=Special:UserLogin&amp;returnto=Core+utilities" title="You are encouraged to log in; however, it is not mandatory [o]" accesskey="o"><span class="vector-icon mw-ui-icon-logIn mw-ui-icon-wikimedia-logIn"></span> <span>Log in</span></a></li>
+		</ul>
+		
+	</div>
+</div>
+
+	
+	</div>
+</div>
+
+</nav>
+
+		</div>
+	</header>
+</div>
+<div class="mw-page-container">
+	<div class="mw-page-container-inner">
+		<div class="vector-sitenotice-container">
+			<div id="siteNotice"></div>
+		</div>
+		<div class="vector-column-start">
+			<div class="vector-main-menu-container">
+		<div id="mw-navigation">
+			<nav id="mw-panel" class="vector-main-menu-landmark" aria-label="Site">
+				<div id="vector-main-menu-pinned-container" class="vector-pinned-container">
+				
+				</div>
+		</nav>
+		</div>
+	</div>
+	<div class="vector-sticky-pinned-container">
+				<nav id="mw-panel-toc" aria-label="Contents" data-event-name="ui.sidebar-toc" class="mw-table-of-contents-container vector-toc-landmark">
+					<div id="vector-toc-pinned-container" class="vector-pinned-container">
+					<div id="vector-toc" class="vector-toc vector-pinnable-element">
+	<div
+	class="vector-pinnable-header vector-toc-pinnable-header vector-pinnable-header-pinned"
+	data-feature-name="toc-pinned"
+	data-pinnable-element-id="vector-toc"
+	
+	
+>
+	<h2 class="vector-pinnable-header-label">Contents</h2>
+	<button class="vector-pinnable-header-toggle-button vector-pinnable-header-pin-button" data-event-name="pinnable-header.vector-toc.pin">move to sidebar</button>
+	<button class="vector-pinnable-header-toggle-button vector-pinnable-header-unpin-button" data-event-name="pinnable-header.vector-toc.unpin">hide</button>
+</div>
+
+
+	<ul class="vector-toc-contents" id="mw-panel-toc-list">
+		<li id="toc-mw-content-text"
+			class="vector-toc-list-item vector-toc-level-1">
+			<a href="#" class="vector-toc-link">
+				<div class="vector-toc-text">Beginning</div>
+			</a>
+		</li>
+		<li id="toc-Essentials"
+		class="vector-toc-list-item vector-toc-level-1 vector-toc-list-item-expanded">
+		<a class="vector-toc-link" href="#Essentials">
+			<div class="vector-toc-text">
+				<span class="vector-toc-numb">1</span>
+				<span>Essentials</span>
+			</div>
+		</a>
+		
+			<button aria-controls="toc-Essentials-sublist" class="cdx-button cdx-button--weight-quiet cdx-button--icon-only vector-toc-toggle">
+				<span class="vector-icon mw-ui-icon-wikimedia-expand"></span>
+				<span>Toggle Essentials subsection</span>
+			</button>
+		
+		<ul id="toc-Essentials-sublist" class="vector-toc-list">
+			<li id="toc-Preventing_data_loss"
+			class="vector-toc-list-item vector-toc-level-2">
+			<a class="vector-toc-link" href="#Preventing_data_loss">
+				<div class="vector-toc-text">
+					<span class="vector-toc-numb">1.1</span>
+					<span>Preventing data loss</span>
+				</div>
+			</a>
+			
+			<ul id="toc-Preventing_data_loss-sublist" class="vector-toc-list">
+			</ul>
+		</li>
+	</ul>
+	</li>
+	<li id="toc-Nonessentials"
+		class="vector-toc-list-item vector-toc-level-1 vector-toc-list-item-expanded">
+		<a class="vector-toc-link" href="#Nonessentials">
+			<div class="vector-toc-text">
+				<span class="vector-toc-numb">2</span>
+				<span>Nonessentials</span>
+			</div>
+		</a>
+		
+		<ul id="toc-Nonessentials-sublist" class="vector-toc-list">
+		</ul>
+	</li>
+	<li id="toc-Alternatives"
+		class="vector-toc-list-item vector-toc-level-1 vector-toc-list-item-expanded">
+		<a class="vector-toc-link" href="#Alternatives">
+			<div class="vector-toc-text">
+				<span class="vector-toc-numb">3</span>
+				<span>Alternatives</span>
+			</div>
+		</a>
+		
+			<button aria-controls="toc-Alternatives-sublist" class="cdx-button cdx-button--weight-quiet cdx-button--icon-only vector-toc-toggle">
+				<span class="vector-icon mw-ui-icon-wikimedia-expand"></span>
+				<span>Toggle Alternatives subsection</span>
+			</button>
+		
+		<ul id="toc-Alternatives-sublist" class="vector-toc-list">
+			<li id="toc-cat_alternatives"
+			class="vector-toc-list-item vector-toc-level-2">
+			<a class="vector-toc-link" href="#cat_alternatives">
+				<div class="vector-toc-text">
+					<span class="vector-toc-numb">3.1</span>
+					<span>cat alternatives</span>
+				</div>
+			</a>
+			
+			<ul id="toc-cat_alternatives-sublist" class="vector-toc-list">
+			</ul>
+		</li>
+		<li id="toc-cd_alternatives"
+			class="vector-toc-list-item vector-toc-level-2">
+			<a class="vector-toc-link" href="#cd_alternatives">
+				<div class="vector-toc-text">
+					<span class="vector-toc-numb">3.2</span>
+					<span>cd alternatives</span>
+				</div>
+			</a>
+			
+			<ul id="toc-cd_alternatives-sublist" class="vector-toc-list">
+			</ul>
+		</li>
+		<li id="toc-date_alternatives"
+			class="vector-toc-list-item vector-toc-level-2">
+			<a class="vector-toc-link" href="#date_alternatives">
+				<div class="vector-toc-text">
+					<span class="vector-toc-numb">3.3</span>
+					<span>date alternatives</span>
+				</div>
+			</a>
+			
+			<ul id="toc-date_alternatives-sublist" class="vector-toc-list">
+			</ul>
+		</li>
+		<li id="toc-cp_alternatives"
+			class="vector-toc-list-item vector-toc-level-2">
+			<a class="vector-toc-link" href="#cp_alternatives">
+				<div class="vector-toc-text">
+					<span class="vector-toc-numb">3.4</span>
+					<span>cp alternatives</span>
+				</div>
+			</a>
+			
+			<ul id="toc-cp_alternatives-sublist" class="vector-toc-list">
+			</ul>
+		</li>
+		<li id="toc-ls_alternatives"
+			class="vector-toc-list-item vector-toc-level-2">
+			<a class="vector-toc-link" href="#ls_alternatives">
+				<div class="vector-toc-text">
+					<span class="vector-toc-numb">3.5</span>
+					<span>ls alternatives</span>
+				</div>
+			</a>
+			
+			<ul id="toc-ls_alternatives-sublist" class="vector-toc-list">
+			</ul>
+		</li>
+		<li id="toc-find_alternatives"
+			class="vector-toc-list-item vector-toc-level-2">
+			<a class="vector-toc-link" href="#find_alternatives">
+				<div class="vector-toc-text">
+					<span class="vector-toc-numb">3.6</span>
+					<span>find alternatives</span>
+				</div>
+			</a>
+			
+			<ul id="toc-find_alternatives-sublist" class="vector-toc-list">
+			</ul>
+		</li>
+		<li id="toc-diff_alternatives"
+			class="vector-toc-list-item vector-toc-level-2">
+			<a class="vector-toc-link" href="#diff_alternatives">
+				<div class="vector-toc-text">
+					<span class="vector-toc-numb">3.7</span>
+					<span>diff alternatives</span>
+				</div>
+			</a>
+			
+			<ul id="toc-diff_alternatives-sublist" class="vector-toc-list">
+			</ul>
+		</li>
+		<li id="toc-grep_alternatives"
+			class="vector-toc-list-item vector-toc-level-2">
+			<a class="vector-toc-link" href="#grep_alternatives">
+				<div class="vector-toc-text">
+					<span class="vector-toc-numb">3.8</span>
+					<span>grep alternatives</span>
+				</div>
+			</a>
+			
+			<ul id="toc-grep_alternatives-sublist" class="vector-toc-list">
+				<li id="toc-Code_searchers"
+			class="vector-toc-list-item vector-toc-level-3">
+			<a class="vector-toc-link" href="#Code_searchers">
+				<div class="vector-toc-text">
+					<span class="vector-toc-numb">3.8.1</span>
+					<span>Code searchers</span>
+				</div>
+			</a>
+			
+			<ul id="toc-Code_searchers-sublist" class="vector-toc-list">
+			</ul>
+		</li>
+		<li id="toc-Interactive_filters"
+			class="vector-toc-list-item vector-toc-level-3">
+			<a class="vector-toc-link" href="#Interactive_filters">
+				<div class="vector-toc-text">
+					<span class="vector-toc-numb">3.8.2</span>
+					<span>Interactive filters</span>
+				</div>
+			</a>
+			
+			<ul id="toc-Interactive_filters-sublist" class="vector-toc-list">
+			</ul>
+		</li>
+	</ul>
+		</li>
+		<li id="toc-dd_alternatives"
+			class="vector-toc-list-item vector-toc-level-2">
+			<a class="vector-toc-link" href="#dd_alternatives">
+				<div class="vector-toc-text">
+					<span class="vector-toc-numb">3.9</span>
+					<span>dd alternatives</span>
+				</div>
+			</a>
+			
+			<ul id="toc-dd_alternatives-sublist" class="vector-toc-list">
+				<li id="toc-Alternative_dd_implementations"
+			class="vector-toc-list-item vector-toc-level-3">
+			<a class="vector-toc-link" href="#Alternative_dd_implementations">
+				<div class="vector-toc-text">
+					<span class="vector-toc-numb">3.9.1</span>
+					<span>Alternative dd implementations</span>
+				</div>
+			</a>
+			
+			<ul id="toc-Alternative_dd_implementations-sublist" class="vector-toc-list">
+				<li id="toc-Spin-offs_of_GNU_dd"
+			class="vector-toc-list-item vector-toc-level-4">
+			<a class="vector-toc-link" href="#Spin-offs_of_GNU_dd">
+				<div class="vector-toc-text">
+					<span class="vector-toc-numb">3.9.1.1</span>
+					<span>Spin-offs of GNU dd</span>
+				</div>
+			</a>
+			
+			<ul id="toc-Spin-offs_of_GNU_dd-sublist" class="vector-toc-list">
+			</ul>
+		</li>
+	</ul>
+		</li>
+		<li id="toc-Modernised_dd_analogues"
+			class="vector-toc-list-item vector-toc-level-3">
+			<a class="vector-toc-link" href="#Modernised_dd_analogues">
+				<div class="vector-toc-text">
+					<span class="vector-toc-numb">3.9.2</span>
+					<span>Modernised dd analogues</span>
+				</div>
+			</a>
+			
+			<ul id="toc-Modernised_dd_analogues-sublist" class="vector-toc-list">
+			</ul>
+		</li>
+		<li id="toc-buffer_spin-offs"
+			class="vector-toc-list-item vector-toc-level-3">
+			<a class="vector-toc-link" href="#buffer_spin-offs">
+				<div class="vector-toc-text">
+					<span class="vector-toc-numb">3.9.3</span>
+					<span>buffer spin-offs</span>
+				</div>
+			</a>
+			
+			<ul id="toc-buffer_spin-offs-sublist" class="vector-toc-list">
+			</ul>
+		</li>
+	</ul>
+		</li>
+		<li id="toc-df_alternatives"
+			class="vector-toc-list-item vector-toc-level-2">
+			<a class="vector-toc-link" href="#df_alternatives">
+				<div class="vector-toc-text">
+					<span class="vector-toc-numb">3.10</span>
+					<span>df alternatives</span>
+				</div>
+			</a>
+			
+			<ul id="toc-df_alternatives-sublist" class="vector-toc-list">
+			</ul>
+		</li>
+		<li id="toc-du_alternatives"
+			class="vector-toc-list-item vector-toc-level-2">
+			<a class="vector-toc-link" href="#du_alternatives">
+				<div class="vector-toc-text">
+					<span class="vector-toc-numb">3.11</span>
+					<span>du alternatives</span>
+				</div>
+			</a>
+			
+			<ul id="toc-du_alternatives-sublist" class="vector-toc-list">
+			</ul>
+		</li>
+	</ul>
+	</li>
+	<li id="toc-POSIX_shell_utilities"
+		class="vector-toc-list-item vector-toc-level-1 vector-toc-list-item-expanded">
+		<a class="vector-toc-link" href="#POSIX_shell_utilities">
+			<div class="vector-toc-text">
+				<span class="vector-toc-numb">4</span>
+				<span>POSIX shell utilities</span>
+			</div>
+		</a>
+		
+		<ul id="toc-POSIX_shell_utilities-sublist" class="vector-toc-list">
+		</ul>
+	</li>
+	<li id="toc-Tips_and_tricks"
+		class="vector-toc-list-item vector-toc-level-1 vector-toc-list-item-expanded">
+		<a class="vector-toc-link" href="#Tips_and_tricks">
+			<div class="vector-toc-text">
+				<span class="vector-toc-numb">5</span>
+				<span>Tips and tricks</span>
+			</div>
+		</a>
+		
+			<button aria-controls="toc-Tips_and_tricks-sublist" class="cdx-button cdx-button--weight-quiet cdx-button--icon-only vector-toc-toggle">
+				<span class="vector-icon mw-ui-icon-wikimedia-expand"></span>
+				<span>Toggle Tips and tricks subsection</span>
+			</button>
+		
+		<ul id="toc-Tips_and_tricks-sublist" class="vector-toc-list">
+			<li id="toc-Override_or_add_missing_coreutils"
+			class="vector-toc-list-item vector-toc-level-2">
+			<a class="vector-toc-link" href="#Override_or_add_missing_coreutils">
+				<div class="vector-toc-text">
+					<span class="vector-toc-numb">5.1</span>
+					<span>Override or add missing coreutils</span>
+				</div>
+			</a>
+			
+			<ul id="toc-Override_or_add_missing_coreutils-sublist" class="vector-toc-list">
+			</ul>
+		</li>
+	</ul>
+	</li>
+	<li id="toc-See_also"
+		class="vector-toc-list-item vector-toc-level-1 vector-toc-list-item-expanded">
+		<a class="vector-toc-link" href="#See_also">
+			<div class="vector-toc-text">
+				<span class="vector-toc-numb">6</span>
+				<span>See also</span>
+			</div>
+		</a>
+		
+		<ul id="toc-See_also-sublist" class="vector-toc-list">
+		</ul>
+	</li>
+</ul>
+</div>
+
+					</div>
+		</nav>
+			</div>
+		</div>
+		<div class="mw-content-container">
+			<main id="content" class="mw-body">
+				<header class="mw-body-header vector-page-titlebar no-font-mode-scale">
+					<nav aria-label="Contents" class="vector-toc-landmark">
+						
+<div id="vector-page-titlebar-toc" class="vector-dropdown vector-page-titlebar-toc vector-button-flush-left"  title="Table of Contents" >
+	<input type="checkbox" id="vector-page-titlebar-toc-checkbox" role="button" aria-haspopup="true" data-event-name="ui.dropdown-vector-page-titlebar-toc" class="vector-dropdown-checkbox "  aria-label="Toggle the table of contents"  >
+	<label id="vector-page-titlebar-toc-label" for="vector-page-titlebar-toc-checkbox" class="vector-dropdown-label cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet cdx-button--icon-only " aria-hidden="true"  ><span class="vector-icon mw-ui-icon-listBullet mw-ui-icon-wikimedia-listBullet"></span>
+
+<span class="vector-dropdown-label-text">Toggle the table of contents</span>
+	</label>
+	<div class="vector-dropdown-content">
+
+
+							<div id="vector-page-titlebar-toc-unpinned-container" class="vector-unpinned-container">
+			</div>
+		
+	</div>
+</div>
+
+					</nav>
+					<h1 id="firstHeading" class="firstHeading mw-first-heading"><span class="mw-page-title-main">Core utilities</span></h1>
+							
+<div id="p-lang-btn" class="vector-dropdown mw-portlet mw-portlet-lang"  >
+	<input type="checkbox" id="p-lang-btn-checkbox" role="button" aria-haspopup="true" data-event-name="ui.dropdown-p-lang-btn" class="vector-dropdown-checkbox mw-interlanguage-selector" aria-label="Go to an article in another language. Available in 7 languages"   >
+	<label id="p-lang-btn-label" for="p-lang-btn-checkbox" class="vector-dropdown-label cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet cdx-button--action-progressive mw-portlet-lang-heading-7" aria-hidden="true"  ><span class="vector-icon mw-ui-icon-language-progressive mw-ui-icon-wikimedia-language-progressive"></span>
+
+<span class="vector-dropdown-label-text">7 languages</span>
+	</label>
+	<div class="vector-dropdown-content">
+
+		<div class="vector-menu-content">
+			
+			<ul class="vector-menu-content-list">
+				
+				<li class="interlanguage-link interwiki-es mw-list-item"><a href="https://wiki.archlinux.org/title/Core_utilities_(Español)" title="Core utilities – español" lang="es" hreflang="es" data-title="Core utilities" data-language-autonym="Español" data-language-local-name="español" class="interlanguage-link-target"><span>Español</span></a></li><li class="interlanguage-link interwiki-hu mw-list-item"><a href="https://wiki.archlinux.org/title/Core_utilities_(Magyar)" title="Core utilities – magyar" lang="hu" hreflang="hu" data-title="Core utilities" data-language-autonym="Magyar" data-language-local-name="magyar" class="interlanguage-link-target"><span>Magyar</span></a></li><li class="interlanguage-link interwiki-ja mw-list-item"><a href="https://wiki.archlinux.jp/index.php/Core_utilities" title="Core utilities – 日本語" lang="ja" hreflang="ja" data-title="Core utilities" data-language-autonym="日本語" data-language-local-name="日本語" class="interlanguage-link-target"><span>日本語</span></a></li><li class="interlanguage-link interwiki-pl mw-list-item"><a href="https://wiki.archlinux.org/title/Core_utilities_(Polski)" title="Core utilities – polski" lang="pl" hreflang="pl" data-title="Core utilities" data-language-autonym="Polski" data-language-local-name="polski" class="interlanguage-link-target"><span>Polski</span></a></li><li class="interlanguage-link interwiki-pt mw-list-item"><a href="https://wiki.archlinux.org/title/Core_utilities_(Português)" title="Core utilities – português" lang="pt" hreflang="pt" data-title="Core utilities" data-language-autonym="Português" data-language-local-name="português" class="interlanguage-link-target"><span>Português</span></a></li><li class="interlanguage-link interwiki-ru mw-list-item"><a href="https://wiki.archlinux.org/title/Core_utilities_(Русский)" title="Core utilities – русский" lang="ru" hreflang="ru" data-title="Core utilities" data-language-autonym="Русский" data-language-local-name="русский" class="interlanguage-link-target"><span>Русский</span></a></li><li class="interlanguage-link interwiki-zh-hans mw-list-item"><a href="https://wiki.archlinuxcn.org/wiki/Core_utilities" title="Core utilities – 中文（简体）" lang="zh-Hans" hreflang="zh-Hans" data-title="Core utilities" data-language-autonym="中文（简体）" data-language-local-name="中文（简体）" class="interlanguage-link-target"><span>中文（简体）</span></a></li>
+			</ul>
+			
+		</div>
+
+	</div>
+</div>
+</header>
+				<div class="vector-page-toolbar vector-feature-custom-font-size-clientpref--excluded">
+					<div class="vector-page-toolbar-container">
+						<div id="left-navigation">
+							<nav aria-label="Namespaces">
+								
+<div id="p-associated-pages" class="vector-menu vector-menu-tabs mw-portlet mw-portlet-associated-pages"  >
+	<div class="vector-menu-content">
+		
+		<ul class="vector-menu-content-list">
+			
+			<li id="ca-nstab-main" class="selected vector-tab-noicon mw-list-item"><a href="/title/Core_utilities" title="View the content page [c]" accesskey="c"><span>Page</span></a></li><li id="ca-talk" class="vector-tab-noicon mw-list-item"><a href="/title/Talk:Core_utilities" rel="discussion" title="Discussion about the content page [t]" accesskey="t"><span>Discussion</span></a></li>
+		</ul>
+		
+	</div>
+</div>
+
+								
+<div id="vector-variants-dropdown" class="vector-dropdown emptyPortlet"  >
+	<input type="checkbox" id="vector-variants-dropdown-checkbox" role="button" aria-haspopup="true" data-event-name="ui.dropdown-vector-variants-dropdown" class="vector-dropdown-checkbox " aria-label="Change language variant"   >
+	<label id="vector-variants-dropdown-label" for="vector-variants-dropdown-checkbox" class="vector-dropdown-label cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet" aria-hidden="true"  ><span class="vector-dropdown-label-text">English</span>
+	</label>
+	<div class="vector-dropdown-content">
+
+
+					
+<div id="p-variants" class="vector-menu mw-portlet mw-portlet-variants emptyPortlet"  >
+	<div class="vector-menu-content">
+		
+		<ul class="vector-menu-content-list">
+			
+			
+		</ul>
+		
+	</div>
+</div>
+
+				
+	</div>
+</div>
+
+							</nav>
+						</div>
+						<div id="right-navigation" class="vector-collapsible">
+							<nav aria-label="Views">
+								
+<div id="p-views" class="vector-menu vector-menu-tabs mw-portlet mw-portlet-views"  >
+	<div class="vector-menu-content">
+		
+		<ul class="vector-menu-content-list">
+			
+			<li id="ca-view" class="selected vector-tab-noicon mw-list-item"><a href="/title/Core_utilities"><span>Read</span></a></li><li id="ca-viewsource" class="vector-tab-noicon mw-list-item"><a href="/index.php?title=Core_utilities&amp;action=edit" title="This page is protected.&#10;You can view its source [e]" accesskey="e"><span>View source</span></a></li><li id="ca-history" class="vector-tab-noicon mw-list-item"><a href="/index.php?title=Core_utilities&amp;action=history" title="Past revisions of this page [h]" accesskey="h"><span>View history</span></a></li>
+		</ul>
+		
+	</div>
+</div>
+
+							</nav>
+				
+							<nav class="vector-page-tools-landmark" aria-label="Page tools">
+								
+<div id="vector-page-tools-dropdown" class="vector-dropdown vector-page-tools-dropdown"  >
+	<input type="checkbox" id="vector-page-tools-dropdown-checkbox" role="button" aria-haspopup="true" data-event-name="ui.dropdown-vector-page-tools-dropdown" class="vector-dropdown-checkbox "  aria-label="Tools"  >
+	<label id="vector-page-tools-dropdown-label" for="vector-page-tools-dropdown-checkbox" class="vector-dropdown-label cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet" aria-hidden="true"  ><span class="vector-dropdown-label-text">Tools</span>
+	</label>
+	<div class="vector-dropdown-content">
+
+
+									<div id="vector-page-tools-unpinned-container" class="vector-unpinned-container">
+						
+<div id="vector-page-tools" class="vector-page-tools vector-pinnable-element">
+	<div
+	class="vector-pinnable-header vector-page-tools-pinnable-header vector-pinnable-header-unpinned"
+	data-feature-name="page-tools-pinned"
+	data-pinnable-element-id="vector-page-tools"
+	data-pinned-container-id="vector-page-tools-pinned-container"
+	data-unpinned-container-id="vector-page-tools-unpinned-container"
+>
+	<div class="vector-pinnable-header-label">Tools</div>
+	<button class="vector-pinnable-header-toggle-button vector-pinnable-header-pin-button" data-event-name="pinnable-header.vector-page-tools.pin">move to sidebar</button>
+	<button class="vector-pinnable-header-toggle-button vector-pinnable-header-unpin-button" data-event-name="pinnable-header.vector-page-tools.unpin">hide</button>
+</div>
+
+	
+<div id="p-cactions" class="vector-menu mw-portlet mw-portlet-cactions emptyPortlet vector-has-collapsible-items"  title="More options" >
+	<div class="vector-menu-heading">
+		Actions
+	</div>
+	<div class="vector-menu-content">
+		
+		<ul class="vector-menu-content-list">
+			
+			<li id="ca-more-view" class="selected vector-more-collapsible-item mw-list-item"><a href="/title/Core_utilities"><span>Read</span></a></li><li id="ca-more-viewsource" class="vector-more-collapsible-item mw-list-item"><a href="/index.php?title=Core_utilities&amp;action=edit"><span>View source</span></a></li><li id="ca-more-history" class="vector-more-collapsible-item mw-list-item"><a href="/index.php?title=Core_utilities&amp;action=history"><span>View history</span></a></li>
+		</ul>
+		
+	</div>
+</div>
+
+<div id="p-tb" class="vector-menu mw-portlet mw-portlet-tb"  >
+	<div class="vector-menu-heading">
+		General
+	</div>
+	<div class="vector-menu-content">
+		
+		<ul class="vector-menu-content-list">
+			
+			<li id="t-whatlinkshere" class="mw-list-item"><a href="/title/Special:WhatLinksHere/Core_utilities" title="A list of all wiki pages that link here [j]" accesskey="j"><span>What links here</span></a></li><li id="t-recentchangeslinked" class="mw-list-item"><a href="/title/Special:RecentChangesLinked/Core_utilities" rel="nofollow" title="Recent changes in pages linked from this page [k]" accesskey="k"><span>Related changes</span></a></li><li id="t-print" class="mw-list-item"><a href="javascript:print();" rel="alternate" title="Printable version of this page [p]" accesskey="p"><span>Printable version</span></a></li><li id="t-permalink" class="mw-list-item"><a href="/index.php?title=Core_utilities&amp;oldid=857740" title="Permanent link to this revision of this page"><span>Permanent link</span></a></li><li id="t-info" class="mw-list-item"><a href="/index.php?title=Core_utilities&amp;action=info" title="More information about this page"><span>Page information</span></a></li>
+		</ul>
+		
+	</div>
+</div>
+
+</div>
+
+									</div>
+				
+	</div>
+</div>
+
+							</nav>
+						</div>
+					</div>
+				</div>
+				<div class="vector-column-end no-font-mode-scale">
+					<div class="vector-sticky-pinned-container">
+						<nav class="vector-page-tools-landmark" aria-label="Page tools">
+							<div id="vector-page-tools-pinned-container" class="vector-pinned-container">
+				
+							</div>
+		</nav>
+						<nav class="vector-appearance-landmark" aria-label="Appearance">
+							<div id="vector-appearance-pinned-container" class="vector-pinned-container">
+				<div id="vector-appearance" class="vector-appearance vector-pinnable-element">
+	<div
+	class="vector-pinnable-header vector-appearance-pinnable-header vector-pinnable-header-pinned"
+	data-feature-name="appearance-pinned"
+	data-pinnable-element-id="vector-appearance"
+	data-pinned-container-id="vector-appearance-pinned-container"
+	data-unpinned-container-id="vector-appearance-unpinned-container"
+>
+	<div class="vector-pinnable-header-label">Appearance</div>
+	<button class="vector-pinnable-header-toggle-button vector-pinnable-header-pin-button" data-event-name="pinnable-header.vector-appearance.pin">move to sidebar</button>
+	<button class="vector-pinnable-header-toggle-button vector-pinnable-header-unpin-button" data-event-name="pinnable-header.vector-appearance.unpin">hide</button>
+</div>
+
+
+</div>
+
+							</div>
+		</nav>
+					</div>
+				</div>
+				<div id="bodyContent" class="vector-body" aria-labelledby="firstHeading" data-mw-ve-target-container>
+					<div class="vector-body-before-content">
+							<div class="mw-indicators">
+		</div>
+
+						<div id="siteSub" class="noprint">From ArchWiki</div>
+					</div>
+					<div id="contentSub"><div id="mw-content-subtitle"></div></div>
+					
+					
+					<div id="mw-content-text" class="mw-body-content"><div class="mw-content-ltr mw-parser-output" lang="en" dir="ltr"><div class="archwiki-template-meta-related-articles"><p>Related articles</p><ul>
+<li><a href="/title/Command-line_shell" title="Command-line shell">Command-line shell</a></li>
+<li><a href="/title/General_recommendations" title="General recommendations">General recommendations</a></li>
+<li><a href="/title/Users_and_groups" title="Users and groups">Users and groups</a></li>
+<li><a href="/title/Pacman" title="Pacman">pacman</a></li>
+<li><a href="/title/Systemd" title="Systemd">systemd</a></li>
+</ul></div>
+<p><i>Core utilities</i> are the basic, fundamental tools of a <a href="https://en.wikipedia.org/wiki/GNU/Linux_naming_controversy" class="extiw" title="wikipedia:GNU/Linux naming controversy">GNU/Linux</a> system. This article provides an incomplete overview of them, links their documentation and describes useful alternatives. The scope of this article includes, but is not limited to, the <a href="https://en.wikipedia.org/wiki/GNU_Core_Utilities" class="extiw" title="wikipedia:GNU Core Utilities">GNU Core Utilities</a>. Most core utilities are traditional <a href="https://en.wikipedia.org/wiki/Unix" class="extiw" title="wikipedia:Unix">Unix</a> tools and many were standardized by <a href="https://en.wikipedia.org/wiki/POSIX" class="extiw" title="wikipedia:POSIX">POSIX</a> but have been developed further to provide more features.
+</p><p>Most command-line interfaces are documented in <a href="/title/Man_page" title="Man page">man pages</a>, utilities by the <a href="/title/GNU_Project" class="mw-redirect" title="GNU Project">GNU Project</a> are documented primarily in <a href="/title/Info_manual" class="mw-redirect" title="Info manual">Info manuals</a>, some <a href="/title/Shell" class="mw-redirect" title="Shell">shells</a> provide a <i>help</i> command for shell builtin commands. Additionally most utilities print their usage when run with the <code>--help</code> flag.
+</p>
+<meta property="mw:PageProp/toc" />
+<div class="mw-heading mw-heading2"><h2 id="Essentials">Essentials</h2></div>
+<p>The following table lists some important utilities which <a href="/title/Arch_Linux" title="Arch Linux">Arch Linux</a> users should be familiar with. See also <span class="plainlinks archwiki-template-man" title="$ man 1 intro"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/intro.1">intro(1)</a></span>.
+</p>
+<table class="wikitable">
+<tbody><tr>
+<th>Package</th>
+<th>Utility</th>
+<th>Description</th>
+<th>Documentation</th>
+<th>Alternatives
+</th></tr>
+<tr>
+<td>shell built-ins</td>
+<td>cd</td>
+<td>change directory</td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1p cd"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/cd.1p">cd(1p)</a></span></td>
+<td><a href="#cd_alternatives">#cd alternatives</a>
+</td></tr>
+<tr>
+<td rowspan="13">GNU <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=coreutils">coreutils</a></span>
+</td>
+<td>ls</td>
+<td>list directory</td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 ls"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/ls.1">ls(1)</a></span>, <a rel="nofollow" class="external text" href="https://www.gnu.org/software/coreutils/manual/html_node/ls-invocation.html">info</a></td>
+<td><span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=tree">tree</a></span>, <a href="#ls_alternatives">#ls alternatives</a>
+</td></tr>
+<tr>
+<td>cat</td>
+<td>concatenate files to stdout</td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 cat"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/cat.1">cat(1)</a></span>, <a rel="nofollow" class="external text" href="https://www.gnu.org/software/coreutils/manual/html_node/cat-invocation.html">info</a></td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 tac"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/tac.1">tac(1)</a></span>, <a href="#cat_alternatives">#cat alternatives</a>
+</td></tr>
+<tr>
+<td>mkdir</td>
+<td>make directory</td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 mkdir"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/mkdir.1">mkdir(1)</a></span>, <a rel="nofollow" class="external text" href="https://www.gnu.org/software/coreutils/manual/html_node/mkdir-invocation.html">info</a>
+</td></tr>
+<tr>
+<td>rmdir</td>
+<td>remove empty directory</td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 rmdir"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/rmdir.1">rmdir(1)</a></span>, <a rel="nofollow" class="external text" href="https://www.gnu.org/software/coreutils/manual/html_node/rmdir-invocation.html">info</a>
+</td></tr>
+<tr>
+<td>rm</td>
+<td>remove files or directories</td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 rm"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/rm.1">rm(1)</a></span>, <a rel="nofollow" class="external text" href="https://www.gnu.org/software/coreutils/manual/html_node/rm-invocation.html">info</a></td>
+<td><a href="/title/Shred" class="mw-redirect" title="Shred">shred</a> <span class="plainlinks archwiki-template-man" title="$ man 1 unlink"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/unlink.1">unlink(1)</a></span>
+</td></tr>
+<tr>
+<td>cp</td>
+<td>copy files or directories</td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 cp"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/cp.1">cp(1)</a></span>, <a rel="nofollow" class="external text" href="https://www.gnu.org/software/coreutils/manual/html_node/cp-invocation.html">info</a></td>
+<td><a href="#cp_alternatives">#cp alternatives</a>
+</td></tr>
+<tr>
+<td>mv</td>
+<td>move files or directories</td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 mv"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/mv.1">mv(1)</a></span>, <a rel="nofollow" class="external text" href="https://www.gnu.org/software/coreutils/manual/html_node/mv-invocation.html">info</a>
+</td></tr>
+<tr>
+<td>ln</td>
+<td>make hard or symbolic links</td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 ln"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/ln.1">ln(1)</a></span>, <a rel="nofollow" class="external text" href="https://www.gnu.org/software/coreutils/manual/html_node/ln-invocation.html">info</a></td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 8 sln"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/sln.8">sln(8)</a></span> (soname recovery)
+</td></tr>
+<tr>
+<td><a href="/title/Chown" class="mw-redirect" title="Chown">chown</a></td>
+<td>change file owner and group</td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 chown"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/chown.1">chown(1)</a></span>, <a rel="nofollow" class="external text" href="https://www.gnu.org/software/coreutils/manual/html_node/chown-invocation.html">info</a></td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 chgrp"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/chgrp.1">chgrp(1)</a></span>
+</td></tr>
+<tr>
+<td><a href="/title/Chmod" class="mw-redirect" title="Chmod">chmod</a></td>
+<td>change file permissions</td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 chmod"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/chmod.1">chmod(1)</a></span>, <a rel="nofollow" class="external text" href="https://www.gnu.org/software/coreutils/manual/html_node/chmod-invocation.html">info</a>
+</td></tr>
+<tr>
+<td><a href="/title/Dd" title="Dd">dd</a></td>
+<td>convert and copy a file</td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 dd"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/dd.1">dd(1)</a></span>, <a rel="nofollow" class="external text" href="https://www.gnu.org/software/coreutils/manual/html_node/dd-invocation.html">info</a></td>
+<td><a href="#dd_alternatives">#dd alternatives</a>
+</td></tr>
+<tr>
+<td>df</td>
+<td>report file system disk space usage</td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 df"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/df.1">df(1)</a></span>, <a rel="nofollow" class="external text" href="https://www.gnu.org/software/coreutils/manual/html_node/df-invocation.html">info</a></td>
+<td><a href="#df_alternatives">#df alternatives</a>
+</td></tr>
+<tr>
+<td>du</td>
+<td>estimate disk space used by files and directories</td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 du"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/du.1">du(1)</a></span>, <a rel="nofollow" class="external text" href="https://www.gnu.org/software/coreutils/manual/html_node/du-invocation.html">info</a></td>
+<td><a href="#du_alternatives">#du alternatives</a>
+</td></tr>
+<tr>
+<td>GNU <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=tar">tar</a></span></td>
+<td>tar</td>
+<td>tar archiver</td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 tar"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/tar.1">tar(1)</a></span>, <a rel="nofollow" class="external text" href="https://www.gnu.org/software/tar/manual/html_chapter/index.html">info</a></td>
+<td><a href="/title/Archiver" class="mw-redirect" title="Archiver">archivers</a>
+</td></tr>
+<tr>
+<td>GNU <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=less">less</a></span></td>
+<td>less</td>
+<td>terminal pager</td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 less"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/less.1">less(1)</a></span></td>
+<td><a href="/title/Terminal_pager" class="mw-redirect" title="Terminal pager">terminal pagers</a>
+</td></tr>
+<tr>
+<td>GNU <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=findutils">findutils</a></span></td>
+<td>find</td>
+<td>search files or directories</td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 find"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/find.1">find(1)</a></span>, <a rel="nofollow" class="external text" href="https://www.gnu.org/software/findutils/manual/html_node/find_html/index.html">info</a>, <a href="https://mywiki.wooledge.org/UsingFind" class="extiw" title="gregswiki:UsingFind">GregsWiki</a></td>
+<td><a href="#find_alternatives">#find alternatives</a>
+</td></tr>
+<tr>
+<td>GNU <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=diffutils">diffutils</a></span></td>
+<td>diff</td>
+<td>compare files line by line</td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 diff"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/diff.1">diff(1)</a></span>, <a rel="nofollow" class="external text" href="https://www.gnu.org/software/diffutils/manual/html_node/Invoking-diff.html">info</a></td>
+<td><a href="#diff_alternatives">#diff alternatives</a>
+</td></tr>
+<tr>
+<td>GNU <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=grep">grep</a></span></td>
+<td>grep</td>
+<td>print lines matching a pattern</td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 grep"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/grep.1">grep(1)</a></span>, <a rel="nofollow" class="external text" href="https://www.gnu.org/software/grep/manual/html_node/index.html">info</a></td>
+<td><a href="#grep_alternatives">#grep alternatives</a>
+</td></tr>
+<tr>
+<td>GNU <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=sed">sed</a></span></td>
+<td>sed</td>
+<td>stream editor</td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 sed"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/sed.1">sed(1)</a></span>, <a rel="nofollow" class="external text" href="https://www.gnu.org/software/sed/manual/html_node/index.html">info</a>, <a rel="nofollow" class="external text" href="https://www.pement.org/sed/sed1line.txt">one-liners</a></td>
+<td><span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=sad">sad</a></span>, <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=sd">sd</a></span>
+</td></tr>
+<tr>
+<td>GNU AWK (<span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=gawk">gawk</a></span>)</td>
+<td><a href="/title/AWK" title="AWK">AWK</a></td>
+<td>pattern scanning and processing language</td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 gawk"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/gawk.1">gawk(1)</a></span>, <a rel="nofollow" class="external text" href="https://www.gnu.org/software/gawk/manual/html_node/index.html">info</a>, <a rel="nofollow" class="external text" href="https://www.pement.org/awk/awk1line.txt">one-liners</a></td>
+<td><a href="/title/AWK#Alternative_implementations" title="AWK">AWK#Alternative implementations</a>
+</td></tr>
+<tr>
+<td rowspan="6"><span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=util-linux">util-linux</a></span>
+</td>
+<td><a href="https://en.wikipedia.org/wiki/dmesg" class="extiw" title="wikipedia:dmesg">dmesg</a></td>
+<td>print or control the kernel ring buffer</td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 dmesg"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/dmesg.1">dmesg(1)</a></span></td>
+<td><a href="/title/Systemd_journal" class="mw-redirect" title="Systemd journal">systemd journal</a>
+</td></tr>
+<tr>
+<td><a href="/title/Lsblk" class="mw-redirect" title="Lsblk">lsblk</a></td>
+<td>list block devices</td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 8 lsblk"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/lsblk.8">lsblk(8)</a></span>
+</td></tr>
+<tr>
+<td><a href="/title/Mount" class="mw-redirect" title="Mount">mount</a></td>
+<td>mount a filesystem</td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 8 mount"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/mount.8">mount(8)</a></span>
+</td></tr>
+<tr>
+<td><a href="/title/Umount" class="mw-redirect" title="Umount">umount</a></td>
+<td>unmount a filesystem</td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 8 umount"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/umount.8">umount(8)</a></span>
+</td></tr>
+<tr>
+<td><a href="/title/Su" title="Su">su</a></td>
+<td>substitute user</td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 su"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/su.1">su(1)</a></span></td>
+<td><a href="/title/Sudo" title="Sudo">sudo</a>, <a href="/title/Doas" title="Doas">doas</a>
+</td></tr>
+<tr>
+<td>kill</td>
+<td>terminate a process</td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 kill"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/kill.1">kill(1)</a></span></td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 pkill"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/pkill.1">pkill(1)</a></span>, <span class="plainlinks archwiki-template-man" title="$ man 1 killall"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/killall.1">killall(1)</a></span>
+</td></tr>
+<tr>
+<td rowspan="3"><span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=procps-ng">procps-ng</a></span>
+</td>
+<td>pgrep</td>
+<td>look up processes by name or attributes</td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 pgrep"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/pgrep.1">pgrep(1)</a></span></td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 pidof"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/pidof.1">pidof(1)</a></span>
+</td></tr>
+<tr>
+<td>ps</td>
+<td>show information about processes</td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 ps"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/ps.1">ps(1)</a></span></td>
+<td rowspan="2"><span class="plainlinks archwiki-template-man" title="$ man 1 top"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/top.1">top(1)</a></span>, <a href="/title/List_of_applications/Utilities#System_monitors" title="List of applications/Utilities">system monitors</a>
+</td></tr>
+<tr>
+<td>free</td>
+<td>display amount of free and used memory</td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 free"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/free.1">free(1)</a></span>
+</td></tr></tbody></table>
+<div class="mw-heading mw-heading3"><h3 id="Preventing_data_loss">Preventing data loss</h3></div>
+<p><code>rm</code>, <code>mv</code>, <code>cp</code> and shell redirections happily delete or overwrite files without asking. <code>rm</code>, <code>mv</code>, and <code>cp</code> all support the <code>-i</code> flag to prompt the user before every removal / overwrite. Some users like to enable the <code>-i</code> flag by default using <a href="/title/Alias" class="mw-redirect" title="Alias">aliases</a>. Relying upon these shell options can be dangerous, because you get used to them, resulting in potential data loss when you use another system or user that does not have them. The best way to prevent data loss is to create <a href="/title/Backup" class="mw-redirect" title="Backup">backups</a>.
+</p>
+<div class="mw-heading mw-heading2"><h2 id="Nonessentials">Nonessentials</h2></div>
+<p>This table lists core utilities that often come in handy.
+</p>
+<table class="wikitable">
+<tbody><tr>
+<th>Package</th>
+<th>Utility</th>
+<th>Description</th>
+<th>Documentation</th>
+<th>Alternatives
+</th></tr>
+<tr>
+<td rowspan="3">shell built-ins
+</td>
+<td><a href="/title/Alias" class="mw-redirect" title="Alias">alias</a></td>
+<td>define or display aliases</td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1p alias"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/alias.1p">alias(1p)</a></span>
+</td></tr>
+<tr>
+<td>type</td>
+<td>print the type of a command</td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1p type"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/type.1p">type(1p)</a></span></td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1p command"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/command.1p">command(1p)</a></span>, <span class="plainlinks archwiki-template-man" title="$ man 1 whereis"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/whereis.1">whereis(1)</a></span>, <span class="plainlinks archwiki-template-man" title="$ man 1 which"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/which.1">which(1)</a></span>
+</td></tr>
+<tr>
+<td>time</td>
+<td>time a command</td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1p time"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/time.1p">time(1p)</a></span>
+</td></tr>
+<tr>
+<td rowspan="16">GNU <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=coreutils">coreutils</a></span>
+</td>
+<td><a href="/title/Tee" class="mw-redirect" title="Tee">tee</a></td>
+<td>read stdin and write to stdout and files</td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 tee"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/tee.1">tee(1)</a></span>, <a rel="nofollow" class="external text" href="https://www.gnu.org/software/coreutils/manual/html_node/tee-invocation.html">info</a></td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 pee"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/pee.1">pee(1)</a></span>
+</td></tr>
+<tr>
+<td>mktemp</td>
+<td>make a temporary file or directory</td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 mktemp"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/mktemp.1">mktemp(1)</a></span>, <a rel="nofollow" class="external text" href="https://www.gnu.org/software/coreutils/manual/html_node/mktemp-invocation.html">info</a>
+</td></tr>
+<tr>
+<td>mknod</td>
+<td>create named pipe or device node</td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 mknod"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/mknod.1">mknod(1)</a></span>, <span class="plainlinks archwiki-template-man" title="$ man 1 mkfifo"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/mkfifo.1">mkfifo(1)</a></span>, <a rel="nofollow" class="external text" href="https://www.gnu.org/software/coreutils/manual/html_node/mkfifo-invocation.html#mkfifo-invocation">info</a>
+</td></tr>
+<tr>
+<td>truncate</td>
+<td>shrink or extend the size of a file</td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 truncate"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/truncate.1">truncate(1)</a></span>, <a rel="nofollow" class="external text" href="https://www.gnu.org/software/coreutils/manual/html_node/truncate-invocation.html#truncate-invocation">info</a></td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 fallocate"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/fallocate.1">fallocate(1)</a></span>
+</td></tr>
+<tr>
+<td>basenc</td>
+<td>encoding input and output it</td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 basenc"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/basenc.1">basenc(1)</a></span>, <span class="plainlinks archwiki-template-man" title="$ man 1 base64"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/base64.1">base64(1)</a></span>, <a rel="nofollow" class="external text" href="https://www.gnu.org/software/coreutils/manual/html_node/basenc-invocation.html">info</a>
+</td></tr>
+<tr>
+<td>cut</td>
+<td>print selected parts of lines</td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 cut"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/cut.1">cut(1)</a></span>, <a rel="nofollow" class="external text" href="https://www.gnu.org/software/coreutils/manual/html_node/cut-invocation.html">info</a></td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 colrm"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/colrm.1">colrm(1)</a></span>, <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=hck">hck</a></span>, <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=choose">choose</a></span>
+</td></tr>
+<tr>
+<td>tr</td>
+<td>translate or delete characters</td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 tr"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/tr.1">tr(1)</a></span>, <a rel="nofollow" class="external text" href="https://www.gnu.org/software/coreutils/manual/html_node/tr-invocation.html">info</a></td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 uconv"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/uconv.1">uconv(1)</a></span>
+</td></tr>
+<tr>
+<td>od</td>
+<td>dump files in octal and other formats</td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 od"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/od.1">od(1)</a></span>, <a rel="nofollow" class="external text" href="https://www.gnu.org/software/coreutils/manual/html_node/od-invocation.html">info</a></td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 hexdump"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/hexdump.1">hexdump(1)</a></span>, <a href="/title/Vim" title="Vim">vim</a>'s <span class="plainlinks archwiki-template-man" title="$ man 1 xxd"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/xxd.1">xxd(1)</a></span>
+</td></tr>
+<tr>
+<td>sort</td>
+<td>sort lines</td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 sort"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/sort.1">sort(1)</a></span>, <a rel="nofollow" class="external text" href="https://www.gnu.org/software/coreutils/manual/html_node/sort-invocation.html">info</a>
+</td></tr>
+<tr>
+<td>uniq</td>
+<td>report or omit repeated lines</td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 uniq"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/uniq.1">uniq(1)</a></span>, <a rel="nofollow" class="external text" href="https://www.gnu.org/software/coreutils/manual/html_node/uniq-invocation.html">info</a></td>
+<td><span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=anewer">anewer</a></span>, <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://aur.archlinux.org/packages/runiq/">runiq</a></span><sup><small>AUR</small></sup>, <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://aur.archlinux.org/packages/huniq-git/">huniq-git</a></span><sup><small>AUR</small></sup>
+</td></tr>
+<tr>
+<td>comm</td>
+<td>compare two sorted files line by line</td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 comm"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/comm.1">comm(1)</a></span>, <a rel="nofollow" class="external text" href="https://www.gnu.org/software/coreutils/manual/html_node/comm-invocation.html">info</a></td>
+<td><span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://aur.archlinux.org/packages/zet/">zet</a></span><sup><small>AUR</small></sup>
+</td></tr>
+<tr>
+<td>head</td>
+<td>output the first part of files</td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 head"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/head.1">head(1)</a></span>, <a rel="nofollow" class="external text" href="https://www.gnu.org/software/coreutils/manual/html_node/head-invocation.html">info</a>
+</td></tr>
+<tr>
+<td>join</td>
+<td>join lines of two inputs on a common field</td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 join"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/join.1">join(1)</a></span>, <a rel="nofollow" class="external text" href="https://www.gnu.org/software/coreutils/manual/html_node/join-invocation.html">info</a></td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 combine"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/combine.1">combine(1)</a></span> <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://aur.archlinux.org/packages/zet/">zet</a></span><sup><small>AUR</small></sup>
+</td></tr>
+<tr>
+<td>md5sum</td>
+<td>calculate cryptography hash functions of inputs and output</td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 sha256sum"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/sha256sum.1">sha256sum(1)</a></span>, <span class="plainlinks archwiki-template-man" title="$ man 1 sha512sum"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/sha512sum.1">sha512sum(1)</a></span>, <a rel="nofollow" class="external text" href="https://www.gnu.org/software/coreutils/manual/html_node/md5sum-invocation.html">info</a></td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 shasum"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/shasum.1">shasum(1)</a></span>, <span class="plainlinks archwiki-template-man" title="$ man 1 rhash"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/rhash.1">rhash(1)</a></span>
+</td></tr>
+<tr>
+<td>tail</td>
+<td>output the last part of files, or follow files</td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 tail"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/tail.1">tail(1)</a></span>, <a rel="nofollow" class="external text" href="https://www.gnu.org/software/coreutils/manual/html_node/tail-invocation.html">info</a>
+</td></tr>
+<tr>
+<td>wc</td>
+<td>print newline, word and byte count</td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 wc"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/wc.1">wc(1)</a></span>, <a rel="nofollow" class="external text" href="https://www.gnu.org/software/coreutils/manual/html_node/wc-invocation.html">info</a>
+</td></tr>
+<tr>
+<td>GNU <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=binutils">binutils</a></span></td>
+<td>strings</td>
+<td>print printable characters in binary files</td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 strings"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/strings.1">strings(1)</a></span>, <a rel="nofollow" class="external text" href="https://sourceware.org/binutils/docs/binutils/strings.html">info</a></td>
+<td><span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://aur.archlinux.org/packages/stringsext/">stringsext</a></span><sup><small>AUR</small></sup>
+</td></tr>
+<tr>
+<td><span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=util-linux">util-linux</a></span></td>
+<td>column</td>
+<td>columnate file, optionally pretty-printing in table with grid</td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 column"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/column.1">column(1)</a></span></td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 paste"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/paste.1">paste(1)</a></span>, <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://aur.archlinux.org/packages/csview/">csview</a></span><sup><small>AUR</small></sup>
+</td></tr>
+<tr>
+<td>GNU <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=findutils">findutils</a></span></td>
+<td>xargs</td>
+<td>combine or template arguments from stdin to invoke external command</td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 xargs"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/xargs.1">xargs(1)</a></span></td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 parallel"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/parallel.1">parallel(1)</a></span> (<span class="plainlinks archwiki-template-man" title="$ man 7 parallel&#95;alternatives"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/parallel_alternatives.7">parallel_alternatives(7)</a></span>)
+</td></tr>
+<tr>
+<td>GNU <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=glibc">glibc</a></span></td>
+<td>iconv</td>
+<td>convert character encodings</td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 iconv"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/iconv.1">iconv(1)</a></span></td>
+<td><span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=recode">recode</a></span>, <span class="plainlinks archwiki-template-man" title="$ man 1 uconv"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/uconv.1">uconv(1)</a></span>
+</td></tr>
+<tr>
+<td>GNU <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=sharutils">sharutils</a></span></td>
+<td>uudecode</td>
+<td>encode file into email friendly text</td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 uuencode"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/uuencode.1">uuencode(1)</a></span>, <span class="plainlinks archwiki-template-man" title="$ man 1 uudecode"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/uudecode.1">uudecode(1)</a></span>, <a rel="nofollow" class="external text" href="https://www.gnu.org/software/sharutils/manual/html_node/uuencode-Invocation.html">info</a></td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 uudeview"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/uudeview.1">uudeview(1)</a></span>
+</td></tr>
+<tr>
+<td><span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=file">file</a></span></td>
+<td>file</td>
+<td>guess file type</td>
+<td><span class="plainlinks archwiki-template-man" title="$ man 1 file"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/file.1">file(1)</a></span>
+</td></tr></tbody></table>
+<p>The <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=moreutils">moreutils</a></span> package provides useful tools like <span class="plainlinks archwiki-template-man" title="$ man 1 sponge"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/sponge.1">sponge(1)</a></span> that are missing from the GNU coreutils.
+</p>
+<div class="mw-heading mw-heading2"><h2 id="Alternatives">Alternatives</h2></div>
+<p>Alternative core utilities are provided by the following packages:
+</p>
+<ul><li><b>9base</b> &#8212; A port of various original Plan9 tools to unix.</li></ul>
+<dl><dd><a rel="nofollow" class="external free" href="https://tools.suckless.org/9base">https://tools.suckless.org/9base</a> || <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=9base">9base</a></span></dd></dl>
+<ul><li><b><a href="/title/BusyBox" title="BusyBox">BusyBox</a></b> &#8212; Utilities for rescue and embedded systems.</li></ul>
+<dl><dd><a rel="nofollow" class="external free" href="https://busybox.net">https://busybox.net</a> || <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=busybox">busybox</a></span></dd></dl>
+<ul><li><b>Heirloom Toolchest</b> &#8212; Traditional implementations of standard Unix utilities.</li></ul>
+<dl><dd><a rel="nofollow" class="external free" href="https://heirloom.sourceforge.net">https://heirloom.sourceforge.net</a> || <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://aur.archlinux.org/packages/heirloom-sh/">heirloom-sh</a></span><sup><small>AUR</small></sup>, <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://aur.archlinux.org/packages/heirloom-doctools/">heirloom-doctools</a></span><sup><small>AUR</small></sup></dd></dl>
+<ul><li><b><a href="https://en.wikipedia.org/wiki/sbase" class="extiw" title="wikipedia:sbase">sbase</a></b> &#8212; A suckless variant of the *nix core utilities.</li></ul>
+<dl><dd><a rel="nofollow" class="external free" href="https://core.suckless.org/sbase">https://core.suckless.org/sbase</a> || <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://aur.archlinux.org/packages/sbase-git/">sbase-git</a></span><sup><small>AUR</small></sup></dd></dl>
+<ul><li><b><a href="https://en.wikipedia.org/wiki/Toybox" class="extiw" title="wikipedia:Toybox">Toybox</a></b> &#8212; An all-in-one Linux command line.</li></ul>
+<dl><dd><a rel="nofollow" class="external free" href="https://landley.net/toybox">https://landley.net/toybox</a> || <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://aur.archlinux.org/packages/toybox/">toybox</a></span><sup><small>AUR</small></sup></dd></dl>
+<ul><li><b>ubase</b> &#8212; An extension of the sbase utilities.</li></ul>
+<dl><dd><a rel="nofollow" class="external free" href="https://core.suckless.org/ubase">https://core.suckless.org/ubase</a> || <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://aur.archlinux.org/packages/ubase-git/">ubase-git</a></span><sup><small>AUR</small></sup></dd></dl>
+<ul><li><b>uutils</b> &#8212; Cross-platform Rust rewrite of the GNU coreutils.</li></ul>
+<dl><dd><a rel="nofollow" class="external free" href="https://github.com/uutils/coreutils">https://github.com/uutils/coreutils</a> || <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=uutils-coreutils">uutils-coreutils</a></span></dd></dl>
+<div class="mw-heading mw-heading3"><h3 id="cat_alternatives">cat alternatives</h3></div>
+<ul><li><b>bat</b> &#8212; A cat clone with syntax highlighting and Git integration.</li></ul>
+<dl><dd><a rel="nofollow" class="external free" href="https://github.com/sharkdp/bat">https://github.com/sharkdp/bat</a> || <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=bat">bat</a></span></dd></dl>
+<div class="mw-heading mw-heading3"><h3 id="cd_alternatives">cd alternatives</h3></div>
+<ul><li><b>autojump</b> &#8212; A faster way to navigate your filesystem from the command line.</li></ul>
+<dl><dd><a rel="nofollow" class="external free" href="https://github.com/wting/autojump">https://github.com/wting/autojump</a> || <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://aur.archlinux.org/packages/autojump/">autojump</a></span><sup><small>AUR</small></sup></dd></dl>
+<ul><li><b>zoxide</b> &#8212; A smart cd command that learns your habits, allowing you to navigate anywhere in just a few keystrokes.</li></ul>
+<dl><dd><a rel="nofollow" class="external free" href="https://github.com/ajeetdsouza/zoxide">https://github.com/ajeetdsouza/zoxide</a> || <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=zoxide">zoxide</a></span></dd></dl>
+<p>See also <a href="/title/Bash#Auto_&quot;cd&quot;_when_entering_just_a_path" title="Bash">Bash#Auto "cd" when entering just a path</a> and <a href="/title/Zsh#Remembering_recent_directories" title="Zsh">Zsh#Remembering recent directories</a>.
+</p>
+<div class="mw-heading mw-heading3"><h3 id="date_alternatives">date alternatives</h3></div>
+<div class="noprint archwiki-template-message">
+<p><span class="mw-default-size" typeof="mw:File"><span><img src="/images/e/e7/Tango-go-next.svg" decoding="async" width="48" height="48" class="mw-file-element" /></span></span><b>This article or section is a candidate for moving to <a href="/title/List_of_applications/Utilities" title="List of applications/Utilities">List of applications/Utilities</a>.</b></p>
+<div><b>Notes:</b> These are not alternatives, <i>date</i> is not even mentioned on this page. (Discuss in <a rel="nofollow" class="external text" href="https://wiki.archlinux.org/title/Talk:Core_utilities">Talk:Core utilities</a>)</div>
+</div>
+<ul><li><b>dateutils</b> &#8212; Nifty command line date and time utilities; fast date calculations and conversion in the shell.</li></ul>
+<dl><dd><a rel="nofollow" class="external free" href="https://www.fresse.org/dateutils/">https://www.fresse.org/dateutils/</a> || <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=dateutils">dateutils</a></span></dd></dl>
+<ul><li><b>pdd</b> &#8212; Tiny datetime diff calculator.</li></ul>
+<dl><dd><a rel="nofollow" class="external free" href="https://github.com/jarun/pdd">https://github.com/jarun/pdd</a> || <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://aur.archlinux.org/packages/pdd/">pdd</a></span><sup><small>AUR</small></sup></dd></dl>
+<div class="mw-heading mw-heading3"><h3 id="cp_alternatives">cp alternatives</h3></div>
+<p>Using <a href="/title/Rsync#As_cp/mv_alternative" title="Rsync">rsync#As cp/mv alternative</a> allows you to resume a failed transfer, to show the transfer status, to skip already existing files and to make sure of the destination files integrity using checksums.
+</p>
+<div class="mw-heading mw-heading3"><h3 id="ls_alternatives">ls alternatives</h3></div>
+<ul><li><b>broot</b> &#8212; A new way to see and navigate directory trees.</li></ul>
+<dl><dd><a rel="nofollow" class="external free" href="https://github.com/Canop/broot">https://github.com/Canop/broot</a> || <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=broot">broot</a></span></dd></dl>
+<ul><li><b>clifm</b> &#8212; A file manager that can list files like ls(1) would (plus icons and RGB colors support).</li></ul>
+<dl><dd><a rel="nofollow" class="external free" href="https://github.com/leo-arch/clifm/wiki/Advanced#files-lister-ls-mode">https://github.com/leo-arch/clifm/wiki/Advanced#files-lister-ls-mode</a> || <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://aur.archlinux.org/packages/clifm/">clifm</a></span><sup><small>AUR</small></sup></dd></dl>
+<ul><li><b>eza</b> &#8212; Another ls replacement with color support, tree view, git integration and other features. Based on exa, which is no longer supported.</li></ul>
+<dl><dd><a rel="nofollow" class="external free" href="https://github.com/eza-community/eza">https://github.com/eza-community/eza</a> || <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=eza">eza</a></span></dd></dl>
+<ul><li><b>lsd</b> &#8212; Modern ls with a lot of pretty colors and awesome icons.</li></ul>
+<dl><dd><a rel="nofollow" class="external free" href="https://github.com/Peltoche/lsd">https://github.com/Peltoche/lsd</a> || <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=lsd">lsd</a></span></dd></dl>
+<div class="mw-heading mw-heading3"><h3 id="find_alternatives">find alternatives</h3></div>
+<ul><li><b>fd</b> &#8212; Simple, fast and user-friendly alternative to find. Ignores hidden and <code>.gitignore</code>'d files by default.</li></ul>
+<dl><dd><a rel="nofollow" class="external free" href="https://github.com/sharkdp/fd">https://github.com/sharkdp/fd</a> || <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=fd">fd</a></span></dd></dl>
+<ul><li><b>fuzzy-find</b> &#8212; Fuzzy completion for finding files.</li></ul>
+<dl><dd><a rel="nofollow" class="external free" href="https://github.com/silentbicycle/ff">https://github.com/silentbicycle/ff</a> || <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://aur.archlinux.org/packages/ff-git/">ff-git</a></span><sup><small>AUR</small></sup></dd></dl>
+<ul><li><b><a href="/title/Locate" title="Locate">plocate</a></b> &#8212; A much faster locate.</li></ul>
+<dl><dd><a rel="nofollow" class="external free" href="https://plocate.sesse.net/">https://plocate.sesse.net/</a> || <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=plocate">plocate</a></span></dd></dl>
+<ul><li><b>rawhide</b> &#8212; find files using pretty C expressions.</li></ul>
+<dl><dd><a rel="nofollow" class="external free" href="https://raf.org/rawhide/">https://raf.org/rawhide/</a> || <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://aur.archlinux.org/packages/rawhide/">rawhide</a></span><sup><small>AUR</small></sup></dd></dl>
+<ul><li><b>uutils-findutils</b> &#8212; Rust rewrite of findutils</li></ul>
+<dl><dd><a rel="nofollow" class="external free" href="https://github.com/uutils/findutils">https://github.com/uutils/findutils</a> || <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://aur.archlinux.org/packages/uutils-findutils/">uutils-findutils</a></span><sup><small>AUR</small></sup></dd></dl>
+<p>For graphical file searchers, see <a href="/title/List_of_applications/Utilities#File_searching" title="List of applications/Utilities">List of applications/Utilities#File searching</a>.
+</p>
+<div class="mw-heading mw-heading3"><h3 id="diff_alternatives">diff alternatives</h3></div>
+<ul><li><b>uutils-diffutils</b> &#8212; Rust rewrite of diffutils.</li></ul>
+<dl><dd><a rel="nofollow" class="external free" href="https://github.com/uutils/diffutils">https://github.com/uutils/diffutils</a> || <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://aur.archlinux.org/packages/uutils-diffutils/">uutils-diffutils</a></span><sup><small>AUR</small></sup></dd></dl>
+<p>While <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=diffutils">diffutils</a></span> does not provide a word-wise diff, several other programs do:
+</p>
+<ul><li><b>cwdiff</b> &#8212; A GNU wdiff wrapper that colorizes the output.</li></ul>
+<dl><dd><a rel="nofollow" class="external free" href="https://github.com/junghans/cwdiff">https://github.com/junghans/cwdiff</a> || <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://aur.archlinux.org/packages/cwdiff/">cwdiff</a></span><sup><small>AUR</small></sup></dd></dl>
+<ul><li><b>dwdiff</b> &#8212; A word diff front-end for the diff program; supports colors.</li></ul>
+<dl><dd><a rel="nofollow" class="external free" href="https://os.ghalkes.nl/dwdiff.html">https://os.ghalkes.nl/dwdiff.html</a> || <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://aur.archlinux.org/packages/dwdiff/">dwdiff</a></span><sup><small>AUR</small></sup></dd></dl>
+<ul><li><a href="/title/Git" title="Git">git</a> diff can do a word diff with <code>--color-words</code>, using <code>--no-index</code> it can also be used for files outside of Git working trees.</li>
+<li><b>git-delta</b> &#8212; A syntax-highlighting pager for git, diff, and grep output.</li></ul>
+<dl><dd><a rel="nofollow" class="external free" href="https://dandavison.github.io/delta/">https://dandavison.github.io/delta/</a> || <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=git-delta">git-delta</a></span></dd></dl>
+<ul><li><b>icdiff</b> &#8212; A colorized diff tool written in Python. "Improved color diff" is meant to supplement normal diff use.</li></ul>
+<dl><dd><a rel="nofollow" class="external free" href="https://github.com/jeffkaufman/icdiff">https://github.com/jeffkaufman/icdiff</a> || <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://aur.archlinux.org/packages/icdiff/">icdiff</a></span><sup><small>AUR</small></sup></dd></dl>
+<ul><li><b>wdiff</b> &#8212; A wordwise implementation of GNU diff; does not support colors.</li></ul>
+<dl><dd><a rel="nofollow" class="external free" href="https://www.gnu.org/software/wdiff/">https://www.gnu.org/software/wdiff/</a> || <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=wdiff">wdiff</a></span></dd></dl>
+<p>See also <a href="/title/List_of_applications/Utilities#Comparison,_diff,_merge" title="List of applications/Utilities">List of applications/Utilities#Comparison, diff, merge</a>.
+</p>
+<div class="mw-heading mw-heading3"><h3 id="grep_alternatives">grep alternatives</h3></div>
+<ul><li><b>mgrep</b> &#8212; A multiline grep.</li></ul>
+<dl><dd><a rel="nofollow" class="external free" href="https://sourceforge.net/projects/multiline-grep/">https://sourceforge.net/projects/multiline-grep/</a> || <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://aur.archlinux.org/packages/mgrep/">mgrep</a></span><sup><small>AUR</small></sup></dd></dl>
+<ul><li><b>pdfgrep</b> &#8212; A tool to search text in PDF files.</li></ul>
+<dl><dd><a rel="nofollow" class="external free" href="https://pdfgrep.org/">https://pdfgrep.org/</a> || <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=pdfgrep">pdfgrep</a></span></dd></dl>
+<ul><li><b>ripgrep-all</b> &#8212; Search in plain text and also in PDFs, E-Books, Office documents, zip, tar.gz.</li></ul>
+<dl><dd><a rel="nofollow" class="external free" href="https://github.com/phiresky/ripgrep-all">https://github.com/phiresky/ripgrep-all</a> || <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=ripgrep-all">ripgrep-all</a></span></dd></dl>
+<div class="mw-heading mw-heading4"><h4 id="Code_searchers">Code searchers</h4></div>
+<p>These tools aim to replace grep for code search. They do recursive search by default, skip binary files and respect <code>.gitignore</code>.
+</p>
+<ul><li><b>ack</b> &#8212; A Perl-based grep replacement, aimed at programmers with large trees of heterogeneous source code.</li></ul>
+<dl><dd><a rel="nofollow" class="external free" href="https://beyondgrep.com/">https://beyondgrep.com/</a> || <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://aur.archlinux.org/packages/ack/">ack</a></span><sup><small>AUR</small></sup></dd></dl>
+<ul><li><b>pcre2grep</b> &#8212; Perl-compatible grep, but it uses the PCRE2 regular expression library.</li></ul>
+<dl><dd><a rel="nofollow" class="external free" href="https://github.com/PCRE2Project/pcre2">https://github.com/PCRE2Project/pcre2</a> || <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=pcre2">pcre2</a></span></dd></dl>
+<ul><li><b>ripgrep (rg)</b> &#8212; A search tool that combines the usability of ag with the raw speed of grep.</li></ul>
+<dl><dd><a rel="nofollow" class="external free" href="https://github.com/BurntSushi/ripgrep">https://github.com/BurntSushi/ripgrep</a> || <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=ripgrep">ripgrep</a></span></dd></dl>
+<ul><li><b>The Silver Searcher (ag)</b> &#8212; Code searching tool similar to ack, but faster.</li></ul>
+<dl><dd><a rel="nofollow" class="external free" href="https://github.com/ggreer/the_silver_searcher">https://github.com/ggreer/the_silver_searcher</a> || <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=the_silver_searcher">the_silver_searcher</a></span></dd></dl>
+<ul><li><b>ugrep (ug)</b> &#8212; Ultrafast grep with interactive user interface, fuzzy search, boolean queries, hexdumps and more.</li></ul>
+<dl><dd><a rel="nofollow" class="external free" href="https://github.com/Genivia/ugrep">https://github.com/Genivia/ugrep</a> || <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=ugrep">ugrep</a></span></dd></dl>
+<p>See also: <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=cscope">cscope</a></span>.
+</p>
+<div class="mw-heading mw-heading4"><h4 id="Interactive_filters">Interactive filters</h4></div>
+<ul><li><b>fnf</b> &#8212; An interactive fuzzy finder for the terminal.</li></ul>
+<dl><dd><a rel="nofollow" class="external free" href="https://github.com/leo-arch/fnf">https://github.com/leo-arch/fnf</a> || <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://aur.archlinux.org/packages/fnf/">fnf</a></span><sup><small>AUR</small></sup></dd></dl>
+<ul><li><b><a href="/title/Fzf" title="Fzf">fzf</a></b> &#8212; General-purpose command-line fuzzy finder, powered by find by default.</li></ul>
+<dl><dd><a rel="nofollow" class="external free" href="https://github.com/junegunn/fzf">https://github.com/junegunn/fzf</a> || <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=fzf">fzf</a></span></dd></dl>
+<ul><li><b>fzy</b> &#8212; A fast, simple fuzzy text selector with an advanced scoring algorithm.</li></ul>
+<dl><dd><a rel="nofollow" class="external free" href="https://github.com/jhawthorn/fzy">https://github.com/jhawthorn/fzy</a> || <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=fzy">fzy</a></span></dd></dl>
+<ul><li><b>peco</b> &#8212; Simplistic interactive filtering tool.</li></ul>
+<dl><dd><a rel="nofollow" class="external free" href="https://github.com/peco/peco">https://github.com/peco/peco</a> || <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=peco">peco</a></span></dd></dl>
+<ul><li><b>percol</b> &#8212; Adds flavor of interactive filtering to the traditional pipe concept of the UNIX shell.</li></ul>
+<dl><dd><a rel="nofollow" class="external free" href="https://github.com/mooz/percol">https://github.com/mooz/percol</a> || <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://aur.archlinux.org/packages/percol/">percol</a></span><sup><small>AUR</small></sup></dd></dl>
+<ul><li><b>skim</b> &#8212; Fuzzy finder written in Rust, similar to fzf.</li></ul>
+<dl><dd><a rel="nofollow" class="external free" href="https://github.com/lotabout/skim">https://github.com/lotabout/skim</a> || <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=skim">skim</a></span></dd></dl>
+<div class="mw-heading mw-heading3"><h3 id="dd_alternatives">dd alternatives</h3></div>
+<div class="noprint archwiki-template-message">
+<p><span class="mw-default-size" typeof="mw:File"><span><img src="/images/1/19/Tango-view-fullscreen.svg" decoding="async" width="48" height="48" class="mw-file-element" /></span></span><b>This article or section needs expansion.</b></p>
+<div><b>Reason:</b> ddrescue should be added to a list below and briefly described. Given the name similarity, it would be nice to mention the differences from dd_rescue. (Discuss in <a rel="nofollow" class="external text" href="https://wiki.archlinux.org/title/Talk:Core_utilities">Talk:Core utilities</a>)</div>
+</div>
+<p>See also: <a href="/title/Dd" title="Dd">dd</a> and <a href="/title/Ddrescue" class="mw-redirect" title="Ddrescue">ddrescue</a>
+</p>
+<div class="mw-heading mw-heading4"><h4 id="Alternative_dd_implementations">Alternative dd implementations</h4></div>
+<p>This subsection lists <i>dd</i> implementations whose interface and default behaviour is mostly compliant with the POSIX specification of <span class="plainlinks archwiki-template-man" title="$ man 1p dd"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/dd.1p">dd(1p)</a></span>.
+</p>
+<ul><li><b>ddpt</b> &#8212; A portable rewrite of <span class="plainlinks archwiki-template-man" title="$ man 8 sg&#95;dd"><a rel="nofollow" class="external text" href="https://man.archlinux.org/man/sg_dd.8">sg_dd(8)</a></span> by the SCSI subsystem maintainer of the Linux kernel, with optional but very specialised hardware I/O (SCSI command sets) support, plus many other features.</li></ul>
+<dl><dd><a rel="nofollow" class="external free" href="https://sg.danny.cz/sg/ddpt.html">https://sg.danny.cz/sg/ddpt.html</a> || <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://aur.archlinux.org/packages/ddpt/">ddpt</a></span><sup><small>AUR</small></sup></dd></dl>
+<ul><li><b>sdd</b> &#8212; A dd implementation portable across UNIX environments by Joerg Schilling, that can checksum the copied data and retry reading bad blocks.</li></ul>
+<dl><dd><a rel="nofollow" class="external free" href="https://schilytools.sourceforge.net/">https://schilytools.sourceforge.net/</a> || <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://aur.archlinux.org/packages/schily-tools-sdd/">schily-tools-sdd</a></span><sup><small>AUR</small></sup></dd></dl>
+<div class="mw-heading mw-heading5"><h5 id="Spin-offs_of_GNU_dd">Spin-offs of GNU dd</h5></div>
+<p>The GNU implementation of <i>dd</i> found in <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=coreutils">coreutils</a></span> also conforms to POSIX. This subsection lists its forks.
+</p>
+<ul><li><b><a href="https://en.wikipedia.org/wiki/Dd_(Unix)#dc3dd" class="extiw" title="wikipedia:Dd (Unix)">dc3dd</a></b> &#8212; Another patched version of GNU dd from the United States Department of Defense Cyber Crime Center (DC3), with similar goals and features to dcfldd.</li></ul>
+<dl><dd><a rel="nofollow" class="external free" href="https://sourceforge.net/projects/dc3dd/">https://sourceforge.net/projects/dc3dd/</a> || <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://aur.archlinux.org/packages/dc3dd/">dc3dd</a></span><sup><small>AUR</small></sup></dd></dl>
+<ul><li><b><a href="https://en.wikipedia.org/wiki/Dd_(Unix)#dcfldd" class="extiw" title="wikipedia:Dd (Unix)">dcfldd</a></b> &#8212;  feature-enhanced fork of GNU dd for forensics and security scenarios, includes on-the-fly hashing capability, flexible wipes, write verification, output to multiple targets at the same time, split and piped output.</li></ul>
+<dl><dd><a rel="nofollow" class="external free" href="https://dcfldd.sourceforge.net">https://dcfldd.sourceforge.net</a> || <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://aur.archlinux.org/packages/dcfldd/">dcfldd</a></span><sup><small>AUR</small></sup></dd></dl>
+<div class="mw-heading mw-heading4"><h4 id="Modernised_dd_analogues">Modernised dd analogues</h4></div>
+<p>This subsection lists <i>dd</i> alternatives that do not conform to POSIX (in terms of the JCL-resembling command-line syntax and <a rel="nofollow" class="external text" href="https://unix.stackexchange.com/a/192114">default behaviour</a>).
+</p>
+<ul><li><b>dd_rescue</b> &#8212; A feature-packed, modernised dd analogue that is suitable for daily scripting, disk cloning, and data recovery.</li></ul>
+<dl><dd><a rel="nofollow" class="external free" href="https://www.garloff.de/kurt/linux/ddrescue/">https://www.garloff.de/kurt/linux/ddrescue/</a> || <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=dd_rescue">dd_rescue</a></span></dd></dl>
+<ul><li><b>rw</b> &#8212; Minimal and portable <i>dd</i> analogue with conventional command-line flags.</li></ul>
+<dl><dd><a rel="nofollow" class="external free" href="https://sortix.org/rw/">https://sortix.org/rw/</a> || <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://aur.archlinux.org/packages/rw/">rw</a></span><sup><small>AUR</small></sup></dd></dl>
+<div class="mw-heading mw-heading4"><h4 id="buffer_spin-offs">buffer spin-offs</h4></div>
+<p>This subsection lists forks of <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://aur.archlinux.org/packages/buffer/">buffer</a></span><sup><small>AUR</small></sup>, a general-purpose I/O buffering utility similar to <i>dd</i> but has a dynamic-sized buffer. It supports blockwise I/O and can be used when dumping from/to an LTO-tape to avoid shoe shining.
+</p>
+<ul><li><b>mbuffer</b> &#8212; Continuation of the <i>buffer</i> utility with threading and other features.</li></ul>
+<dl><dd><a rel="nofollow" class="external free" href="https://www.maier-komor.de/mbuffer.html">https://www.maier-komor.de/mbuffer.html</a> || <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=mbuffer">mbuffer</a></span></dd></dl>
+<div class="mw-heading mw-heading3"><h3 id="df_alternatives">df alternatives</h3></div>
+<ul><li><b>duf</b> &#8212; A disk usage/free utility.</li></ul>
+<dl><dd><a rel="nofollow" class="external free" href="https://github.com/muesli/duf">https://github.com/muesli/duf</a> || <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=duf">duf</a></span></dd></dl>
+<div class="mw-heading mw-heading3"><h3 id="du_alternatives">du alternatives</h3></div>
+<ul><li><b>cdu</b> &#8212; du wrapper with colors and a pretty histogram.</li></ul>
+<dl><dd><a rel="nofollow" class="external free" href="http://arsunik.free.fr/prog/cdu.html">http://arsunik.free.fr/prog/cdu.html</a> || <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://aur.archlinux.org/packages/cdu/">cdu</a></span><sup><small>AUR</small></sup></dd></dl>
+<ul><li><b>dua</b> &#8212; Fast <b>d</b>isk <b>u</b>sage <b>a</b>nalyzer, supports deleting files, written in Rust.</li></ul>
+<dl><dd><a rel="nofollow" class="external free" href="https://github.com/Byron/dua-cli">https://github.com/Byron/dua-cli</a> || <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=dua-cli">dua-cli</a></span></dd></dl>
+<ul><li><b>dust</b> &#8212; A more intuitive version of du, in Rust.</li></ul>
+<dl><dd><a rel="nofollow" class="external free" href="https://github.com/bootandy/dust">https://github.com/bootandy/dust</a> || <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=dust">dust</a></span></dd></dl>
+<ul><li><b>gdu</b> &#8212; Disk usage analyzer with console interface, written in Go.</li></ul>
+<dl><dd><a rel="nofollow" class="external free" href="https://github.com/Dundee/gdu">https://github.com/Dundee/gdu</a> || <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=gdu">gdu</a></span></dd></dl>
+<ul><li><b>ncdu</b> &#8212; An extremely lightweight and simple ncurses based disk usage analyzer, written in Zig.</li></ul>
+<dl><dd><a rel="nofollow" class="external free" href="https://dev.yorhel.nl/ncdu">https://dev.yorhel.nl/ncdu</a> || <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=ncdu">ncdu</a></span></dd></dl>
+<p>See also <a href="/title/List_of_applications/Utilities#Disk_usage_display" title="List of applications/Utilities">List of applications/Utilities#Disk usage display</a>.
+</p>
+<div class="mw-heading mw-heading2"><h2 id="POSIX_shell_utilities">POSIX shell utilities</h2></div>
+<p>Many common packages already install most popular <a rel="nofollow" class="external text" href="https://pubs.opengroup.org/onlinepubs/9799919799/idx/utilities.html">POSIX utilities</a> as dependencies, but the <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=posix">posix</a></span> metapackage can be installed to ensure all of them being always present.
+</p><p>Beside mandatory utilities, there are also metapackages for some of the optional categories:
+</p>
+<ul><li><span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=posix-c-development">posix-c-development</a></span></li>
+<li><span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=posix-software-development">posix-software-development</a></span></li>
+<li><span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=posix-user-portability">posix-user-portability</a></span></li>
+<li><span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=posix-xsi">posix-xsi</a></span></li></ul>
+<div class="archwiki-template-box archwiki-template-box-note"><strong>Note</strong> Not all optional utilities from given category are necessarily present in corresponding metapackage.</div>
+<div class="mw-heading mw-heading2"><h2 id="Tips_and_tricks">Tips and tricks</h2></div>
+<div class="mw-heading mw-heading3"><h3 id="Override_or_add_missing_coreutils">Override or add missing coreutils</h3></div>
+<p>Some commands (<code>arch</code>, <code>kill</code>, etc.) are missing from <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=coreutils">coreutils</a></span> or taken from other packages. To complete them for compatibility, install <span class="plainlinks archwiki-template-pkg"><a rel="nofollow" class="external text" href="https://archlinux.org/packages/?name=uutils-coreutils">uutils-coreutils</a></span> and do:
+</p>
+<pre># ln -sf /usr/bin/uu-coreutils /usr/local/bin/arch
+# echo -e "#compdef arch=uu-arch\n_uu-arch" &gt; /usr/local/share/zsh/site-functions/_arch
+# echo "complete -c arch -w uu-arch" &gt; /usr/local/share/fish/vendor_completions.d/arch.fish
+</pre>
+<div class="mw-heading mw-heading2"><h2 id="See_also">See also</h2></div>
+<ul><li><a rel="nofollow" class="external text" href="https://www.gnu.org/software/coreutils/manual/coreutils.html">GNU Coreutils documentation</a></li>
+<li><a rel="nofollow" class="external text" href="https://www.gnu.org/software/coreutils/faq/coreutils-faq.html">GNU Coreutils FAQ</a></li>
+<li><a rel="nofollow" class="external text" href="https://www.pixelbeat.org/docs/coreutils-gotchas.html">Coreutils Gotchas</a>: GNU coreutils maintainer's notes about some confusing behaviour in coreutils components</li>
+<li><a rel="nofollow" class="external text" href="https://pubs.opengroup.org/onlinepubs/9799919799/idx/utilities.html">POSIX utilities</a></li></ul>
+<!-- 
+NewPP limit report
+Cached time: 20260116212847
+Cache expiry: 86400
+Reduced expiry: false
+Complications: [show‐toc]
+CPU time usage: 0.207 seconds
+Real time usage: 0.217 seconds
+Preprocessor visited node count: 4128/1000000
+Revision size: 22332/2097152 bytes
+Post‐expand include size: 45744/2097152 bytes
+Template argument size: 16802/2097152 bytes
+Highest expansion depth: 7/100
+Expensive parser function count: 0/100
+Unstrip recursion depth: 0/20
+Unstrip post‐expand size: 0/5000000 bytes
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%  121.500      1 -total
+ 22.69%   27.565     88 Template:Man
+ 13.40%   16.282      1 Template:Related_articles_start
+ 10.67%   12.963     54 Template:App
+  8.50%   10.326      1 Template:Move
+  7.20%    8.751     10 Template:Aur
+  7.03%    8.542     65 Template:Pkg
+  6.30%    7.654      1 Template:META_Related_articles_start
+  6.03%    7.325     15 Template:Ic
+  5.21%    6.329      5 Template:Related
+-->
+
+<!-- Saved in parser cache with key archwiki:pcache:8642:|%23|:idhash:canonical and timestamp 20260116212847 and revision id 857740. Rendering was triggered because: diff-page
+ -->
+</div>
+<div class="printfooter" data-nosnippet="">Retrieved from "<a dir="ltr" href="https://wiki.archlinux.org/index.php?title=Core_utilities&amp;oldid=857740">https://wiki.archlinux.org/index.php?title=Core_utilities&amp;oldid=857740</a>"</div></div>
+					<div id="catlinks" class="catlinks" data-mw="interface"><div id="mw-normal-catlinks" class="mw-normal-catlinks"><a href="/title/Special:Categories" title="Special:Categories">Categories</a>: <ul><li><a href="/title/Category:Command-line" title="Category:Command-line">Command-line</a></li><li><a href="/title/Category:Lists_of_software" title="Category:Lists of software">Lists of software</a></li></ul></div><div id="mw-hidden-catlinks" class="mw-hidden-catlinks mw-hidden-cats-hidden">Hidden categories: <ul><li><a href="/title/Category:Pages_or_sections_flagged_with_Template:Move" title="Category:Pages or sections flagged with Template:Move">Pages or sections flagged with Template:Move</a></li><li><a href="/title/Category:Pages_or_sections_flagged_with_Template:Expansion" title="Category:Pages or sections flagged with Template:Expansion">Pages or sections flagged with Template:Expansion</a></li></ul></div></div>
+				</div>
+			</main>
+			
+		</div>
+		<div class="mw-footer-container">
+			
+<footer id="footer" class="mw-footer" >
+	<ul id="footer-info">
+	<li id="footer-info-lastmod"> This page was last edited on 20 December 2025, at 19:59.</li>
+	<li id="footer-info-copyright">Content is available under <a class="external" rel="nofollow" href="https://www.gnu.org/copyleft/fdl.html">GNU Free Documentation License 1.3 or later</a> unless otherwise noted.</li>
+</ul>
+
+	<ul id="footer-places">
+	<li id="footer-places-privacy"><a href="https://terms.archlinux.org/docs/privacy-policy/">Privacy policy</a></li>
+	<li id="footer-places-about"><a href="/title/ArchWiki:About">About ArchWiki</a></li>
+	<li id="footer-places-disclaimers"><a href="/title/ArchWiki:General_disclaimer">Disclaimers</a></li>
+	<li id="footer-places-archwiki-code-of-conduct"><a href="https://terms.archlinux.org/docs/code-of-conduct/" class="extiw" title="archlinux-service-agreements:code-of-conduct">Code of conduct</a></li>
+	<li id="footer-places-archwiki-terms-of-service"><a href="https://terms.archlinux.org/docs/terms-of-service/" class="extiw" title="archlinux-service-agreements:terms-of-service">Terms of service</a></li>
+</ul>
+
+	<ul id="footer-icons" class="noprint">
+	<li id="footer-copyrightico"><a href="https://www.gnu.org/copyleft/fdl.html" class="cdx-button cdx-button--fake-button cdx-button--size-large cdx-button--fake-button--enabled"><img src="/resources/assets/licenses/gnu-fdl.png" alt="GNU Free Documentation License 1.3 or later" width="88" height="31" loading="lazy"></a></li>
+	<li id="footer-poweredbyico"><picture><source media="(min-width: 500px)" srcset="/resources/assets/poweredby_mediawiki.svg" width="88" height="31"><img src="/resources/assets/mediawiki_compact.svg" width="25" height="25" loading="lazy"></picture></li>
+</ul>
+
+</footer>
+
+		</div>
+	</div> 
+</div> 
+<div class="vector-header-container vector-sticky-header-container no-font-mode-scale">
+	<div id="vector-sticky-header" class="vector-sticky-header">
+		<div class="vector-sticky-header-start">
+			<div class="vector-sticky-header-icon-start vector-button-flush-left vector-button-flush-right" aria-hidden="true">
+				<button class="cdx-button cdx-button--weight-quiet cdx-button--icon-only vector-sticky-header-search-toggle" tabindex="-1" data-event-name="ui.vector-sticky-search-form.icon"><span class="vector-icon mw-ui-icon-search mw-ui-icon-wikimedia-search"></span>
+
+<span>Search</span>
+			</button>
+		</div>
+			
+		<div role="search" class="vector-search-box-vue  vector-search-box-show-thumbnail vector-search-box">
+			<div class="vector-typeahead-search-container">
+				<div class="cdx-typeahead-search cdx-typeahead-search--show-thumbnail">
+					<form action="/index.php" id="vector-sticky-search-form" class="cdx-search-input cdx-search-input--has-end-button">
+						<div  class="cdx-search-input__input-wrapper"  data-search-loc="header-moved">
+							<div class="cdx-text-input cdx-text-input--has-start-icon">
+								<input
+									class="cdx-text-input__input mw-searchInput" autocomplete="off"
+									
+									type="search" name="search" placeholder="Search ArchWiki">
+								<span class="cdx-text-input__icon cdx-text-input__start-icon"></span>
+							</div>
+							<input type="hidden" name="title" value="Special:Search">
+						</div>
+						<button class="cdx-button cdx-search-input__end-button">Search</button>
+					</form>
+				</div>
+			</div>
+		</div>
+		<div class="vector-sticky-header-context-bar">
+				<nav aria-label="Contents" class="vector-toc-landmark">
+						
+					<div id="vector-sticky-header-toc" class="vector-dropdown mw-portlet mw-portlet-sticky-header-toc vector-sticky-header-toc vector-button-flush-left"  >
+						<input type="checkbox" id="vector-sticky-header-toc-checkbox" role="button" aria-haspopup="true" data-event-name="ui.dropdown-vector-sticky-header-toc" class="vector-dropdown-checkbox "  aria-label="Toggle the table of contents"  >
+						<label id="vector-sticky-header-toc-label" for="vector-sticky-header-toc-checkbox" class="vector-dropdown-label cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet cdx-button--icon-only " aria-hidden="true"  ><span class="vector-icon mw-ui-icon-listBullet mw-ui-icon-wikimedia-listBullet"></span>
+
+<span class="vector-dropdown-label-text">Toggle the table of contents</span>
+						</label>
+						<div class="vector-dropdown-content">
+					
+						<div id="vector-sticky-header-toc-unpinned-container" class="vector-unpinned-container">
+						</div>
+					
+						</div>
+					</div>
+			</nav>
+				<div class="vector-sticky-header-context-bar-primary" aria-hidden="true" ><span class="mw-page-title-main">Core utilities</span></div>
+			</div>
+		</div>
+		<div class="vector-sticky-header-end" aria-hidden="true">
+			<div class="vector-sticky-header-icons">
+				<a href="#" class="cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet cdx-button--icon-only" id="ca-talk-sticky-header" tabindex="-1" data-event-name="talk-sticky-header"><span class="vector-icon mw-ui-icon-speechBubbles mw-ui-icon-wikimedia-speechBubbles"></span>
+
+<span></span>
+			</a>
+			<a href="#" class="cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet cdx-button--icon-only" id="ca-subject-sticky-header" tabindex="-1" data-event-name="subject-sticky-header"><span class="vector-icon mw-ui-icon-article mw-ui-icon-wikimedia-article"></span>
+
+<span></span>
+			</a>
+			<a href="#" class="cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet cdx-button--icon-only" id="ca-history-sticky-header" tabindex="-1" data-event-name="history-sticky-header"><span class="vector-icon mw-ui-icon-wikimedia-history mw-ui-icon-wikimedia-wikimedia-history"></span>
+
+<span></span>
+			</a>
+			<a href="#" class="cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet cdx-button--icon-only mw-watchlink" id="ca-watchstar-sticky-header" tabindex="-1" data-event-name="watch-sticky-header"><span class="vector-icon mw-ui-icon-wikimedia-star mw-ui-icon-wikimedia-wikimedia-star"></span>
+
+<span></span>
+			</a>
+			<a href="#" class="cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet cdx-button--icon-only reading-lists-bookmark" id="ca-bookmark-sticky-header" tabindex="-1" data-event-name="watch-sticky-bookmark"><span class="vector-icon mw-ui-icon-wikimedia-bookmarkOutline mw-ui-icon-wikimedia-wikimedia-bookmarkOutline"></span>
+
+<span></span>
+			</a>
+			<a href="#" class="cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet cdx-button--icon-only" id="ca-edit-sticky-header" tabindex="-1" data-event-name="wikitext-edit-sticky-header"><span class="vector-icon mw-ui-icon-wikimedia-wikiText mw-ui-icon-wikimedia-wikimedia-wikiText"></span>
+
+<span></span>
+			</a>
+			<a href="#" class="cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet cdx-button--icon-only" id="ca-ve-edit-sticky-header" tabindex="-1" data-event-name="ve-edit-sticky-header"><span class="vector-icon mw-ui-icon-wikimedia-edit mw-ui-icon-wikimedia-wikimedia-edit"></span>
+
+<span></span>
+			</a>
+			<a href="#" class="cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet cdx-button--icon-only" id="ca-viewsource-sticky-header" tabindex="-1" data-event-name="ve-edit-protected-sticky-header"><span class="vector-icon mw-ui-icon-wikimedia-editLock mw-ui-icon-wikimedia-wikimedia-editLock"></span>
+
+<span></span>
+			</a>
+		</div>
+			<div class="vector-sticky-header-buttons">
+				<a href="#" class="cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet cdx-button--action-progressive" id="ca-addsection-sticky-header" tabindex="-1" data-event-name="addsection-sticky-header"><span class="vector-icon mw-ui-icon-speechBubbleAdd-progressive mw-ui-icon-wikimedia-speechBubbleAdd-progressive"></span>
+
+<span>Add topic</span>
+			</a>
+		</div>
+			<div class="vector-sticky-header-icon-end">
+				<div class="vector-user-links">
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="mw-portlet mw-portlet-dock-bottom emptyPortlet" id="p-dock-bottom">
+	<ul>
+		
+	</ul>
+</div>
+<script>(RLQ=window.RLQ||[]).push(function(){mw.config.set({"wgBackendResponseTime":134,"wgPageParseReport":{"limitreport":{"cputime":"0.207","walltime":"0.217","ppvisitednodes":{"value":4128,"limit":1000000},"revisionsize":{"value":22332,"limit":2097152},"postexpandincludesize":{"value":45744,"limit":2097152},"templateargumentsize":{"value":16802,"limit":2097152},"expansiondepth":{"value":7,"limit":100},"expensivefunctioncount":{"value":0,"limit":100},"unstrip-depth":{"value":0,"limit":20},"unstrip-size":{"value":0,"limit":5000000},"timingprofile":["100.00%  121.500      1 -total"," 22.69%   27.565     88 Template:Man"," 13.40%   16.282      1 Template:Related_articles_start"," 10.67%   12.963     54 Template:App","  8.50%   10.326      1 Template:Move","  7.20%    8.751     10 Template:Aur","  7.03%    8.542     65 Template:Pkg","  6.30%    7.654      1 Template:META_Related_articles_start","  6.03%    7.325     15 Template:Ic","  5.21%    6.329      5 Template:Related"]},"cachereport":{"timestamp":"20260116212847","ttl":86400,"transientcontent":false}}});});</script>
+</body>
+</html>

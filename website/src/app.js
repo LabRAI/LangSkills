@@ -14,6 +14,20 @@ function escapeForClipboard(text) {
   return String(text || "");
 }
 
+function renderTemplate(text, skill) {
+  const id = String(skill && skill.id ? skill.id : "");
+  const parts = id.split("/");
+  const domain = String(skill && skill.domain ? skill.domain : parts[0] || "");
+  const topic = String(parts[1] || "");
+  const slug = String(parts[2] || "");
+  const title = String(skill && skill.title ? skill.title : "");
+  const level = String(skill && skill.level ? skill.level : "");
+  const risk = String(skill && skill.risk_level ? skill.risk_level : "");
+
+  const vars = { id, domain, topic, slug, title, level, risk_level: risk };
+  return String(text || "").replace(/\{\{([a-zA-Z0-9_]+)\}\}/g, (m, k) => (k in vars ? vars[k] : m));
+}
+
 async function copyText(text) {
   const value = escapeForClipboard(text);
   if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -66,16 +80,11 @@ async function main() {
 
   const tabs = Array.from(document.querySelectorAll(".tab"));
 
-  const indexResp = await fetch("./index.json", { cache: "no-store" });
-  if (!indexResp.ok) throw new Error(`Failed to load index.json: ${indexResp.status}`);
-  const index = await indexResp.json();
-  const skills = Array.isArray(index.skills) ? index.skills : [];
-  for (const s of skills) {
-    s._haystack = normalize(`${s.id || ""} ${s.title || ""} ${s.domain || ""}`);
-  }
-  count.textContent = String(skills.length);
+  let apiMode = false;
+  let totalMatches = 0;
 
-  const skillsById = new Map(skills.map((s) => [s.id, s]));
+  let skills = [];
+  const skillsById = new Map();
   const contentCache = new Map(); // `${id}|${tab}` -> string
 
   const MAX_RESULTS = 250;
@@ -83,6 +92,70 @@ async function main() {
   let currentId = null;
   let filtered = skills;
   let loadSeq = 0;
+  let searchSeq = 0;
+
+  async function tryFetchJson(url) {
+    const resp = await fetch(url, { cache: "no-store" });
+    if (!resp.ok) return null;
+    try {
+      return await resp.json();
+    } catch {
+      return null;
+    }
+  }
+
+  async function apiFetchSkill(id) {
+    const u = new URL("./api/skill", window.location.href);
+    u.searchParams.set("id", id);
+    const json = await tryFetchJson(u.toString());
+    if (!json || !json.ok || !json.skill) return null;
+    return json.skill;
+  }
+
+  async function apiSearch(query) {
+    const u = new URL("./api/search", window.location.href);
+    u.searchParams.set("q", query || "");
+    u.searchParams.set("limit", String(MAX_RESULTS));
+    const json = await tryFetchJson(u.toString());
+    if (!json || !json.ok) return null;
+    const results = Array.isArray(json.results) ? json.results : [];
+    return { total: Number(json.total || 0), results };
+  }
+
+  async function initIndexOrApi() {
+    // Prefer local backend API mode when available; fallback to static index.json.
+    const summary = await tryFetchJson("./api/summary");
+    if (summary && summary.ok) {
+      apiMode = true;
+      totalMatches = Number(summary.skills_count || 0);
+      count.textContent = String(totalMatches);
+
+      const initial = await apiSearch("");
+      if (initial) {
+        filtered = initial.results;
+        totalMatches = initial.total;
+        count.textContent = String(totalMatches);
+        for (const s of filtered) if (s && s.id) skillsById.set(s.id, s);
+      } else {
+        filtered = [];
+        totalMatches = 0;
+        count.textContent = "0";
+      }
+      return;
+    }
+
+    const indexResp = await fetch("./index.json", { cache: "no-store" });
+    if (!indexResp.ok) throw new Error(`Failed to load index.json: ${indexResp.status}`);
+    const index = await indexResp.json();
+    skills = Array.isArray(index.skills) ? index.skills : [];
+    for (const s of skills) {
+      s._haystack = normalize(`${s.id || ""} ${s.title || ""} ${s.domain || ""}`);
+      if (s && s.id) skillsById.set(s.id, s);
+    }
+    filtered = skills;
+    totalMatches = skills.length;
+    count.textContent = String(totalMatches);
+  }
 
   function renderList() {
     results.innerHTML = "";
@@ -107,12 +180,12 @@ async function main() {
       row.addEventListener("click", () => selectSkill(s.id));
       frag.appendChild(row);
     }
-    if (filtered.length > MAX_RESULTS) {
+    if (totalMatches > shown.length) {
       const more = document.createElement("div");
       more.className = "row";
       more.style.cursor = "default";
       more.style.opacity = "0.8";
-      more.innerHTML = `<div class="row-title">Showing ${MAX_RESULTS} of ${filtered.length} matches</div><div class="row-sub">Refine your search to narrow results.</div>`;
+      more.innerHTML = `<div class="row-title">Showing ${shown.length} of ${totalMatches} matches</div><div class="row-sub">Refine your search to narrow results.</div>`;
       frag.appendChild(more);
     }
     results.appendChild(frag);
@@ -145,7 +218,9 @@ async function main() {
     const fileKey = tabName === "library" ? "library" : tabName;
     let filePath = s.files && s.files[fileKey] ? String(s.files[fileKey]) : "";
     if (!filePath) {
-      const idPath = String(s.id || "").replace(/^\\/+/, "");
+      const baseId = (s.template ? String(s.template) : String(s.id || "")).replace(/^[\\/]+/, "");
+      if (baseId.includes("..")) throw new Error(`Invalid id for ${tabName}`);
+      const idPath = baseId;
       if (!idPath) throw new Error(`Missing id for ${tabName}`);
       const base = `skills/${idPath}`;
       if (tabName === "library") filePath = `${base}/library.md`;
@@ -154,9 +229,10 @@ async function main() {
     }
     if (!filePath) throw new Error(`Missing file path for ${tabName}: ${s.id}`);
 
-    const resp = await fetch(`./${filePath.replace(/^\\/+/, "")}`, { cache: "no-store" });
+    const resp = await fetch(`./${filePath.replace(/^[\\/]+/, "")}`, { cache: "no-store" });
     if (!resp.ok) throw new Error(`Failed to load ${tabName} (${resp.status}): ${s.id}`);
-    const text = await resp.text();
+    let text = await resp.text();
+    if (s.template) text = renderTemplate(text, s);
     contentCache.set(cacheKey, text);
     return text;
   }
@@ -207,10 +283,30 @@ async function main() {
     activateTab("library");
   }
 
-  q.addEventListener("input", () => {
+  q.addEventListener("input", async () => {
     const v = normalize(q.value);
-    filtered = v ? skills.filter((s) => s._haystack.includes(v)) : skills;
-    count.textContent = String(filtered.length);
+    if (!apiMode) {
+      filtered = v ? skills.filter((s) => s._haystack.includes(v)) : skills;
+      totalMatches = filtered.length;
+      count.textContent = String(totalMatches);
+      renderList();
+      return;
+    }
+
+    const seq = ++searchSeq;
+    const r = await apiSearch(v);
+    if (seq !== searchSeq) return;
+    if (!r) {
+      filtered = [];
+      totalMatches = 0;
+      count.textContent = "0";
+      renderList();
+      return;
+    }
+    filtered = r.results;
+    totalMatches = r.total;
+    count.textContent = String(totalMatches);
+    for (const s of filtered) if (s && s.id) skillsById.set(s.id, s);
     renderList();
   });
 
@@ -236,11 +332,20 @@ async function main() {
     }, 900);
   });
 
+  await initIndexOrApi();
   renderList();
 
   const initial = parseHashId();
-  if (initial && skillsById.has(initial)) {
-    selectSkill(initial);
+  if (initial) {
+    if (!apiMode) {
+      if (skillsById.has(initial)) selectSkill(initial);
+    } else {
+      const s = await apiFetchSkill(initial);
+      if (s && s.id) {
+        skillsById.set(s.id, s);
+        selectSkill(s.id);
+      }
+    }
   }
 }
 

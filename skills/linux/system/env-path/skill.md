@@ -19,7 +19,7 @@
 
 ## Steps (<= 12)
 1. 查看当前环境变量：`env | sort`（不要把输出直接发到公开渠道）[[1][2]]
-2. 查看某个变量：`echo "$PATH"` 或 `env | rg '^PATH='`[[3]]
+2. 查看某个变量：`echo "$PATH"` 或 `env | rg '^PATH='`[[2][3]]
 3. 为单条命令临时设置变量：`VAR=value command ...` 或 `env VAR=value command ...`[[1][2]]
 4. 在当前 shell 会话生效：`export VAR=value`（新开终端不会保留）[[3]]
 5. 追加 PATH（避免覆盖）：`export PATH="$PATH:/opt/bin"`[[3]]
@@ -39,6 +39,6 @@
 - See: reference/troubleshooting.md
 
 ## Sources
-- [1] man7 env(1): https://man7.org/linux/man-pages/man1/env.1.html
-- [2] POSIX env: https://pubs.opengroup.org/onlinepubs/9699919799/utilities/env.html
-- [3] GNU Bash manual: https://www.gnu.org/software/bash/manual/bash.html
+- [1] Arch man: env(1): https://man.archlinux.org/man/env.1.en.txt
+- [2] Arch Wiki: Environment variables: https://wiki.archlinux.org/title/Environment_variables
+- [3] Arch Wiki: Bash: https://wiki.archlinux.org/title/Bash

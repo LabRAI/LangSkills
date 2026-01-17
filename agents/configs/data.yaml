@@ -1,0 +1,23 @@
+domain: data
+owners: []
+
+sources:
+  primary:
+    - data_duckdb_docs
+
+source_policy:
+  prefer:
+    - official docs
+    - api reference
+  allow_domains:
+    - duckdb.org
+  deny_domains: []
+
+seeds:
+  - https://duckdb.org/docs/
+
+topics:
+  - id: duckdb/query-csv-parquet
+    title: "DuckDB：用 SQL 直接查询 CSV/Parquet 并导出结果"
+    level: bronze
+    risk_level: low

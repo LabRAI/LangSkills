@@ -1,5 +1,6 @@
 {
   "allowed": [
+    "0BSD",
     "MIT",
     "Apache-2.0",
     "BSD-2-Clause",
@@ -26,6 +27,7 @@
     "GFDL-1.3-or-later",
 
     "curl",
+    "lsof",
 
     "Public-Domain"
   ],

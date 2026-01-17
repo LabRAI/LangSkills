@@ -1,0 +1,457 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>journalctl</title><meta name="generator" content="DocBook XSL Stylesheets Vsnapshot"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><script src="https://code.jquery.com/jquery-3.7.1.min.js"></script><script src="../nav.js"></script><style>
+    a.headerlink {
+      color: #c60f0f;
+      font-size: 0.8em;
+      padding: 0 4px 0 4px;
+      text-decoration: none;
+      visibility: hidden;
+    }
+
+    a.headerlink:hover {
+      background-color: #c60f0f;
+      color: white;
+    }
+
+    h1:hover > a.headerlink, h2:hover > a.headerlink, h3:hover > a.headerlink, dt:hover > a.headerlink {
+      visibility: visible;
+    }
+  </style><a href="index.html">Index </a>·
+  <a href="systemd.directives.html">Directives </a><span style="float:right">systemd 259</span><hr><div class="refentry"><a name="journalctl"></a><div class="titlepage"></div><div class="refnamediv"><h2>Name</h2><p>journalctl — Print log entries from the systemd journal</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><div class="cmdsynopsis"><p><code class="command">journalctl</code>  [OPTIONS...] [MATCHES...]</p></div></div><div class="refsect1"><a name="id-1.5"></a><h2 id="Description">Description<a class="headerlink" title="Permalink to this headline" href="#Description">¶</a></h2><p><span class="command"><strong>journalctl</strong></span> is used to print the log entries stored in the journal by
+    <a href="systemd-journald.service.html#"><span class="citerefentry"><span class="refentrytitle">systemd-journald.service</span>(8)</span></a>
+    and
+    <a href="systemd-journal-remote.service.html#"><span class="citerefentry"><span class="refentrytitle">systemd-journal-remote.service</span>(8)</span></a>.
+    </p><p>If called without parameters, it will show the contents of the journal accessible to the calling
+    user, starting with the oldest entry collected.</p><p>If one or more match arguments are passed, the output is filtered accordingly. A match is in the
+    format "<code class="literal">FIELD=VALUE</code>", e.g. "<code class="literal">_SYSTEMD_UNIT=httpd.service</code>", referring to
+    the components of a structured journal entry. See
+    <a href="systemd.journal-fields.html#"><span class="citerefentry"><span class="refentrytitle">systemd.journal-fields</span>(7)</span></a>
+    for a list of well-known fields. If multiple matches are specified matching different fields, the log
+    entries are filtered by both, i.e. the resulting output will show only entries matching all the specified
+    matches of this kind. If two matches apply to the same field, then they are automatically matched as
+    alternatives, i.e. the resulting output will show entries matching any of the specified matches for the
+    same field. Finally, the character "<code class="literal">+</code>" may appear as a separate word between other terms
+    on the command line. This causes all matches before and after to be combined in a disjunction
+    (i.e. logical OR).</p><p>It is also possible to filter the entries by specifying an absolute file path as an argument. The
+    file path may be a file or a symbolic link and the file must exist at the time of the query. If a file
+    path refers to an executable binary, an "<code class="literal">_EXE=</code>" match for the canonicalized binary path
+    is added to the query. If a file path refers to an executable script, a "<code class="literal">_COMM=</code>" match
+    for the script name is added to the query. If a file path refers to a device node,
+    "<code class="literal">_KERNEL_DEVICE=</code>" matches for the kernel name of the device and for each of its ancestor
+    devices is added to the query. Symbolic links are dereferenced, kernel names are synthesized, and parent
+    devices are identified from the environment at the time of the query. In general, a device node is the
+    best proxy for an actual device, as log entries do not usually contain fields that identify an actual
+    device. For the resulting log entries to be correct for the actual device, the relevant parts of the
+    environment at the time the entry was logged, in particular the actual device corresponding to the device
+    node, must have been the same as those at the time of the query. Because device nodes generally change
+    their corresponding devices across reboots, specifying a device node path causes the resulting entries to
+    be restricted to those from the current boot.</p><p>Additional constraints may be added using options <code class="option">--boot</code>,
+    <code class="option">--unit=</code>, etc., to further limit what entries will be shown (logical AND).</p><p>Output is interleaved from all accessible journal files, whether they are rotated or currently
+    being written, and regardless of whether they belong to the system itself or are accessible user
+    journals. The <code class="option">--header</code> option can be used to identify which files
+    <span class="emphasis"><em>are</em></span> being shown.</p><p>The set of journal files which will be used can be modified using the <code class="option">--user</code>,
+    <code class="option">--system</code>, <code class="option">--directory=</code>, and <code class="option">--file=</code> options, see
+    below.</p><p>All users are granted access to their private per-user journals. However, by default, only root and
+    users who are members of a few special groups are granted access to the system journal and the journals
+    of other users. Members of the groups "<code class="literal">systemd-journal</code>", "<code class="literal">adm</code>", and
+    "<code class="literal">wheel</code>" can read all journal files. Note that the two latter groups traditionally have
+    additional privileges specified by the distribution. Members of the "<code class="literal">wheel</code>" group can
+    often perform administrative tasks.</p><p>The output is paged through <span class="command"><strong>less</strong></span> by default, and long lines are "truncated" to
+    screen width. The hidden part can be viewed by using the left-arrow and right-arrow keys. Paging can be
+    disabled; see the <code class="option">--no-pager</code> option and the "Environment" section below.</p><p>When outputting to a tty, lines are colored according to priority: lines of level ERROR and higher
+    are colored red; lines of level WARNING are colored yellow; lines of level NOTICE are highlighted;
+    lines of level INFO are displayed normally; lines of level DEBUG are colored grey.</p><p>To write entries <span class="emphasis"><em>to</em></span> the journal, a few methods may be used. In general, output
+    from systemd units is automatically connected to the journal, see
+    <a href="systemd-journald.service.html#"><span class="citerefentry"><span class="refentrytitle">systemd-journald.service</span>(8)</span></a>.
+    In addition,
+    <a href="systemd-cat.html#"><span class="citerefentry"><span class="refentrytitle">systemd-cat</span>(1)</span></a>
+    may be used to send messages to the journal directly.</p></div><div class="refsect1"><a name="id-1.6"></a><h2 id="Source Options">Source Options<a class="headerlink" title="Permalink to this headline" href="#Source%20Options">¶</a></h2><p>The following options control where to read journal records from:</p><div class="variablelist"><dl class="variablelist"><dt id="--system"><span class="term"><code class="option">--system</code>, </span><span class="term"><code class="option">--user</code></span><a class="headerlink" title="Permalink to this term" href="#--system">¶</a></dt><dd><p>Show messages from system services and the kernel (with
+        <code class="option">--system</code>). Show messages from service of current user (with
+        <code class="option">--user</code>).  If neither is specified, show all messages that the user can see.
+        </p><p>The <code class="option">--user</code> option affects how <code class="option">--unit=</code> arguments are
+        treated. See <code class="option">--unit=</code>.</p><p>Note that <code class="option">--user</code> only works if persistent logging is enabled, via the
+        <code class="varname">Storage=</code> setting in
+        <a href="journald.conf.html#"><span class="citerefentry"><span class="refentrytitle">journald.conf</span>(5)</span></a>.</p><p><a name="v205"></a>Added in version 205.</p></dd><dt id="-M"><span class="term"><code class="option">-M</code>, </span><span class="term"><code class="option">--machine=</code></span><a class="headerlink" title="Permalink to this term" href="#-M">¶</a></dt><dd><p>Show messages from a running, local container. Specify a container name to connect
+        to.</p><p><a name="v209"></a>Added in version 209.</p></dd><dt id="-m"><span class="term"><code class="option">-m</code>, </span><span class="term"><code class="option">--merge</code></span><a class="headerlink" title="Permalink to this term" href="#-m">¶</a></dt><dd><p>Show entries interleaved from all available journals, including remote
+        ones.</p><p><a name="v190"></a>Added in version 190.</p></dd><dt id="-D DIR"><span class="term"><code class="option">-D <em class="replaceable"><code>DIR</code></em></code>, </span><span class="term"><code class="option">--directory=<em class="replaceable"><code>DIR</code></em></code></span><a class="headerlink" title="Permalink to this term" href="#-D%20DIR">¶</a></dt><dd><p>Takes a directory path as argument. If specified, journalctl will operate on the
+        specified journal directory <em class="replaceable"><code>DIR</code></em> instead of the default runtime and system
+        journal paths.</p><p><a name="v187"></a>Added in version 187.</p></dd><dt id="-i GLOB"><span class="term"><code class="option">-i <em class="replaceable"><code>GLOB</code></em></code>, </span><span class="term"><code class="option">--file=<em class="replaceable"><code>GLOB</code></em></code></span><a class="headerlink" title="Permalink to this term" href="#-i%20GLOB">¶</a></dt><dd><p>Takes a file glob as an argument. If specified, journalctl will operate on the
+        specified journal files matching <em class="replaceable"><code>GLOB</code></em> instead of the default runtime and
+        system journal paths. May be specified multiple times, in which case files will be suitably
+        interleaved.</p><p><a name="v205"></a>Added in version 205.</p></dd><dt id="--root=ROOT"><span class="term"><code class="option">--root=<em class="replaceable"><code>ROOT</code></em></code></span><a class="headerlink" title="Permalink to this term" href="#--root=ROOT">¶</a></dt><dd><p>Takes a directory path as an argument. If specified, <span class="command"><strong>journalctl</strong></span>
+        will operate on journal directories and catalog file hierarchy underneath the specified directory
+        instead of the root directory (e.g. <code class="option">--update-catalog</code> will create
+        <code class="filename"><em class="replaceable"><code>ROOT</code></em>/var/lib/systemd/catalog/database</code>, and journal
+        files under <code class="filename"><em class="replaceable"><code>ROOT</code></em>/run/journal/</code> or
+        <code class="filename"><em class="replaceable"><code>ROOT</code></em>/var/log/journal/</code> will be displayed).
+        </p><p><a name="v201"></a>Added in version 201.</p></dd><dt id="--image=IMAGE"><span class="term"><code class="option">--image=<em class="replaceable"><code>IMAGE</code></em></code></span><a class="headerlink" title="Permalink to this term" href="#--image=IMAGE">¶</a></dt><dd><p>Takes a path to a disk image file or block device node. If specified,
+        <span class="command"><strong>journalctl</strong></span> will operate on the file system in the indicated disk image. This
+        option is similar to <code class="option">--root=</code>, but operates on file systems stored in disk images or
+        block devices, thus providing an easy way to extract log data from disk images. The disk image should
+        either contain just a file system or a set of file systems within a GPT partition table, following
+        the <a class="ulink" href="https://uapi-group.org/specifications/specs/discoverable_partitions_specification" target="_top">UAPI.2 Discoverable Partitions
+        Specification</a>. For further information on supported disk images, see
+        <a href="systemd-nspawn.html#"><span class="citerefentry"><span class="refentrytitle">systemd-nspawn</span>(1)</span></a>'s
+        switch of the same name.</p><p><a name="v247"></a>Added in version 247.</p></dd><dt id="--image-policy=policy"><span class="term"><code class="option">--image-policy=<em class="replaceable"><code>policy</code></em></code></span><a class="headerlink" title="Permalink to this term" href="#--image-policy=policy">¶</a></dt><dd><p>Takes an image policy string as argument, as per
+    <a href="systemd.image-policy.html#"><span class="citerefentry"><span class="refentrytitle">systemd.image-policy</span>(7)</span></a>. The
+    policy is enforced when operating on the disk image specified via <code class="option">--image=</code>, see
+    above. If not specified, defaults to the "<code class="literal">*</code>" policy, i.e. all recognized file systems
+    in the image are used.</p></dd><dt id="--namespace=NAMESPACE"><span class="term"><code class="option">--namespace=<em class="replaceable"><code>NAMESPACE</code></em></code></span><a class="headerlink" title="Permalink to this term" href="#--namespace=NAMESPACE">¶</a></dt><dd><p>Takes a journal namespace identifier string as argument. If not specified, the data
+        collected by the default namespace is shown. If specified, shows the log data of the specified
+        namespace instead. If the namespace is specified as "<code class="literal">*</code>" data from all namespaces is
+        shown, interleaved. If the namespace identifier is prefixed with "<code class="literal">+</code>" data from the
+        specified namespace and the default namespace is shown, interleaved, but no other. For details about
+        journal namespaces see
+        <a href="systemd-journald.service.html#"><span class="citerefentry"><span class="refentrytitle">systemd-journald.service</span>(8)</span></a>.</p><p><a name="v245"></a>Added in version 245.</p></dd></dl></div></div><div class="refsect1"><a name="id-1.7"></a><h2 id="Filtering Options">Filtering Options<a class="headerlink" title="Permalink to this headline" href="#Filtering%20Options">¶</a></h2><p>The following options control how to filter journal records:</p><div class="variablelist"><dl class="variablelist"><dt id="-S"><span class="term"><code class="option">-S</code>, </span><span class="term"><code class="option">--since=</code>, </span><span class="term"><code class="option">-U</code>, </span><span class="term"><code class="option">--until=</code></span><a class="headerlink" title="Permalink to this term" href="#-S">¶</a></dt><dd><p>Start showing entries on or newer than the specified date, or on or older than the
+        specified date, respectively. Date specifications should be of the format "<code class="literal">2012-10-30
+        18:17:16</code>".  If the time part is omitted, "<code class="literal">00:00:00</code>" is assumed.  If only
+        the seconds component is omitted, "<code class="literal">:00</code>" is assumed. If the date component is
+        omitted, the current day is assumed. Alternatively the strings "<code class="literal">yesterday</code>",
+        "<code class="literal">today</code>", "<code class="literal">tomorrow</code>" are understood, which refer to 00:00:00 of the
+        day before the current day, the current day, or the day after the current day,
+        respectively. "<code class="literal">now</code>" refers to the current time. Finally, relative times may be
+        specified, prefixed with "<code class="literal">-</code>" or "<code class="literal">+</code>", referring to times before or
+        after the current time, respectively. For complete time and date specification, see
+        <a href="systemd.time.html#"><span class="citerefentry"><span class="refentrytitle">systemd.time</span>(7)</span></a>. Note
+        that <code class="option">--output=short-full</code> prints timestamps that follow precisely this format.
+        </p><p><a name="v195"></a>Added in version 195.</p></dd><dt id="-c"><span class="term"><code class="option">-c</code>, </span><span class="term"><code class="option">--cursor=</code></span><a class="headerlink" title="Permalink to this term" href="#-c">¶</a></dt><dd><p>Start showing entries from the location in the journal specified by the passed
+        cursor.</p><p><a name="v193"></a>Added in version 193.</p></dd><dt id="--after-cursor="><span class="term"><code class="option">--after-cursor=</code></span><a class="headerlink" title="Permalink to this term" href="#--after-cursor=">¶</a></dt><dd><p>Start showing entries from the location in the journal <span class="emphasis"><em>after</em></span>
+        the location specified by the passed cursor.  The cursor is shown when the
+        <code class="option">--show-cursor</code> option is used.</p><p><a name="v206"></a>Added in version 206.</p></dd><dt id="--cursor-file=FILE"><span class="term"><code class="option">--cursor-file=<em class="replaceable"><code>FILE</code></em></code></span><a class="headerlink" title="Permalink to this term" href="#--cursor-file=FILE">¶</a></dt><dd><p>If <em class="replaceable"><code>FILE</code></em> exists and contains a cursor, start showing
+        entries <span class="emphasis"><em>after</em></span> this location. Otherwise, show entries according to the other
+        given options. At the end, write the cursor of the last entry to
+        <em class="replaceable"><code>FILE</code></em>. Use this option to continually read the journal by sequentially
+        calling <span class="command"><strong>journalctl</strong></span>.</p><p><a name="v242"></a>Added in version 242.</p></dd><dt id="-b ID±offset|all"><span class="term"><code class="option">-b [<span class="optional">[<span class="optional"><em class="replaceable"><code>ID</code></em></span>][<span class="optional"><em class="replaceable"><code>±offset</code></em></span>]|<code class="constant">all</code></span>]</code>, </span><span class="term"><code class="option">--boot[<span class="optional">=[<span class="optional"><em class="replaceable"><code>ID</code></em></span>][<span class="optional"><em class="replaceable"><code>±offset</code></em></span>]|<code class="constant">all</code></span>]</code></span><a class="headerlink" title="Permalink to this term" href="#-b%20ID%C2%B1offset%7Call">¶</a></dt><dd><p>Show messages from a specific boot. This will add a match for
+        "<code class="literal">_BOOT_ID=</code>".</p><p>The argument may be empty, in which case logs for the current boot will be shown.</p><p>If the boot ID is omitted, a positive <em class="replaceable"><code>offset</code></em> will look up the boots
+        starting from the beginning of the journal, and an equal-or-less-than zero
+        <em class="replaceable"><code>offset</code></em> will look up boots starting from the end of the journal. Thus,
+        <code class="constant">1</code> means the first boot found in the journal in chronological order,
+        <code class="constant">2</code> the second and so on; while <code class="constant">-0</code> is the last boot,
+        <code class="constant">-1</code> the boot before last, and so on. An empty <em class="replaceable"><code>offset</code></em>
+        is equivalent to specifying <code class="constant">-0</code>, except when the current boot is not the last
+        boot (e.g. because <code class="option">--directory=</code> was specified to look at logs from a different
+        machine).</p><p>If the 32-character <em class="replaceable"><code>ID</code></em> is specified, it may optionally be followed
+        by <em class="replaceable"><code>offset</code></em> which identifies the boot relative to the one given by boot
+        <em class="replaceable"><code>ID</code></em>. Negative values mean earlier boots and positive values mean later
+        boots. If <em class="replaceable"><code>offset</code></em> is not specified, a value of zero is assumed, and the
+        logs for the boot given by <em class="replaceable"><code>ID</code></em> are shown.</p><p>The special argument <code class="constant">all</code> can be used to negate the effect of an earlier
+        use of <code class="option">-b</code>.</p><p><a name="v186"></a>Added in version 186.</p></dd><dt id="-u"><span class="term"><code class="option">-u</code>, </span><span class="term"><code class="option">--unit=<em class="replaceable"><code>UNIT</code></em>|<em class="replaceable"><code>PATTERN</code></em></code></span><a class="headerlink" title="Permalink to this term" href="#-u">¶</a></dt><dd><p>Show messages for the specified systemd unit <em class="replaceable"><code>UNIT</code></em> (such as
+        a service unit), or for any of the units matched by <em class="replaceable"><code>PATTERN</code></em>.  If a pattern
+        is specified, a list of unit names found in the journal is compared with the specified pattern and
+        all that match are used. For each unit name, a match is added for messages from the unit
+        ("<code class="literal">_SYSTEMD_UNIT=<em class="replaceable"><code>UNIT</code></em></code>"), along with additional matches for
+        messages from systemd and messages about coredumps for the specified unit. A match is also added for
+        "<code class="literal">_SYSTEMD_SLICE=<em class="replaceable"><code>UNIT</code></em></code>", such that if the provided
+        <em class="replaceable"><code>UNIT</code></em> is a
+        <a href="systemd.slice.html#"><span class="citerefentry"><span class="refentrytitle">systemd.slice</span>(5)</span></a>
+        unit, all logs of children of the slice will be shown.</p><p>With <code class="option">--user</code>, all <code class="option">--unit=</code> arguments will be converted to match
+        user messages as if specified with <code class="option">--user-unit=</code>.</p><p>This parameter can be specified multiple times.</p><p><a name="v195"></a>Added in version 195.</p></dd><dt id="--user-unit="><span class="term"><code class="option">--user-unit=</code></span><a class="headerlink" title="Permalink to this term" href="#--user-unit=">¶</a></dt><dd><p>Show messages for the specified user session unit. This will add a match for messages
+        from the unit ("<code class="literal">_SYSTEMD_USER_UNIT=</code>" and "<code class="literal">_UID=</code>") and additional
+        matches for messages from session systemd and messages about coredumps for the specified unit. A
+        match is also added for "<code class="literal">_SYSTEMD_USER_SLICE=<em class="replaceable"><code>UNIT</code></em></code>", such
+        that if the provided <em class="replaceable"><code>UNIT</code></em> is a
+        <a href="systemd.slice.html#"><span class="citerefentry"><span class="refentrytitle">systemd.slice</span>(5)</span></a>
+        unit, all logs of children of the unit will be shown.</p><p>This parameter can be specified multiple times.</p><p><a name="v198"></a>Added in version 198.</p></dd><dt id="-I"><span class="term"><code class="option">-I</code>, </span><span class="term"><code class="option">--invocation=<em class="replaceable"><code>ID</code></em>[<span class="optional"><em class="replaceable"><code>±offset</code></em></span>]|<em class="replaceable"><code>offset</code></em></code></span><a class="headerlink" title="Permalink to this term" href="#-I">¶</a></dt><dd><p>Show messages from a specific invocation of unit. This will add a match for
+          "<code class="literal">_SYSTEMD_INVOCATION_ID=</code>", "<code class="literal">OBJECT_SYSTEMD_INVOCATION_ID=</code>",
+          "<code class="literal">INVOCATION_ID=</code>", "<code class="literal">USER_INVOCATION_ID=</code>".</p><p>A positive <em class="replaceable"><code>offset</code></em> will look up the invocations of a systemd unit
+          from the beginning of the journal, and zero or a negative offset will look up invocations starting
+          from the end of the journal. Thus, <code class="constant">1</code> means the first invocation found in the
+          journal in chronological order, <code class="constant">2</code> the second and so on; while
+          <code class="constant">0</code> is the latest invocation, <code class="constant">-1</code> the invocation before the
+          latest, and so on.</p><p>If the 32-character <em class="replaceable"><code>ID</code></em> is specified, it may optionally be followed
+          by <em class="replaceable"><code>±offset</code></em> which identifies the invocation relative to the one given by
+          invocation <em class="replaceable"><code>ID</code></em>. Negative values mean earlier invocations and positive
+          values mean later invocations. If <em class="replaceable"><code>±offset</code></em> is not specified, a value of
+          zero is assumed, and the logs for the invocation given by <em class="replaceable"><code>ID</code></em> will be
+          shown.</p><p><code class="option">-I</code> is equivalent to <code class="option">--invocation=0</code>, and logs for the latest
+          invocation will be shown.</p><p>When an offset is specified, a unit name must be specified with <code class="option">-u/--unit=</code>
+          or <code class="option">--user-unit=</code> option.</p><p>When specified with <code class="option">-b/--boot=</code>, then invocations are searched within the
+          specified boot.</p><p><a name="v257"></a>Added in version 257.</p></dd><dt id="-t"><span class="term"><code class="option">-t</code>, </span><span class="term"><code class="option">--identifier=<em class="replaceable"><code>SYSLOG_IDENTIFIER</code></em></code></span><a class="headerlink" title="Permalink to this term" href="#-t">¶</a></dt><dd><p>Show messages for the specified syslog identifier
+        <em class="replaceable"><code>SYSLOG_IDENTIFIER</code></em>.</p><p>This parameter can be specified multiple times.</p><p><a name="v217"></a>Added in version 217.</p></dd><dt id="-T"><span class="term"><code class="option">-T</code>, </span><span class="term"><code class="option">--exclude-identifier=<em class="replaceable"><code>SYSLOG_IDENTIFIER</code></em></code></span><a class="headerlink" title="Permalink to this term" href="#-T">¶</a></dt><dd><p>Exclude messages for the specified syslog identifier
+        <em class="replaceable"><code>SYSLOG_IDENTIFIER</code></em>.</p><p>This parameter can be specified multiple times.</p><p><a name="v256"></a>Added in version 256.</p></dd><dt id="-p"><span class="term"><code class="option">-p</code>, </span><span class="term"><code class="option">--priority=</code></span><a class="headerlink" title="Permalink to this term" href="#-p">¶</a></dt><dd><p>Filter output by message priorities or priority ranges. Takes either a single numeric
+        or textual log level (i.e. between 0/"<code class="literal">emerg</code>" and 7/"<code class="literal">debug</code>"), or a
+        range of numeric/text log levels in the form FROM..TO. The log levels are the usual syslog log levels
+        as documented in <a href="https://man7.org/linux/man-pages/man3/syslog.3.html"><span class="citerefentry"><span class="refentrytitle">syslog</span>(3)</span></a>,
+        i.e. "<code class="literal">emerg</code>" (0), "<code class="literal">alert</code>" (1), "<code class="literal">crit</code>" (2),
+        "<code class="literal">err</code>" (3), "<code class="literal">warning</code>" (4), "<code class="literal">notice</code>" (5),
+        "<code class="literal">info</code>" (6), "<code class="literal">debug</code>" (7). If a single log level is specified, all
+        messages with this log level or a lower (hence more important) log level are shown. If a range is
+        specified, all messages within the range are shown, including both the start and the end value of the
+        range. This will add "<code class="literal">PRIORITY=</code>" matches for the specified
+        priorities.</p><p><a name="v188"></a>Added in version 188.</p></dd><dt id="--facility="><span class="term"><code class="option">--facility=</code></span><a class="headerlink" title="Permalink to this term" href="#--facility=">¶</a></dt><dd><p>Filter output by syslog facility. Takes a comma-separated list of numbers or
+        facility names. The names are the usual syslog facilities as documented in <a href="https://man7.org/linux/man-pages/man3/syslog.3.html"><span class="citerefentry"><span class="refentrytitle">syslog</span>(3)</span></a>.
+        <code class="option">--facility=help</code> may be used to display a list of known facility names and exit.
+        </p><p><a name="v245"></a>Added in version 245.</p></dd><dt id="-g"><span class="term"><code class="option">-g</code>, </span><span class="term"><code class="option">--grep=</code></span><a class="headerlink" title="Permalink to this term" href="#-g">¶</a></dt><dd><p>Filter output to entries where the <code class="varname">MESSAGE=</code> field matches the
+        specified regular expression. PERL-compatible regular expressions are used, see <a href="http://pcre.org/current/doc/html/pcre2pattern.html"><span class="citerefentry"><span class="refentrytitle">pcre2pattern</span>(3)</span></a>
+        for a detailed description of the syntax.</p><p>If the pattern is all lowercase, matching is case insensitive.  Otherwise, matching is case
+        sensitive. This can be overridden with the <code class="option">--case-sensitive</code> option, see
+        below.</p><p>When used with <code class="option">--lines=</code> (not prefixed with "<code class="literal">+</code>"),
+        <code class="option">--reverse</code> is implied.</p><p><a name="v237"></a>Added in version 237.</p></dd><dt id="--case-sensitive=BOOLEAN"><span class="term"><code class="option">--case-sensitive[<span class="optional">=BOOLEAN</span>]</code></span><a class="headerlink" title="Permalink to this term" href="#--case-sensitive=BOOLEAN">¶</a></dt><dd><p>Make pattern matching case sensitive or case insensitive.</p><p><a name="v237"></a>Added in version 237.</p></dd><dt id="-k"><span class="term"><code class="option">-k</code>, </span><span class="term"><code class="option">--dmesg</code></span><a class="headerlink" title="Permalink to this term" href="#-k">¶</a></dt><dd><p>Show only kernel messages. This adds the match "<code class="literal">_TRANSPORT=kernel</code>".
+        This implies <code class="option">--boot=0</code> unless explicitly specified otherwise.</p><p><a name="v205"></a>Added in version 205.</p></dd></dl></div></div><div class="refsect1"><a name="id-1.8"></a><h2 id="Output Options">Output Options<a class="headerlink" title="Permalink to this headline" href="#Output%20Options">¶</a></h2><p>The following options control how journal records are printed:</p><div class="variablelist"><dl class="variablelist"><dt id="-o"><span class="term"><code class="option">-o</code>, </span><span class="term"><code class="option">--output=</code></span><a class="headerlink" title="Permalink to this term" href="#-o">¶</a></dt><dd><p>Controls the formatting of the journal entries that are shown. Takes one of the
+        following options:</p><div class="variablelist"><dl class="variablelist"><dt id="short"><span class="term"><code class="option">short</code></span><a class="headerlink" title="Permalink to this term" href="#short">¶</a></dt><dd><p>is the default and generates an output that is mostly identical to the
+            formatting of classic syslog files, showing one line per journal entry.</p><p><a name="v206"></a>Added in version 206.</p></dd><dt id="short-full"><span class="term"><code class="option">short-full</code></span><a class="headerlink" title="Permalink to this term" href="#short-full">¶</a></dt><dd><p>is very similar, but shows timestamps in the format the
+            <code class="option">--since=</code> and <code class="option">--until=</code> options accept. Unlike the timestamp
+            information shown in <code class="option">short</code> output mode this mode includes weekday, year and
+            timezone information in the output, and is locale-independent.</p><p><a name="v232"></a>Added in version 232.</p></dd><dt id="short-iso"><span class="term"><code class="option">short-iso</code></span><a class="headerlink" title="Permalink to this term" href="#short-iso">¶</a></dt><dd><p>is very similar, but shows timestamps in the
+            <a class="ulink" href="https://tools.ietf.org/html/rfc3339" target="_top">RFC 3339</a> profile of ISO 8601.</p><p><a name="v206"></a>Added in version 206.</p></dd><dt id="short-iso-precise"><span class="term"><code class="option">short-iso-precise</code></span><a class="headerlink" title="Permalink to this term" href="#short-iso-precise">¶</a></dt><dd><p>as for <code class="option">short-iso</code> but includes full microsecond
+            precision.</p><p><a name="v234"></a>Added in version 234.</p></dd><dt id="short-precise"><span class="term"><code class="option">short-precise</code></span><a class="headerlink" title="Permalink to this term" href="#short-precise">¶</a></dt><dd><p>is very similar, but shows classic syslog timestamps with full microsecond
+            precision.</p><p><a name="v207"></a>Added in version 207.</p></dd><dt id="short-monotonic"><span class="term"><code class="option">short-monotonic</code></span><a class="headerlink" title="Permalink to this term" href="#short-monotonic">¶</a></dt><dd><p>is very similar, but shows monotonic timestamps instead of wallclock
+            timestamps.</p><p><a name="v206"></a>Added in version 206.</p></dd><dt id="short-delta"><span class="term"><code class="option">short-delta</code></span><a class="headerlink" title="Permalink to this term" href="#short-delta">¶</a></dt><dd><p>as for <code class="option">short-monotonic</code> but includes the time difference
+            to the previous entry.
+            Maybe unreliable time differences are marked by a "<code class="literal">*</code>".</p><p><a name="v252"></a>Added in version 252.</p></dd><dt id="short-unix"><span class="term"><code class="option">short-unix</code></span><a class="headerlink" title="Permalink to this term" href="#short-unix">¶</a></dt><dd><p>is very similar, but shows seconds passed since January 1st 1970 UTC instead of
+            wallclock timestamps ("UNIX time"). The time is shown with microsecond accuracy.</p><p><a name="v230"></a>Added in version 230.</p></dd><dt id="verbose"><span class="term"><code class="option">verbose</code></span><a class="headerlink" title="Permalink to this term" href="#verbose">¶</a></dt><dd><p>shows the full-structured entry items with all fields.</p><p><a name="v206"></a>Added in version 206.</p></dd><dt id="export"><span class="term"><code class="option">export</code></span><a class="headerlink" title="Permalink to this term" href="#export">¶</a></dt><dd><p>serializes the journal into a binary (but mostly text-based) stream suitable
+            for backups and network transfer (see <a class="ulink" href="https://systemd.io/JOURNAL_EXPORT_FORMATS#journal-export-format" target="_top">Journal Export
+            Format</a> for more information). To import the binary stream back into native journald
+            format use
+            <a href="systemd-journal-remote.html#"><span class="citerefentry"><span class="refentrytitle">systemd-journal-remote</span>(8)</span></a>.</p><p><a name="v206"></a>Added in version 206.</p></dd><dt id="json"><span class="term"><code class="option">json</code></span><a class="headerlink" title="Permalink to this term" href="#json">¶</a></dt><dd><p>formats entries as JSON objects, separated by newline characters (see <a class="ulink" href="https://systemd.io/JOURNAL_EXPORT_FORMATS#journal-json-format" target="_top">Journal JSON Format</a>
+            for more information). Field values are generally encoded as JSON strings, with three exceptions:
+            </p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem"><p>Fields larger than 4096 bytes are encoded as <code class="constant">null</code>
+              values. (This may be turned off by passing <code class="option">--all</code>, but be aware that this may
+              allocate overly long JSON objects.)</p></li><li class="listitem"><p>Journal entries permit non-unique fields within the same log entry. JSON does
+              not allow non-unique fields within objects. Due to this, if a non-unique field is encountered a
+              JSON array is used as field value, listing all field values as elements.</p></li><li class="listitem"><p>Fields containing non-printable or non-UTF8 bytes are encoded as arrays
+              containing the raw bytes individually formatted as unsigned numbers.</p></li></ol></div><p>
+
+            Note that this encoding is reversible (with the exception of the size limit).</p><p><a name="v206"></a>Added in version 206.</p></dd><dt id="json-pretty"><span class="term"><code class="option">json-pretty</code></span><a class="headerlink" title="Permalink to this term" href="#json-pretty">¶</a></dt><dd><p>formats entries as JSON data structures, but formats them in multiple lines in
+            order to make them more readable by humans.</p><p><a name="v206"></a>Added in version 206.</p></dd><dt id="json-sse"><span class="term"><code class="option">json-sse</code></span><a class="headerlink" title="Permalink to this term" href="#json-sse">¶</a></dt><dd><p>formats entries as JSON data structures, but wraps them in a format suitable for
+            <a class="ulink" href="https://developer.mozilla.org/en-US/docs/Server-sent_events/Using_server-sent_events" target="_top">Server-Sent
+            Events</a>.</p><p><a name="v206"></a>Added in version 206.</p></dd><dt id="json-seq"><span class="term"><code class="option">json-seq</code></span><a class="headerlink" title="Permalink to this term" href="#json-seq">¶</a></dt><dd><p>formats entries as JSON data structures, but prefixes them with an ASCII Record
+            Separator character (0x1E) and suffixes them with an ASCII Line Feed character (0x0A), in
+            accordance with <a class="ulink" href="https://tools.ietf.org/html/rfc7464" target="_top">JavaScript Object Notation
+            (JSON) Text Sequences </a> ("<code class="literal">application/json-seq</code>").</p><p><a name="v240"></a>Added in version 240.</p></dd><dt id="cat"><span class="term"><code class="option">cat</code></span><a class="headerlink" title="Permalink to this term" href="#cat">¶</a></dt><dd><p>generates a very terse output, only showing the actual message of each journal
+            entry with no metadata, not even a timestamp. If combined with the
+            <code class="option">--output-fields=</code> option will output the listed fields for each log record,
+            instead of the message.</p><p><a name="v206"></a>Added in version 206.</p></dd><dt id="with-unit"><span class="term"><code class="option">with-unit</code></span><a class="headerlink" title="Permalink to this term" href="#with-unit">¶</a></dt><dd><p>similar to <code class="option">short-full</code>, but prefixes the unit and user unit names
+            instead of the traditional syslog identifier. Useful when using templated instances, as it will
+            include the arguments in the unit names.</p><p><a name="v239"></a>Added in version 239.</p></dd></dl></div></dd><dt id="--truncate-newline"><span class="term"><code class="option">--truncate-newline</code></span><a class="headerlink" title="Permalink to this term" href="#--truncate-newline">¶</a></dt><dd><p>Truncate each log message at the first newline character on output, so that only the
+        first line of each message is displayed.</p><p><a name="v254"></a>Added in version 254.</p></dd><dt id="--output-fields="><span class="term"><code class="option">--output-fields=</code></span><a class="headerlink" title="Permalink to this term" href="#--output-fields=">¶</a></dt><dd><p>A comma separated list of the fields which should be included in the output. This
+        has an effect only for the output modes which would normally show all fields
+        (<code class="option">verbose</code>, <code class="option">export</code>, <code class="option">json</code>,
+        <code class="option">json-pretty</code>, <code class="option">json-sse</code> and <code class="option">json-seq</code>), as well as
+        on <code class="option">cat</code>. For the former, the "<code class="literal">__CURSOR</code>",
+        "<code class="literal">__REALTIME_TIMESTAMP</code>", "<code class="literal">__MONOTONIC_TIMESTAMP</code>", and
+        "<code class="literal">_BOOT_ID</code>" fields are always printed.</p><p><a name="v236"></a>Added in version 236.</p></dd><dt id="-n"><span class="term"><code class="option">-n</code>, </span><span class="term"><code class="option">--lines=</code></span><a class="headerlink" title="Permalink to this term" href="#-n">¶</a></dt><dd><p>Show the most recent journal events and limit the number of events shown. The argument
+        is a positive integer or "<code class="literal">all</code>" to disable the limit. Additionally, if the number is
+        prefixed with "<code class="literal">+</code>", the oldest journal events are used instead. The default value is
+        10 if no argument is given.</p><p>If <code class="option">--follow</code> is used, this option is implied. When not prefixed with "<code class="literal">+</code>"
+        and used with <code class="option">--grep=</code>, <code class="option">--reverse</code> is implied.</p></dd><dt id="-r"><span class="term"><code class="option">-r</code>, </span><span class="term"><code class="option">--reverse</code></span><a class="headerlink" title="Permalink to this term" href="#-r">¶</a></dt><dd><p>Reverse output so that the newest entries are displayed first.</p><p><a name="v198"></a>Added in version 198.</p></dd><dt id="--show-cursor"><span class="term"><code class="option">--show-cursor</code></span><a class="headerlink" title="Permalink to this term" href="#--show-cursor">¶</a></dt><dd><p>The cursor is shown after the last entry after two dashes:</p><pre class="programlisting">-- cursor: s=0639…</pre><p>The format of the cursor is private and subject to change.</p><p><a name="v209"></a>Added in version 209.</p></dd><dt id="--utc"><span class="term"><code class="option">--utc</code></span><a class="headerlink" title="Permalink to this term" href="#--utc">¶</a></dt><dd><p>Express time in Coordinated Universal Time (UTC).</p><p><a name="v217"></a>Added in version 217.</p></dd><dt id="-x"><span class="term"><code class="option">-x</code>, </span><span class="term"><code class="option">--catalog</code></span><a class="headerlink" title="Permalink to this term" href="#-x">¶</a></dt><dd><p>Augment log lines with explanation texts from the message catalog. This will add
+        explanatory help texts to log messages in the output where this is available. These short help texts
+        will explain the context of an error or log event, possible solutions, as well as pointers to support
+        forums, developer documentation, and any other relevant manuals. Note that help texts are not
+        available for all messages, but only for selected ones. For more information on the message catalog,
+        see <a class="ulink" href="https://systemd.io/CATALOG" target="_top">Journal Message Catalogs</a>.</p><p>Note: when attaching <span class="command"><strong>journalctl</strong></span> output to bug reports, please do
+        <span class="emphasis"><em>not</em></span> use <code class="option">-x</code>.</p><p><a name="v196"></a>Added in version 196.</p></dd><dt id="-W"><span class="term"><code class="option">-W</code>, </span><span class="term"><code class="option">--no-hostname</code></span><a class="headerlink" title="Permalink to this term" href="#-W">¶</a></dt><dd><p>Do not show the hostname field of log messages. This switch has an effect only on the
+        <code class="option">short</code> family of output modes (see above).</p><p>Note: this option does not remove occurrences of the hostname from log entries themselves, so
+        it does not prevent the hostname from being visible in the logs.</p><p><a name="v230"></a>Added in version 230.</p></dd><dt id="--no-full"><span class="term"><code class="option">--no-full</code>, </span><span class="term"><code class="option">--full</code>, </span><span class="term"><code class="option">-l</code></span><a class="headerlink" title="Permalink to this term" href="#--no-full">¶</a></dt><dd><p>Ellipsize fields when they do not fit in available columns.  The default is to show
+        full fields, allowing them to wrap or be truncated by the pager, if one is used.</p><p>The old options <code class="option">-l</code>/<code class="option">--full</code> are not useful anymore, except to
+        undo <code class="option">--no-full</code>.</p><p><a name="v196"></a>Added in version 196.</p></dd><dt id="-a"><span class="term"><code class="option">-a</code>, </span><span class="term"><code class="option">--all</code></span><a class="headerlink" title="Permalink to this term" href="#-a">¶</a></dt><dd><p>Show all fields in full, even if they include unprintable characters or are very
+        long. By default, fields with unprintable characters are abbreviated as "blob data". (Note that the
+        pager may escape unprintable characters again.)</p></dd><dt id="-f"><span class="term"><code class="option">-f</code>, </span><span class="term"><code class="option">--follow</code></span><a class="headerlink" title="Permalink to this term" href="#-f">¶</a></dt><dd><p>Show only the most recent journal entries, and continuously print new entries as they
+        are appended to the journal, until Ctrl-C is hit (or the tool is otherwise terminated).</p><p><span class="command"><strong>journalctl</strong></span> will send an
+        <a href="sd_notify.html#"><span class="citerefentry"><span class="refentrytitle">sd_notify</span>(3)</span></a>
+        "<code class="literal">READY=1</code>" message once it initialized and successfully established its watch on the
+        journal.</p></dd><dt id="--no-tail"><span class="term"><code class="option">--no-tail</code></span><a class="headerlink" title="Permalink to this term" href="#--no-tail">¶</a></dt><dd><p>Show all stored output lines, even in follow mode. Undoes the effect of
+        <code class="option">--lines=</code>.</p></dd><dt id="-q"><span class="term"><code class="option">-q</code>, </span><span class="term"><code class="option">--quiet</code></span><a class="headerlink" title="Permalink to this term" href="#-q">¶</a></dt><dd><p>Suppresses all informational messages (i.e. "-- Journal begins at …", "-- Reboot
+        --"), any warning messages regarding inaccessible system journals when run as a normal
+        user.</p></dd><dt id="--synchronize-on-exit="><span class="term"><code class="option">--synchronize-on-exit=</code></span><a class="headerlink" title="Permalink to this term" href="#--synchronize-on-exit=">¶</a></dt><dd><p>Takes a boolean argument. If true and operating in <code class="option">--follow</code> mode, a
+        journal synchronization request (equivalent to <span class="command"><strong>journalctl --sync</strong></span>) is issued when
+        <code class="constant">SIGTERM</code>/<code class="constant">SIGINT</code> is received, and log output continues until
+        this request completes. This is useful for synchronizing journal log output to the runtime of
+        services or external events, ensuring that any log data enqueued to the logging subsystem by
+        the time <code class="constant">SIGTERM</code>/<code class="constant">SIGINT</code> is issued is guaranteed to be
+        processed and displayed by the time log output ends. Defaults to false.</p><p><a name="v258"></a>Added in version 258.</p></dd></dl></div></div><div class="refsect1"><a name="id-1.9"></a><h2 id="Pager Control Options">Pager Control Options<a class="headerlink" title="Permalink to this headline" href="#Pager%20Control%20Options">¶</a></h2><p>The following options control page support:</p><div class="variablelist"><dl class="variablelist"><dt id="--no-pager"><span class="term"><code class="option">--no-pager</code></span><a class="headerlink" title="Permalink to this term" href="#--no-pager">¶</a></dt><dd><p>Do not pipe output into a pager.</p></dd><dt id="-e"><span class="term"><code class="option">-e</code>, </span><span class="term"><code class="option">--pager-end</code></span><a class="headerlink" title="Permalink to this term" href="#-e">¶</a></dt><dd><p>Immediately jump to the end of the journal inside the implied pager tool. This
+        implies <code class="option">--lines=1000</code> and <code class="option">--boot=0</code> unless explicitly specified
+        otherwise, to guarantee that the pager will not buffer logs of unbounded size. Note that this option
+        is only supported for the
+        <a href="https://man7.org/linux/man-pages/man1/less.1.html"><span class="citerefentry"><span class="refentrytitle">less</span>(1)</span></a>
+        pager.</p><p><a name="v198"></a>Added in version 198.</p></dd></dl></div></div><div class="refsect1"><a name="id-1.10"></a><h2 id="Forward Secure Sealing (FSS) Options">Forward Secure Sealing (FSS) Options<a class="headerlink" title="Permalink to this headline" href="#Forward%20Secure%20Sealing%20(FSS)%20Options">¶</a></h2><p>The following options may be used together with the <code class="option">--setup-keys</code> command described
+    below:</p><div class="variablelist"><dl class="variablelist"><dt id="--interval="><span class="term"><code class="option">--interval=</code></span><a class="headerlink" title="Permalink to this term" href="#--interval=">¶</a></dt><dd><p>Specifies the change interval for the sealing key when generating an FSS key pair
+        with <code class="option">--setup-keys</code>. Shorter intervals increase CPU consumption but shorten the time
+        range of undetectable journal alterations. Defaults to 15min.</p><p>Note, <code class="option">--output=json-sse</code> and <code class="option">--output=json-seq</code> are silently
+        migrated to <code class="option">--output=json</code>.</p><p><a name="v189"></a>Added in version 189.</p></dd><dt id="--verify-key="><span class="term"><code class="option">--verify-key=</code></span><a class="headerlink" title="Permalink to this term" href="#--verify-key=">¶</a></dt><dd><p>Specifies the FSS verification key to use for the <code class="option">--verify</code>
+        operation.</p><p><a name="v189"></a>Added in version 189.</p></dd><dt id="--force"><span class="term"><code class="option">--force</code></span><a class="headerlink" title="Permalink to this term" href="#--force">¶</a></dt><dd><p>When <code class="option">--setup-keys</code> is passed and Forward Secure Sealing (FSS) has
+        already been configured, recreate FSS keys.</p><p><a name="v206"></a>Added in version 206.</p></dd></dl></div></div><div class="refsect1"><a name="id-1.11"></a><h2 id="Commands">Commands<a class="headerlink" title="Permalink to this headline" href="#Commands">¶</a></h2><p>The following commands are understood. If none is specified the default is to display journal records:</p><div class="variablelist"><dl class="variablelist"><dt id="-N"><span class="term"><code class="option">-N</code>, </span><span class="term"><code class="option">--fields</code></span><a class="headerlink" title="Permalink to this term" href="#-N">¶</a></dt><dd><p>Print all field names currently used in all entries of the journal.</p><p><a name="v229"></a>Added in version 229.</p></dd><dt id="-F"><span class="term"><code class="option">-F</code>, </span><span class="term"><code class="option">--field=</code></span><a class="headerlink" title="Permalink to this term" href="#-F">¶</a></dt><dd><p>Print all possible data values the specified field can take in all entries of the
+        journal.</p><p><a name="v195"></a>Added in version 195.</p></dd><dt id="--list-boots"><span class="term"><code class="option">--list-boots</code></span><a class="headerlink" title="Permalink to this term" href="#--list-boots">¶</a></dt><dd><p>Show a tabular list of boot numbers (relative to the current boot), their IDs, and the
+          timestamps of the first and last message pertaining to the boot. When specified with
+          <code class="option">-n/--lines=[<span class="optional">+</span>]<em class="replaceable"><code>N</code></em></code> option, only the
+          first (when the number prefixed with "<code class="literal">+</code>") or the last (without prefix)
+          <em class="replaceable"><code>N</code></em> entries will be shown. When specified with
+          <code class="option">-r/--reverse</code>, the list will be shown in the reverse order.</p><p><a name="v209"></a>Added in version 209.</p></dd><dt id="--list-invocations"><span class="term"><code class="option">--list-invocations</code></span><a class="headerlink" title="Permalink to this term" href="#--list-invocations">¶</a></dt><dd><p>List invocation IDs of a unit. Requires a unit name with <code class="option">-u/--unit=</code> or
+          <code class="option">--user-unit=</code>. Show a tabular list of invocation numbers (relative to the current
+          or latest invocation), their IDs, and the timestamps of the first and last message pertaining to
+          the invocation. When <code class="option">-b/-boot</code> is specified, invocations in the boot will be shown.
+          When specified with <code class="option">-n/--lines=[<span class="optional">+</span>]<em class="replaceable"><code>N</code></em></code>
+          option, only the first (when the number prefixed with "<code class="literal">+</code>") or the last (without
+          prefix) <em class="replaceable"><code>N</code></em> entries will be shown. When specified with
+          <code class="option">-r/--reverse</code>, the list will be shown in the reverse order.</p><p><a name="v257"></a>Added in version 257.</p></dd><dt id="--disk-usage"><span class="term"><code class="option">--disk-usage</code></span><a class="headerlink" title="Permalink to this term" href="#--disk-usage">¶</a></dt><dd><p>Shows the current disk usage of all journal files. This shows the sum of the disk
+        usage of all archived and active journal files.</p><p><a name="v190"></a>Added in version 190.</p></dd><dt id="--vacuum-size="><span class="term"><code class="option">--vacuum-size=</code>, </span><span class="term"><code class="option">--vacuum-time=</code>, </span><span class="term"><code class="option">--vacuum-files=</code></span><a class="headerlink" title="Permalink to this term" href="#--vacuum-size=">¶</a></dt><dd><p><code class="option">--vacuum-size=</code> removes the oldest archived journal files until the
+        disk space they use falls below the specified size. Accepts the usual "<code class="literal">K</code>",
+        "<code class="literal">M</code>", "<code class="literal">G</code>" and "<code class="literal">T</code>" suffixes (to the base of
+        1024).</p><p><code class="option">--vacuum-time=</code> removes archived journal files older than the specified
+        timespan. Accepts the usual "<code class="literal">s</code>" (default), "<code class="literal">m</code>",
+        "<code class="literal">h</code>", "<code class="literal">days</code>", "<code class="literal">weeks</code>", "<code class="literal">months</code>",
+        and "<code class="literal">years</code>" suffixes, see
+        <a href="systemd.time.html#"><span class="citerefentry"><span class="refentrytitle">systemd.time</span>(7)</span></a> for
+        details.</p><p><code class="option">--vacuum-files=</code> leaves only the specified number of separate journal
+        files.</p><p>Note that running <code class="option">--vacuum-size=</code> has only an indirect effect on the output
+        shown by <code class="option">--disk-usage</code>, as the latter includes active journal files, while the
+        vacuuming operation only operates on archived journal files. Similarly,
+        <code class="option">--vacuum-files=</code> might not actually reduce the number of journal files to below the
+        specified number, as it will not remove active journal files.</p><p><code class="option">--vacuum-size=</code>, <code class="option">--vacuum-time=</code> and
+        <code class="option">--vacuum-files=</code> may be combined in a single invocation to enforce any combination of
+        a size, a time and a number of files limit on the archived journal files. Specifying any of these
+        three parameters as zero is equivalent to not enforcing the specific limit, and is thus
+        redundant.</p><p>These three switches may also be combined with <code class="option">--rotate</code> into one command. If
+        so, all active files are rotated first, and the requested vacuuming operation is executed right
+        after. The rotation has the effect that all currently active files are archived (and potentially new,
+        empty journal files opened as replacement), and hence the vacuuming operation has the greatest effect
+        as it can take all log data written so far into account.</p><p><a name="v218"></a>Added in version 218.</p></dd><dt id="--verify"><span class="term"><code class="option">--verify</code></span><a class="headerlink" title="Permalink to this term" href="#--verify">¶</a></dt><dd><p>Check the journal file for internal consistency. If the file has been generated
+        with FSS enabled and the FSS verification key has been specified with
+        <code class="option">--verify-key=</code>, authenticity of the journal file is verified.</p><p><a name="v189"></a>Added in version 189.</p></dd><dt id="--sync"><span class="term"><code class="option">--sync</code></span><a class="headerlink" title="Permalink to this term" href="#--sync">¶</a></dt><dd><p>Asks the journal daemon to write all yet unwritten journal data to the backing file
+        system and synchronize all journals. This call does not return until the synchronization operation
+        is complete. This command guarantees that any log messages written before its invocation are safely
+        stored on disk at the time it returns.</p><p><a name="v228"></a>Added in version 228.</p></dd><dt id="--relinquish-var"><span class="term"><code class="option">--relinquish-var</code></span><a class="headerlink" title="Permalink to this term" href="#--relinquish-var">¶</a></dt><dd><p>Asks the journal daemon for the reverse operation to <code class="option">--flush</code>: if
+        requested the daemon will write further log data to <code class="filename">/run/log/journal/</code> and
+        stops writing to <code class="filename">/var/log/journal/</code>. A subsequent call to
+        <code class="option">--flush</code> causes the log output to switch back to
+        <code class="filename">/var/log/journal/</code>, see above.</p><p><a name="v243"></a>Added in version 243.</p></dd><dt id="--smart-relinquish-var"><span class="term"><code class="option">--smart-relinquish-var</code></span><a class="headerlink" title="Permalink to this term" href="#--smart-relinquish-var">¶</a></dt><dd><p>Similar to <code class="option">--relinquish-var</code>, but executes no operation if the root
+        file system and <code class="filename">/var/log/journal/</code> reside on the same mount point. This operation
+        is used during system shutdown in order to make the journal daemon stop writing data to
+        <code class="filename">/var/log/journal/</code> in case that directory is located on a mount point that needs
+        to be unmounted.</p><p><a name="v243"></a>Added in version 243.</p></dd><dt id="--flush"><span class="term"><code class="option">--flush</code></span><a class="headerlink" title="Permalink to this term" href="#--flush">¶</a></dt><dd><p>Asks the journal daemon to flush any log data stored in
+        <code class="filename">/run/log/journal/</code> into <code class="filename">/var/log/journal/</code>, if persistent
+        storage is enabled. This call does not return until the operation is complete. Note that this call is
+        idempotent: the data is only flushed from <code class="filename">/run/log/journal/</code> into
+        <code class="filename">/var/log/journal/</code> once during system runtime (but see
+        <code class="option">--relinquish-var</code> below), and this command exits cleanly without executing any
+        operation if this has already happened. This command effectively guarantees that all data is flushed
+        to <code class="filename">/var/log/journal/</code> at the time it returns.</p><p><a name="v217"></a>Added in version 217.</p></dd><dt id="--rotate"><span class="term"><code class="option">--rotate</code></span><a class="headerlink" title="Permalink to this term" href="#--rotate">¶</a></dt><dd><p>Asks the journal daemon to rotate journal files. This call does not return until
+        the rotation operation is complete. Journal file rotation has the effect that all currently active
+        journal files are marked as archived and renamed, so that they are never written to in future. New
+        (empty) journal files are then created in their place. This operation may be combined with
+        <code class="option">--vacuum-size=</code>, <code class="option">--vacuum-time=</code> and
+        <code class="option">--vacuum-file=</code> into a single command, see above.</p><p><a name="v227"></a>Added in version 227.</p></dd><dt id="--header"><span class="term"><code class="option">--header</code></span><a class="headerlink" title="Permalink to this term" href="#--header">¶</a></dt><dd><p>Instead of showing journal contents, show internal header information of the
+        journal fields accessed.</p><p>This option is particularly useful when trying to identify out-of-order journal entries, as
+        happens for example when the machine is booted with the wrong system time.</p><p><a name="v187"></a>Added in version 187.</p></dd><dt id="--list-catalog 128-bit-ID…"><span class="term"><code class="option">--list-catalog [<span class="optional"><em class="replaceable"><code>128-bit-ID…</code></em></span>]</code></span><a class="headerlink" title="Permalink to this term" href="#--list-catalog%20128-bit-ID%E2%80%A6">¶</a></dt><dd><p>List the contents of the message catalog as a table of message IDs, plus their
+        short description strings.</p><p>If any <em class="replaceable"><code>128-bit-ID</code></em>s are specified, only those entries are
+        shown.</p><p><a name="v196"></a>Added in version 196.</p></dd><dt id="--dump-catalog 128-bit-ID…"><span class="term"><code class="option">--dump-catalog [<span class="optional"><em class="replaceable"><code>128-bit-ID…</code></em></span>]</code></span><a class="headerlink" title="Permalink to this term" href="#--dump-catalog%20128-bit-ID%E2%80%A6">¶</a></dt><dd><p>Show the contents of the message catalog, with entries separated by a line
+        consisting of two dashes and the ID (the format is the same as <code class="filename">.catalog</code>
+        files).</p><p>If any <em class="replaceable"><code>128-bit-ID</code></em>s are specified, only those entries are
+        shown.</p><p><a name="v199"></a>Added in version 199.</p></dd><dt id="--update-catalog"><span class="term"><code class="option">--update-catalog</code></span><a class="headerlink" title="Permalink to this term" href="#--update-catalog">¶</a></dt><dd><p>Update the message catalog index. This command needs to be executed each time new
+        catalog files are installed, removed, or updated to rebuild the binary catalog
+        index.</p><p><a name="v196"></a>Added in version 196.</p></dd><dt id="--setup-keys"><span class="term"><code class="option">--setup-keys</code></span><a class="headerlink" title="Permalink to this term" href="#--setup-keys">¶</a></dt><dd><p>Instead of showing journal contents, generate a new key pair for Forward Secure
+        Sealing (FSS). This will generate a sealing key and a verification key. The sealing key is stored in
+        the journal data directory and shall remain on the host. The verification key should be stored
+        externally. Refer to the <code class="option">Seal=</code> option in
+        <a href="journald.conf.html#"><span class="citerefentry"><span class="refentrytitle">journald.conf</span>(5)</span></a> for
+        information on Forward Secure Sealing and for a link to a refereed scholarly paper detailing the
+        cryptographic theory it is based on.</p><p><a name="v189"></a>Added in version 189.</p></dd><dt id="-h"><span class="term"><code class="option">-h</code>, </span><span class="term"><code class="option">--help</code></span><a class="headerlink" title="Permalink to this term" href="#-h">¶</a></dt><dd><p><a name="help-text"></a><a name="help-para"></a>Print a short help text and exit.
+    </p></dd><dt id="--version"><span class="term"><code class="option">--version</code></span><a class="headerlink" title="Permalink to this term" href="#--version">¶</a></dt><dd><p><a name="version-text"></a>Print a short version string and exit.</p></dd></dl></div></div><div class="refsect1"><a name="id-1.12"></a><h2 id="Exit status">Exit status<a class="headerlink" title="Permalink to this headline" href="#Exit%20status">¶</a></h2><p>On success, 0 is returned; otherwise, a non-zero failure code is returned.</p></div><div class="refsect1"><a name="id-1.13"></a><h2 id="Environment">Environment<a class="headerlink" title="Permalink to this headline" href="#Environment">¶</a></h2><div class="variablelist"><dl class="variablelist"><dt id="$SYSTEMD_LOG_LEVEL"><span class="term"><code class="varname">$SYSTEMD_LOG_LEVEL</code></span><a class="headerlink" title="Permalink to this term" href="#%24SYSTEMD_LOG_LEVEL">¶</a></dt><dd><p><a name="log-level-body"></a>The maximum log level of emitted messages (messages with a higher
+      log level, i.e. less important ones, will be suppressed). Takes a comma-separated list of values. A
+      value may be either one of (in order of decreasing importance) <code class="constant">emerg</code>,
+      <code class="constant">alert</code>, <code class="constant">crit</code>, <code class="constant">err</code>,
+      <code class="constant">warning</code>, <code class="constant">notice</code>, <code class="constant">info</code>,
+      <code class="constant">debug</code>, or an integer in the range 0…7. See
+      <a href="https://man7.org/linux/man-pages/man3/syslog.3.html"><span class="citerefentry"><span class="refentrytitle">syslog</span>(3)</span></a>
+      for more information. Each value may optionally be prefixed with one of <code class="constant">console</code>,
+      <code class="constant">syslog</code>, <code class="constant">kmsg</code> or <code class="constant">journal</code> followed by a
+      colon to set the maximum log level for that specific log target (e.g.
+      <code class="constant">SYSTEMD_LOG_LEVEL=debug,console:info</code> specifies to log at debug level except when
+      logging to the console which should be at info level). Note that the global maximum log level takes
+      priority over any per target maximum log levels.</p></dd><dt id="$SYSTEMD_LOG_COLOR"><span class="term"><code class="varname">$SYSTEMD_LOG_COLOR</code></span><a class="headerlink" title="Permalink to this term" href="#%24SYSTEMD_LOG_COLOR">¶</a></dt><dd><p><a name="log-color-body"></a>A boolean. If true, messages written to the tty will be colored
+      according to priority.</p><p>This setting is only useful when messages are written directly to the terminal, because
+      <a href="journalctl.html#"><span class="citerefentry"><span class="refentrytitle">journalctl</span>(1)</span></a> and
+      other tools that display logs will color messages based on the log level on their own.</p></dd><dt id="$SYSTEMD_LOG_TIME"><span class="term"><code class="varname">$SYSTEMD_LOG_TIME</code></span><a class="headerlink" title="Permalink to this term" href="#%24SYSTEMD_LOG_TIME">¶</a></dt><dd><p><a name="log-time-body"></a>A boolean. If true, console log messages will be prefixed with a
+      timestamp.</p><p>This setting is only useful when messages are written directly to the terminal or a file, because
+      <a href="journalctl.html#"><span class="citerefentry"><span class="refentrytitle">journalctl</span>(1)</span></a> and
+      other tools that display logs will attach timestamps based on the entry metadata on their own.</p></dd><dt id="$SYSTEMD_LOG_LOCATION"><span class="term"><code class="varname">$SYSTEMD_LOG_LOCATION</code></span><a class="headerlink" title="Permalink to this term" href="#%24SYSTEMD_LOG_LOCATION">¶</a></dt><dd><p><a name="log-location-body"></a>A boolean. If true, messages will be prefixed with a filename
+      and line number in the source code where the message originates.</p><p>Note that the log location is often attached as metadata to journal entries anyway. Including it
+      directly in the message text can nevertheless be convenient when debugging programs.</p></dd><dt id="$SYSTEMD_LOG_TID"><span class="term"><code class="varname">$SYSTEMD_LOG_TID</code></span><a class="headerlink" title="Permalink to this term" href="#%24SYSTEMD_LOG_TID">¶</a></dt><dd><p><a name="log-tid-body"></a>A boolean. If true, messages will be prefixed with the current
+      numerical thread ID (TID).</p><p>Note that the this information is attached as metadata to journal entries anyway. Including it
+      directly in the message text can nevertheless be convenient when debugging programs.</p></dd><dt id="$SYSTEMD_LOG_TARGET"><span class="term"><code class="varname">$SYSTEMD_LOG_TARGET</code></span><a class="headerlink" title="Permalink to this term" href="#%24SYSTEMD_LOG_TARGET">¶</a></dt><dd><p><a name="log-target-body"></a>The destination for log messages. One of
+      <code class="constant">console</code> (log to the attached tty), <code class="constant">console-prefixed</code> (log to
+      the attached tty but with prefixes encoding the log level and "facility", see <a href="https://man7.org/linux/man-pages/man3/syslog.3.html"><span class="citerefentry"><span class="refentrytitle">syslog</span>(3)</span></a>,
+      <code class="constant">kmsg</code> (log to the kernel circular log buffer), <code class="constant">journal</code> (log to
+      the journal), <code class="constant">journal-or-kmsg</code> (log to the journal if available, and to kmsg
+      otherwise), <code class="constant">auto</code> (determine the appropriate log target automatically, the default),
+      <code class="constant">null</code> (disable log output).</p></dd><dt id="$SYSTEMD_LOG_RATELIMIT_KMSG"><span class="term"><code class="varname">$SYSTEMD_LOG_RATELIMIT_KMSG</code></span><a class="headerlink" title="Permalink to this term" href="#%24SYSTEMD_LOG_RATELIMIT_KMSG">¶</a></dt><dd><p><a name="log-ratelimit-kmsg-body"></a> Whether to ratelimit kmsg or not. Takes a boolean.
+      Defaults to "<code class="literal">true</code>". If disabled, systemd will not ratelimit messages written to kmsg.
+      </p></dd><dt id="$SYSTEMD_PAGER"><span class="term"><code class="varname">$SYSTEMD_PAGER</code>, </span><span class="term"><code class="varname">$PAGER</code></span><a class="headerlink" title="Permalink to this term" href="#%24SYSTEMD_PAGER">¶</a></dt><dd><p>Pager to use when <code class="option">--no-pager</code> is not given.
+      <code class="varname">$SYSTEMD_PAGER</code> is used if set; otherwise <code class="varname">$PAGER</code> is used.
+      If neither <code class="varname">$SYSTEMD_PAGER</code> nor <code class="varname">$PAGER</code> are set, a set of well-known
+      pager implementations is tried in turn, including
+      <a href="https://man7.org/linux/man-pages/man1/less.1.html"><span class="citerefentry"><span class="refentrytitle">less</span>(1)</span></a>
+      and
+      <a href="https://man7.org/linux/man-pages/man1/more.1.html"><span class="citerefentry"><span class="refentrytitle">more</span>(1)</span></a>,
+      until one is found. If no pager implementation is discovered, no pager is invoked. Setting those
+      environment variables to an empty string or the value "<code class="literal">cat</code>" is equivalent to passing
+      <code class="option">--no-pager</code>.</p><p>Note: if <code class="varname">$SYSTEMD_PAGERSECURE</code> is not set, <code class="varname">$SYSTEMD_PAGER</code>
+      and <code class="varname">$PAGER</code> can only be used to disable the pager (with "<code class="literal">cat</code>" or
+      "<code class="literal"></code>"), and are otherwise ignored.</p></dd><dt id="$SYSTEMD_LESS"><span class="term"><code class="varname">$SYSTEMD_LESS</code></span><a class="headerlink" title="Permalink to this term" href="#%24SYSTEMD_LESS">¶</a></dt><dd><p>Override the options passed to <span class="command"><strong>less</strong></span> (by default
+      "<code class="literal">FRSXMK</code>").</p><p>Users might want to change two options in particular:</p><div class="variablelist"><dl class="variablelist"><dt id="K"><span class="term"><code class="option">K</code></span><a class="headerlink" title="Permalink to this term" href="#K">¶</a></dt><dd><p>This option instructs the pager to exit immediately when
+            <span class="keycap"><strong>Ctrl</strong></span>+<span class="keycap"><strong>C</strong></span> is pressed. To allow
+            <span class="command"><strong>less</strong></span> to handle <span class="keycap"><strong>Ctrl</strong></span>+<span class="keycap"><strong>C</strong></span>
+            itself to switch back to the pager command prompt, unset this option.</p><p>If the value of <code class="varname">$SYSTEMD_LESS</code> does not include "<code class="literal">K</code>",
+            and the pager that is invoked is <span class="command"><strong>less</strong></span>,
+            <span class="keycap"><strong>Ctrl</strong></span>+<span class="keycap"><strong>C</strong></span> will be ignored by the
+            executable, and needs to be handled by the pager.</p></dd><dt id="X"><span class="term"><code class="option">X</code></span><a class="headerlink" title="Permalink to this term" href="#X">¶</a></dt><dd><p>This option instructs the pager to not send termcap initialization and deinitialization
+            strings to the terminal. It is set by default to allow command output to remain visible in the
+            terminal even after the pager exits. Nevertheless, this prevents some pager functionality from
+            working, in particular paged output cannot be scrolled with the mouse.</p></dd></dl></div><p>Note that setting the regular <code class="varname">$LESS</code> environment variable has no effect
+      for <span class="command"><strong>less</strong></span> invocations by systemd tools.</p><p>See
+      <a href="https://man7.org/linux/man-pages/man1/less.1.html"><span class="citerefentry"><span class="refentrytitle">less</span>(1)</span></a>
+      for more discussion.</p></dd><dt id="$SYSTEMD_LESSCHARSET"><span class="term"><code class="varname">$SYSTEMD_LESSCHARSET</code></span><a class="headerlink" title="Permalink to this term" href="#%24SYSTEMD_LESSCHARSET">¶</a></dt><dd><p>Override the charset passed to <span class="command"><strong>less</strong></span> (by default "<code class="literal">utf-8</code>", if
+      the invoking terminal is determined to be UTF-8 compatible).</p><p>Note that setting the regular <code class="varname">$LESSCHARSET</code> environment variable has no effect
+      for <span class="command"><strong>less</strong></span> invocations by systemd tools.</p></dd><dt id="$SYSTEMD_PAGERSECURE"><span class="term"><code class="varname">$SYSTEMD_PAGERSECURE</code></span><a class="headerlink" title="Permalink to this term" href="#%24SYSTEMD_PAGERSECURE">¶</a></dt><dd><p>Common pager commands like <a href="https://man7.org/linux/man-pages/man1/less.1.html"><span class="citerefentry"><span class="refentrytitle">less</span>(1)</span></a>, in
+      addition to "paging", i.e. scrolling through the output, support opening of or writing to other files
+      and running arbitrary shell commands. When commands are invoked with elevated privileges, for example
+      under <a href="https://man7.org/linux/man-pages/man8/sudo.8.html"><span class="citerefentry"><span class="refentrytitle">sudo</span>(8)</span></a> or
+      <a href="http://linux.die.net/man/1/pkexec"><span class="citerefentry"><span class="refentrytitle">pkexec</span>(1)</span></a>, the
+      pager becomes a security boundary. Care must be taken that only programs with strictly limited
+      functionality are used as pagers, and unintended interactive features like opening or creation of new
+      files or starting of subprocesses are not allowed. "Secure mode" for the pager may be enabled as
+      described below, <span class="emphasis"><em>if the pager supports that</em></span> (most pagers are not written in a way
+      that takes this into consideration). It is recommended to either explicitly enable "secure mode" or to
+      completely disable the pager using <code class="option">--no-pager</code> or <code class="varname">PAGER=cat</code> when
+      allowing untrusted users to execute commands with elevated privileges.</p><p>This option takes a boolean argument. When set to true, the "secure mode" of the pager is
+      enabled. In "secure mode", <code class="option">LESSSECURE=1</code> will be set when invoking the pager, which
+      instructs the pager to disable commands that open or create new files or start new subprocesses.
+      Currently only <a href="https://man7.org/linux/man-pages/man1/less.1.html"><span class="citerefentry"><span class="refentrytitle">less</span>(1)</span></a> is known
+      to understand this variable and implement "secure mode".</p><p>When set to false, no limitation is placed on the pager. Setting
+      <code class="varname">SYSTEMD_PAGERSECURE=0</code> or not removing it from the inherited environment may allow
+      the user to invoke arbitrary commands.</p><p>When <code class="varname">$SYSTEMD_PAGERSECURE</code> is not set, systemd tools attempt to automatically
+      figure out if "secure mode" should be enabled and whether the pager supports it. "Secure mode" is
+      enabled if the effective UID is not the same as the owner of the login session, see
+      <a href="https://man7.org/linux/man-pages/man2/geteuid.2.html"><span class="citerefentry"><span class="refentrytitle">geteuid</span>(2)</span></a>
+      and
+      <a href="sd_pid_get_owner_uid.html#"><span class="citerefentry"><span class="refentrytitle">sd_pid_get_owner_uid</span>(3)</span></a>,
+      or when running under
+      <a href="sudo.html#"><span class="citerefentry"><span class="refentrytitle">sudo</span>(8)</span></a> or similar
+      tools (<code class="varname">$SUDO_UID</code> is set <a href="#ftn.id-1.13.2.11.2.4.6" class="footnote" name="id-1.13.2.11.2.4.6"><sup class="footnote">[1]</sup></a>). In those cases,
+      <code class="varname">SYSTEMD_PAGERSECURE=1</code> will be set and pagers which are not known to implement
+      "secure mode" will not be used at all. Note that this autodetection only covers the most common
+      mechanisms to elevate privileges and is intended as convenience. It is recommended to explicitly set
+      <code class="varname">$SYSTEMD_PAGERSECURE</code> or disable the pager.</p><p>Note that if the <code class="varname">$SYSTEMD_PAGER</code> or <code class="varname">$PAGER</code> variables are to
+      be honoured, other than to disable the pager, <code class="varname">$SYSTEMD_PAGERSECURE</code> must be set
+      too.</p></dd><dt id="$SYSTEMD_COLORS"><span class="term"><code class="varname">$SYSTEMD_COLORS</code></span><a class="headerlink" title="Permalink to this term" href="#%24SYSTEMD_COLORS">¶</a></dt><dd><p>Takes a boolean argument. When true, <span class="command"><strong>systemd</strong></span> and related utilities
+      will use colors in their output, otherwise the output will be monochrome. Additionally, the variable can
+      take one of the following special values: "<code class="literal">16</code>", "<code class="literal">256</code>" to restrict the use
+      of colors to the base 16 or 256 ANSI colors, respectively. This can be specified to override the automatic
+      decision based on <code class="varname">$TERM</code> and what the console is connected to.</p></dd><dt id="$SYSTEMD_URLIFY"><span class="term"><code class="varname">$SYSTEMD_URLIFY</code></span><a class="headerlink" title="Permalink to this term" href="#%24SYSTEMD_URLIFY">¶</a></dt><dd><p>The value must be a boolean. Controls whether clickable links should be generated in
+      the output for terminal emulators supporting this. This can be specified to override the decision that
+      <span class="command"><strong>systemd</strong></span> makes based on <code class="varname">$TERM</code> and other conditions.</p></dd></dl></div></div><div class="refsect1"><a name="id-1.14"></a><h2 id="Examples">Examples<a class="headerlink" title="Permalink to this headline" href="#Examples">¶</a></h2><p>Without arguments, all collected logs are shown unfiltered:</p><pre class="programlisting">journalctl</pre><p>With one match specified, all entries with a field matching the expression are shown:</p><pre class="programlisting">journalctl _SYSTEMD_UNIT=avahi-daemon.service
+journalctl _SYSTEMD_CGROUP=/user.slice/user-42.slice/session-c1.scope</pre><p>If two different fields are matched, only entries matching both expressions at the same time are
+    shown:</p><pre class="programlisting">journalctl _SYSTEMD_UNIT=avahi-daemon.service _PID=28097</pre><p>If two matches refer to the same field, all entries matching either expression are shown:</p><pre class="programlisting">journalctl _SYSTEMD_UNIT=avahi-daemon.service _SYSTEMD_UNIT=dbus.service</pre><p>If the separator "<code class="literal">+</code>" is used, two expressions may be combined in a logical OR. The
+    following will show all messages from the Avahi service process with the PID 28097 plus all messages from
+    the D-Bus service (from any of its processes):</p><pre class="programlisting">journalctl _SYSTEMD_UNIT=avahi-daemon.service _PID=28097 + _SYSTEMD_UNIT=dbus.service</pre><p>To show all fields emitted <span class="emphasis"><em>by</em></span> a unit and <span class="emphasis"><em>about</em></span> the unit,
+    option <code class="option">-u</code>/<code class="option">--unit=</code> should be used. <span class="command"><strong>journalctl -u
+    <em class="replaceable"><code>name</code></em></strong></span> expands to a complex filter similar to
+
+    </p><pre class="programlisting">_SYSTEMD_UNIT=<em class="replaceable"><code>name</code></em>.service
+  + UNIT=<em class="replaceable"><code>name</code></em>.service _PID=1
+  + OBJECT_SYSTEMD_UNIT=<em class="replaceable"><code>name</code></em>.service _UID=0
+  + COREDUMP_UNIT=<em class="replaceable"><code>name</code></em>.service _UID=0 MESSAGE_ID=fc2e22bc6ee647b6b90729ab34a250b1</pre><p>
+
+    (see
+    <a href="systemd.journal-fields.html#"><span class="citerefentry"><span class="refentrytitle">systemd.journal-fields</span>(7)</span></a>
+    for an explanation of those patterns).</p><p>Show all logs generated by the D-Bus executable:</p><pre class="programlisting">journalctl /usr/bin/dbus-daemon</pre><p>Show all kernel logs from previous boot:</p><pre class="programlisting">journalctl -k -b -1</pre><p>Show a live log display from a system service <code class="filename">apache.service</code>:</p><pre class="programlisting">journalctl -f -u apache</pre></div><div class="refsect1"><a name="id-1.15"></a><h2 id="See Also">See Also<a class="headerlink" title="Permalink to this headline" href="#See%20Also">¶</a></h2><p><span class="simplelist"><a href="systemd.html#"><span class="citerefentry"><span class="refentrytitle">systemd</span>(1)</span></a>, <a href="systemd-cat.html#"><span class="citerefentry"><span class="refentrytitle">systemd-cat</span>(1)</span></a>, <a href="systemd-journald.service.html#"><span class="citerefentry"><span class="refentrytitle">systemd-journald.service</span>(8)</span></a>, <a href="systemctl.html#"><span class="citerefentry"><span class="refentrytitle">systemctl</span>(1)</span></a>, <a href="coredumpctl.html#"><span class="citerefentry"><span class="refentrytitle">coredumpctl</span>(1)</span></a>, <a href="systemd.journal-fields.html#"><span class="citerefentry"><span class="refentrytitle">systemd.journal-fields</span>(7)</span></a>, <a href="journald.conf.html#"><span class="citerefentry"><span class="refentrytitle">journald.conf</span>(5)</span></a>, <a href="systemd.time.html#"><span class="citerefentry"><span class="refentrytitle">systemd.time</span>(7)</span></a>, <a href="systemd-journal-remote.service.html#"><span class="citerefentry"><span class="refentrytitle">systemd-journal-remote.service</span>(8)</span></a>, <a href="systemd-journal-upload.service.html#"><span class="citerefentry"><span class="refentrytitle">systemd-journal-upload.service</span>(8)</span></a></span></p></div><div class="footnotes"><br><hr style="width:100; text-align:left;margin-left: 0"><div id="ftn.id-1.13.2.11.2.4.6" class="footnote"><p><a href="#id-1.13.2.11.2.4.6" class="para"><sup class="para">[1] </sup></a>It is recommended for other tools to set and check <code class="varname">$SUDO_UID</code> as appropriate,
+      treating it is a common interface.</p></div></div></div></body></html>

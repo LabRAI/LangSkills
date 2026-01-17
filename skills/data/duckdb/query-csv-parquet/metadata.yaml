@@ -1,0 +1,11 @@
+id: data/duckdb/query-csv-parquet
+title: "DuckDB：用 SQL 直接查询 CSV/Parquet 并导出结果"
+domain: data
+level: bronze
+risk_level: low
+platforms: []
+tools: []
+tags: []
+last_verified: ""
+owners: []
+aliases: []

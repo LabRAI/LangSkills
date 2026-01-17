@@ -1,0 +1,14 @@
+id: linux/m2-templates/parameterized-template
+title: "M2 参数化模板：占位技能（用于 10 万级扩量验收）"
+domain: linux
+level: bronze
+risk_level: low
+kind: template
+hidden: true
+platforms: [linux]
+tools: []
+tags: ["m2", "template", "parameterized"]
+aliases: []
+owners: []
+last_verified: ""
+

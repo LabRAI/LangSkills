@@ -39,4 +39,4 @@
 ## Sources
 - [1] Arch man: nohup(1): https://man.archlinux.org/man/nohup.1.en.txt
 - [2] GNU Bash manual: Job Control Builtins: https://www.gnu.org/software/bash/manual/html_node/Job-Control-Builtins.html
-- [3] Arch man: bash(1): https://man.archlinux.org/man/bash.1.en.txt
+- [3] Arch Wiki: Bash: https://wiki.archlinux.org/title/Bash

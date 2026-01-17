@@ -39,6 +39,6 @@
 - See: reference/troubleshooting.md
 
 ## Sources
-- [1] POSIX umask: https://pubs.opengroup.org/onlinepubs/9699919799/utilities/umask.html
-- [2] man7 umask(1p): https://man7.org/linux/man-pages/man1/umask.1p.html
-- [3] GNU Bash manual: https://www.gnu.org/software/bash/manual/bash.html
+- [1] Arch Wiki: Umask: https://wiki.archlinux.org/title/Umask
+- [2] Arch Wiki: File permissions and attributes: https://wiki.archlinux.org/title/File_permissions_and_attributes
+- [3] Arch Wiki: Bash: https://wiki.archlinux.org/title/Bash

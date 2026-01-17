@@ -1,0 +1,23 @@
+domain: cloud
+owners: []
+
+sources:
+  primary:
+    - cloud_kubernetes_docs
+
+source_policy:
+  prefer:
+    - official docs
+    - api reference
+  allow_domains:
+    - kubernetes.io
+  deny_domains: []
+
+seeds:
+  - https://kubernetes.io/docs/
+
+topics:
+  - id: kubernetes/kubectl-context-namespace
+    title: "kubectl 上下文与 namespace：避免在错误集群执行命令"
+    level: bronze
+    risk_level: medium

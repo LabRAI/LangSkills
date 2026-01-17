@@ -1,0 +1,4 @@
+FIXTURE CACHE (offline)
+URL: https://man.archlinux.org/man/find.1.en.txt
+Purpose: used by scripts/self-check.js --with-capture to avoid network fetches.
+

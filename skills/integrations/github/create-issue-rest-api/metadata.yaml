@@ -1,0 +1,11 @@
+id: integrations/github/create-issue-rest-api
+title: "GitHub REST API：用 curl 创建 issue（安全存储 token）"
+domain: integrations
+level: bronze
+risk_level: medium
+platforms: []
+tools: []
+tags: []
+last_verified: ""
+owners: []
+aliases: []

@@ -392,6 +392,7 @@ const warnings = [];
 const licensePolicyPath = args.licensePolicy ? path.resolve(repoRoot, args.licensePolicy) : path.join(repoRoot, "scripts", "license-policy.json");
 const licensePolicy = args.requireLicenseFields ? loadLicensePolicy(licensePolicyPath) : null;
 const libraryHashes = new Map(); // sha256 -> first skill id
+const skillIdSeen = new Map(); // metadata id -> first relPosix
 
 function riskRank(level) {
   const v = String(level || "").trim().toLowerCase();
@@ -468,6 +469,15 @@ for (const skillDir of skillDirs) {
     if (!id) errors.push(`[${relPosix}] metadata.yaml missing id`);
     if (id && id !== expectedId) {
       errors.push(`[${relPosix}] metadata id mismatch: '${id}' != '${expectedId}'`);
+    }
+
+    if (args.requireNoDuplicates && id) {
+      const prev = skillIdSeen.get(id);
+      if (prev && prev !== relPosix) {
+        errors.push(`[${relPosix}] metadata id duplicates ${prev}`);
+      } else if (!prev) {
+        skillIdSeen.set(id, relPosix);
+      }
     }
 
     if (!title) errors.push(`[${relPosix}] metadata.yaml missing title`);

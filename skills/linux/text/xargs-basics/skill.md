@@ -18,12 +18,12 @@
 - Inputs needed: 输入列表（stdin）、目标命令、每次处理多少项、是否并行
 
 ## Steps (<= 12)
-1. 基础用法：`printf '%s\\n' a b c | xargs echo`[[1][2]]
-2. 限制每次参数数量：`printf '%s\\n' a b c | xargs -n 1 echo`[[1][2]]
-3. 使用占位符：`printf '%s\\n' a b | xargs -I{} echo "item={}"`[[2]]
-4. 处理包含空格的路径：`find . -type f -print0 | xargs -0 -n 1 echo`（搭配 -print0/-0）[[2][3]]
-5. 并行（谨慎）：`printf '%s\\n' a b c | xargs -P 4 -n 1 echo`（确保目标命令可并发）[[2]]
-6. 对不可逆命令先预览：把 `echo` 换成真实命令前，先确认输出与数量（例如先 `wc -l`）[[2]]
+1. 基础用法：`printf '%s\\n' a b c | xargs echo`[[1]]
+2. 限制每次参数数量：`printf '%s\\n' a b c | xargs -n 1 echo`[[1]]
+3. 使用占位符：`printf '%s\\n' a b | xargs -I{} echo "item={}"`[[1]]
+4. 处理包含空格的路径：`find . -type f -print0 | xargs -0 -n 1 echo`（搭配 -print0/-0）[[1][2][3]]
+5. 并行（谨慎）：`printf '%s\\n' a b c | xargs -P 4 -n 1 echo`（确保目标命令可并发）[[1]]
+6. 对不可逆命令先预览：把 `echo` 换成真实命令前，先确认输出与数量（例如先 `wc -l`）[[1]]
 
 ## Verification
 - 先用 `echo` 验证将执行的命令参数是否正确
@@ -39,6 +39,6 @@
 - See: reference/troubleshooting.md
 
 ## Sources
-- [1] POSIX xargs: https://pubs.opengroup.org/onlinepubs/9699919799/utilities/xargs.html
-- [2] man7 xargs(1): https://man7.org/linux/man-pages/man1/xargs.1.html
-- [3] GNU findutils manual (find): https://www.gnu.org/software/findutils/manual/html_mono/find.html
+- [1] Arch man: xargs(1): https://man.archlinux.org/man/xargs.1.en.txt
+- [2] Arch man: find(1): https://man.archlinux.org/man/find.1.en.txt
+- [3] Arch Wiki: Find: https://wiki.archlinux.org/title/Find

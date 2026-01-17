@@ -1,0 +1,11 @@
+id: cloud/kubernetes/kubectl-context-namespace
+title: "kubectl 上下文与 namespace：避免在错误集群执行命令"
+domain: cloud
+level: bronze
+risk_level: medium
+platforms: []
+tools: []
+tags: []
+last_verified: ""
+owners: []
+aliases: []

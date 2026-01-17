@@ -39,6 +39,6 @@
 - See: reference/troubleshooting.md
 
 ## Sources
-- [1] man7 lsblk(8): https://man7.org/linux/man-pages/man8/lsblk.8.html
-- [2] man7 mount(8): https://man7.org/linux/man-pages/man8/mount.8.html
-- [3] man7 umount(8): https://man7.org/linux/man-pages/man8/umount.8.html
+- [1] Arch man: lsblk(8): https://man.archlinux.org/man/lsblk.8.en.txt
+- [2] Arch man: mount(8): https://man.archlinux.org/man/mount.8.en.txt
+- [3] Arch man: umount(8): https://man.archlinux.org/man/umount.8.en.txt

@@ -39,6 +39,6 @@
 - See: reference/troubleshooting.md
 
 ## Sources
-- [1] man7 cp(1): https://man7.org/linux/man-pages/man1/cp.1.html
-- [2] man7 mv(1): https://man7.org/linux/man-pages/man1/mv.1.html
-- [3] GNU coreutils manual (cp/mv): https://www.gnu.org/software/coreutils/manual/coreutils.html
+- [1] Arch man: cp(1): https://man.archlinux.org/man/cp.1.en.txt
+- [2] Arch man: mv(1): https://man.archlinux.org/man/mv.1.en.txt
+- [3] Arch Wiki: Core utilities: https://wiki.archlinux.org/title/Core_utilities

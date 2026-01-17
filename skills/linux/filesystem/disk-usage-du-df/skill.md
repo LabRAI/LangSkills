@@ -39,6 +39,6 @@
 - See: reference/troubleshooting.md
 
 ## Sources
-- [1] GNU coreutils manual: df invocation: https://www.gnu.org/software/coreutils/manual/html_node/df-invocation.html
-- [2] GNU coreutils manual: du invocation: https://www.gnu.org/software/coreutils/manual/html_node/du-invocation.html
-- [3] Arch man: df(1): https://man.archlinux.org/man/df.1.en.txt
+- [1] Arch man: df(1): https://man.archlinux.org/man/df.1.en.txt
+- [2] Arch man: du(1): https://man.archlinux.org/man/du.1.en.txt
+- [3] Arch Wiki: Disk usage: https://wiki.archlinux.org/title/Disk_usage

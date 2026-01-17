@@ -1,0 +1,6 @@
+# Examples
+
+```bash
+echo "{{id}}"
+```
+

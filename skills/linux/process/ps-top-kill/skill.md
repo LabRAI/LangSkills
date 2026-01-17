@@ -22,8 +22,8 @@
 1. 列出进程（抽样定位）：`ps aux | head` 或 `ps -ef | head`[[1]]
 2. 按需格式化输出：例如 `ps -eo pid,ppid,user,%cpu,%mem,etime,cmd | head`[[1]]
 3. 实时观察资源：`top`（在 top 内按 `P/M` 排序，看 %CPU/%MEM）[[2]]
-4. 先优雅终止：`kill -TERM <pid>`（给进程时间清理资源）[[3][4]]
-5. 仍不退出再强制：等待几秒后 `kill -KILL <pid>`（最后手段）[[3][4]]
+4. 先优雅终止：`kill -TERM <pid>`（给进程时间清理资源）[[3]]
+5. 仍不退出再强制：等待几秒后 `kill -KILL <pid>`（最后手段）[[3]]
 
 ## Verification
 - `ps`/`top` 中进程不再存在（或资源恢复正常）
@@ -41,5 +41,4 @@
 ## Sources
 - [1] Arch man: ps(1): https://man.archlinux.org/man/ps.1.en.txt
 - [2] Arch man: top(1): https://man.archlinux.org/man/top.1.en.txt
-- [3] POSIX kill specification: https://pubs.opengroup.org/onlinepubs/9699919799/utilities/kill.html
-- [4] Arch man: kill(1): https://man.archlinux.org/man/kill.1.en.txt
+- [3] Arch man: kill(1): https://man.archlinux.org/man/kill.1.en.txt

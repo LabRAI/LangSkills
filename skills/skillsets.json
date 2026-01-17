@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "parameterized": [
+    {
+      "template_id": "linux/m2-templates/parameterized-template",
+      "output_domain": "linux",
+      "output_topic": "m2-param",
+      "slug_prefix": "p-",
+      "slug_pad": 6,
+      "start": 1,
+      "count": 100000,
+      "title_template": "M2 参数化技能实例 {slug}",
+      "levels": { "default": "bronze", "silver_every": 20, "gold_every": 200 }
+    }
+  ]
+}

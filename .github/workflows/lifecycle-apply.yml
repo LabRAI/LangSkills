@@ -1,0 +1,94 @@
+name: lifecycle-apply
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry-run (no commit/push/PR)"
+        type: boolean
+        default: true
+      branch:
+        description: "Target branch name (optional)"
+        required: false
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Run lifecycle (report + optional apply)
+        id: life
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="runs/lifecycle/${{ github.run_id }}/report.json"
+          args=(node scripts/lifecycle.js --out "$out" --downgrade)
+          if [ "${{ inputs.dry_run }}" != "true" ]; then args+=(--apply); fi
+          "${args[@]}"
+          echo "out=$out" >> "$GITHUB_OUTPUT"
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lifecycle-report
+          path: ${{ steps.life.outputs.out }}
+      - name: Validate skills (strict)
+        run: node scripts/validate-skills.js --strict --fail-on-license-review
+      - name: Configure git identity
+        if: ${{ inputs.dry_run != 'true' }}
+        run: |
+          git config user.name "skill-bot"
+          git config user.email "skill-bot@users.noreply.github.com"
+      - name: Compute branch name
+        if: ${{ inputs.dry_run != 'true' }}
+        id: vars
+        shell: bash
+        run: |
+          if [ -n "${{ inputs.branch }}" ]; then
+            echo "branch=${{ inputs.branch }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "branch=bot/lifecycle/${{ github.run_id }}" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Commit/push changes (optional)
+        if: ${{ inputs.dry_run != 'true' }}
+        id: commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "$(git status --porcelain -- skills)" ]; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "[lifecycle-apply] no changes under skills/; skipping commit/push/PR"
+            exit 0
+          fi
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+          node scripts/git-automation.js --paths skills --remote origin --branch "${{ steps.vars.outputs.branch }}" --message "chore: lifecycle apply" --execute
+      - name: Create PR (optional)
+        if: ${{ inputs.dry_run != 'true' && steps.commit.outputs.changed == 'true' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > pr_body.md <<'EOF'
+          Automated lifecycle update (stale/archived tagging and optional downgrade).
+
+          - Workflow run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          - Branch: `${{ steps.vars.outputs.branch }}`
+          - Report: `runs/lifecycle/${{ github.run_id }}/report.json` (uploaded as artifact)
+
+          CI must pass before merge.
+          EOF
+          node scripts/create-pr.js \
+            --repo "${{ github.repository }}" \
+            --head "${{ steps.vars.outputs.branch }}" \
+            --base "main" \
+            --title "chore: lifecycle apply" \
+            --body-file pr_body.md

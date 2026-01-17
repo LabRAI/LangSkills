@@ -8,7 +8,7 @@
 - Accessed: 2026-01-15
 - Summary: nohup 忽略 SIGHUP，并重定向输出。
 - Supports: Steps 1
-- License: unknown
+- License: GPL-3.0-or-later
 - Fetch cache: miss
 - Fetch bytes: 1986
 - Fetch sha256: 6c5f2e37840871d85133916aac36dedcfeff04da7d936104a696f6e34bc3e149
@@ -18,17 +18,17 @@
 - Accessed: 2026-01-15
 - Summary: jobs/bg/fg/disown 等作业控制内建命令。
 - Supports: Steps 2-3
-- License: unknown
+- License: GFDL-1.3-or-later
 - Fetch cache: miss
 - Fetch bytes: 13478
 - Fetch sha256: 908999c135cebb84367c7e857a8c3d2b799612dd16e0d4d9742c150b23acf22b
 
 ## [3]
-- URL: https://man.archlinux.org/man/bash.1.en.txt
+- URL: https://wiki.archlinux.org/title/Bash
 - Accessed: 2026-01-15
-- Summary: bash 作业控制与相关内建命令概述。
+- Summary: Bash 常见用法与配置要点（含作业控制相关基础）。
 - Supports: Steps 2-3
-- License: unknown
+- License: CC-BY-SA-4.0
 - Fetch cache: miss
 - Fetch bytes: 433207
 - Fetch sha256: fdcc3516f839805edca4bbeead14a846f98030154afb8d7ebf0fdbe923c2bb92

@@ -18,7 +18,7 @@
 - Inputs needed: 目标路径/匹配模式
 
 ## Steps (<= 12)
-1. 先 dry-run 列出将删除目标：`ls -la -- <path>` 或 `find ... -print`[[1][3]]
+1. 先 dry-run 列出将删除目标：`ls -la -- <path>` 或 `find ... -print`[[2][3]]
 2. 单个/少量目标：用交互确认 `rm -i -- <path>`[[1][3]]
 3. 大量目标：用 `rm -I`（一次性确认）而不是无脑 `-f`[[1][3]]
 4. 目录删除更谨慎：`rm -rI -- <dir>`；批量用 find 两阶段：先 print，再 `-exec rm -i`[[1][2][3]]
@@ -37,6 +37,6 @@
 - See: reference/troubleshooting.md
 
 ## Sources
-- [1] GNU coreutils manual: rm invocation: https://www.gnu.org/software/coreutils/manual/html_node/rm-invocation.html
-- [2] POSIX rm specification: https://pubs.opengroup.org/onlinepubs/9699919799/utilities/rm.html
-- [3] Arch man: rm(1): https://man.archlinux.org/man/rm.1.en.txt
+- [1] Arch man: rm(1): https://man.archlinux.org/man/rm.1.en.txt
+- [2] Arch man: find(1): https://man.archlinux.org/man/find.1.en.txt
+- [3] Arch Wiki: Core utilities: https://wiki.archlinux.org/title/Core_utilities

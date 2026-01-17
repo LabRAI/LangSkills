@@ -1,0 +1,24 @@
+domain: devtools
+owners: []
+
+sources:
+  primary:
+    - devtools_git_docs
+
+source_policy:
+  prefer:
+    - official docs
+    - man pages
+  allow_domains:
+    - git-scm.com
+    - kernel.org
+  deny_domains: []
+
+seeds:
+  - https://git-scm.com/docs
+
+topics:
+  - id: git/bisect-regression
+    title: "git bisect：自动定位引入回归的提交（可回放/可复现）"
+    level: bronze
+    risk_level: medium

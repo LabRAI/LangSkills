@@ -1,0 +1,3 @@
+{
+  "response": "{\n  \"version\": 1,\n  \"updates\": [\n    {\n      \"proposal_id\": \"prop_f168bf55ff23\",\n      \"action\": \"manual\",\n      \"reason\": \"This looks like a concrete find(1) topic; map it to the Linux filesystem taxonomy.\",\n      \"confidence\": 0.8,\n      \"suggested\": {\n        \"topic\": \"filesystem\",\n        \"slug\": \"find-files\",\n        \"title\": \"Use find to locate files safely\"\n      }\n    }\n  ]\n}\n"
+}

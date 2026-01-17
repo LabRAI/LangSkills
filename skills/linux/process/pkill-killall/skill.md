@@ -39,6 +39,6 @@
 - See: reference/troubleshooting.md
 
 ## Sources
-- [1] man7 kill(1): https://man7.org/linux/man-pages/man1/kill.1.html
-- [2] man7 pkill(1): https://man7.org/linux/man-pages/man1/pkill.1.html
-- [3] man7 killall(1): https://man7.org/linux/man-pages/man1/killall.1.html
+- [1] Arch man: kill(1): https://man.archlinux.org/man/kill.1.en.txt
+- [2] Arch man: pkill(1): https://man.archlinux.org/man/pkill.1.en.txt
+- [3] Arch man: killall(1): https://man.archlinux.org/man/killall.1.en.txt

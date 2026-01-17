@@ -4,6 +4,10 @@ const crypto = require("crypto");
 const fs = require("fs");
 const path = require("path");
 
+const { getRepoUrlLicenseMap, lookupLicenseForUrl, loadUrlLicensePairsFromSourcesMd } = require("./license_lookup");
+
+const REPO_ROOT = path.resolve(__dirname, "..", "..");
+
 function ensureDir(dirPath) {
   fs.mkdirSync(dirPath, { recursive: true });
 }
@@ -113,11 +117,16 @@ function renderSteps(steps) {
 }
 
 async function fetchSourcesWithEvidence(sources, cacheDir, timeoutMs, log) {
+  const licenseMap = getRepoUrlLicenseMap(REPO_ROOT);
   const fetched = [];
   for (const s of Array.isArray(sources) ? sources : []) {
+    const rawLicense = s && s.license ? String(s.license).trim() : "";
+    const resolvedLicense = rawLicense || lookupLicenseForUrl(s && s.url ? s.url : "", licenseMap) || "";
+
     const r = await fetchWithCache(s.url, cacheDir, timeoutMs, log);
     fetched.push({
       ...s,
+      license: resolvedLicense || "unknown",
       fetched: {
         cache: r.fromCache ? "hit" : "miss",
         bytes: Buffer.byteLength(r.text, "utf8"),
@@ -3293,8 +3302,23 @@ async function captureLinuxSkill({
     return null;
   }
 
+  const specSources = Array.isArray(spec.sources) ? spec.sources : [];
+  const canonicalPath = path.join(REPO_ROOT, "skills", "linux", topic, slug, "reference", "sources.md");
+  const canonicalPairs = loadUrlLicensePairsFromSourcesMd(canonicalPath);
+  const sourcesInput =
+    canonicalPairs.length >= specSources.length
+      ? specSources.map((s, i) => {
+        const c = canonicalPairs[i] || {};
+        return {
+          ...s,
+          url: c.url || s.url,
+          license: c.license || s.license,
+        };
+      })
+      : specSources;
+
   if (sourcePolicy) {
-    for (const s of Array.isArray(spec.sources) ? spec.sources : []) {
+    for (const s of sourcesInput) {
       if (!isUrlAllowed(s.url, sourcePolicy)) {
         throw new Error(`[source_policy] blocked URL for linux/${key}: ${s.url}`);
       }
@@ -3302,7 +3326,13 @@ async function captureLinuxSkill({
   }
 
   const accessed = utcDate();
-  const sources = await fetchSourcesWithEvidence(spec.sources, cacheDir, timeoutMs, log);
+  const sources = await fetchSourcesWithEvidence(sourcesInput, cacheDir, timeoutMs, log);
+  if (strict) {
+    for (const s of Array.isArray(sources) ? sources : []) {
+      const lic = String(s && s.license ? s.license : "").trim();
+      if (!lic || /^unknown\b/i.test(lic)) throw new Error(`[license] missing license mapping for linux/${key}: ${s && s.url ? s.url : ""}`);
+    }
+  }
 
   return {
     skillMd: renderSkillMd({ title, riskLevel, spec, sources }),

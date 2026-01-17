@@ -4,6 +4,7 @@ owners: []
 sources:
   primary:
     - integrations_slack_docs
+    - integrations_github_docs
 
 source_policy:
   prefer:
@@ -11,7 +12,16 @@ source_policy:
     - api reference
   allow_domains:
     - slack.com
+    - github.com
   deny_domains: []
 
 seeds: []
-topics: []
+topics:
+  - id: slack/incoming-webhooks
+    title: "Slack Incoming Webhooks：安全发送消息（无需 bot token）"
+    level: bronze
+    risk_level: medium
+  - id: github/create-issue-rest-api
+    title: "GitHub REST API：用 curl 创建 issue（安全存储 token）"
+    level: bronze
+    risk_level: medium

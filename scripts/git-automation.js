@@ -5,9 +5,11 @@ const childProcess = require("child_process");
 const path = require("path");
 
 function run(cmd, args, options = {}) {
+  const env = { ...process.env, GIT_TERMINAL_PROMPT: "0" };
   const p = childProcess.spawnSync(cmd, args, {
     encoding: "utf8",
     stdio: ["ignore", "pipe", "pipe"],
+    env,
     ...options,
   });
   return {
@@ -249,6 +251,10 @@ function main() {
   }
 
   if (args.dryRun) return;
+  if (planned.length === 0) {
+    console.log("[git-automation] execute: skipped (no changes)");
+    return;
+  }
 
   let switched = false;
   try {
@@ -268,6 +274,8 @@ function main() {
     const staged = stagedFiles(repoRoot);
     if (staged.length === 0) {
       console.log("[git-automation] commit: skipped (no staged changes)");
+      console.log("[git-automation] push: skipped (no staged changes)");
+      return;
     } else {
       console.log(`[git-automation] commit: ${args.message}`);
       const c = git(repoRoot, ["commit", "-m", args.message]);

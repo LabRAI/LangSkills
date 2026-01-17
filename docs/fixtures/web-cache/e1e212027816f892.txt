@@ -1,0 +1,4 @@
+FIXTURE CACHE (offline)
+URL: https://pubs.opengroup.org/onlinepubs/9699919799/utilities/find.html
+Purpose: used by scripts/self-check.js --with-capture to avoid network fetches.
+

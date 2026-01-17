@@ -338,10 +338,11 @@ function usage(exitCode = 0) {
 Usage:
   node agents/orchestrator/run.js --domain <domain>
     [--run-id <id>] [--runs-dir runs] [--cache-dir .cache/web]
+    [--skip-repo-ingest]
     [--crawl-max-pages <n>] [--crawl-max-depth <n>]
     [--extract-max-docs <n>]
-    [--generate-max-topics <n>] [--out <skillsRoot>] [--overwrite] [--capture] [--capture-strict]
-    [--loop] [--sleep-ms <n>] [--cycle-sleep-ms <n>]
+    [--generate-max-topics <n>] [--out <skillsRoot>] [--overwrite] [--overwrite-content] [--capture] [--capture-strict]
+    [--loop] [--max-cycles <n>] [--sleep-ms <n>] [--cycle-sleep-ms <n>]
 `.trim();
   if (exitCode === 0) console.log(msg);
   else console.error(msg);
@@ -354,15 +355,18 @@ function parseArgs(argv) {
     runId: null,
     runsDir: "runs",
     cacheDir: ".cache/web",
+    skipRepoIngest: false,
     crawlMaxPages: 50,
     crawlMaxDepth: 2,
     extractMaxDocs: 50,
     generateMaxTopics: 0,
     out: "skills",
     overwrite: false,
+    overwriteContent: false,
     capture: false,
     captureStrict: false,
     loop: false,
+    maxCycles: 0,
     sleepMs: 0,
     cycleSleepMs: 0,
   };
@@ -381,6 +385,8 @@ function parseArgs(argv) {
     } else if (a === "--cache-dir") {
       args.cacheDir = argv[i + 1] || args.cacheDir;
       i++;
+    } else if (a === "--skip-repo-ingest") {
+      args.skipRepoIngest = true;
     } else if (a === "--crawl-max-pages") {
       args.crawlMaxPages = Number(argv[i + 1] || "50");
       i++;
@@ -397,9 +403,14 @@ function parseArgs(argv) {
       args.out = argv[i + 1] || args.out;
       i++;
     } else if (a === "--overwrite") args.overwrite = true;
+    else if (a === "--overwrite-content") args.overwriteContent = true;
     else if (a === "--capture") args.capture = true;
     else if (a === "--capture-strict") args.captureStrict = true;
     else if (a === "--loop") args.loop = true;
+    else if (a === "--max-cycles") {
+      args.maxCycles = Number(argv[i + 1] || "0");
+      i++;
+    }
     else if (a === "--sleep-ms") {
       args.sleepMs = Number(argv[i + 1] || "0");
       i++;
@@ -418,6 +429,7 @@ function parseArgs(argv) {
   if (!Number.isFinite(args.crawlMaxDepth) || args.crawlMaxDepth < 0) args.crawlMaxDepth = 2;
   if (!Number.isFinite(args.extractMaxDocs) || args.extractMaxDocs < 0) args.extractMaxDocs = 50;
   if (!Number.isFinite(args.generateMaxTopics) || args.generateMaxTopics < 0) args.generateMaxTopics = 0;
+  if (!Number.isFinite(args.maxCycles) || args.maxCycles < 0) args.maxCycles = 0;
   if (!Number.isFinite(args.sleepMs) || args.sleepMs < 0) args.sleepMs = 0;
   if (!Number.isFinite(args.cycleSleepMs) || args.cycleSleepMs < 0) args.cycleSleepMs = 0;
   return args;
@@ -756,11 +768,12 @@ async function main() {
 
   let cycle = 0;
   while (true) {
+    if (args.maxCycles > 0 && cycle >= args.maxCycles) break;
     cycle += 1;
     console.log(`[orchestrator] cycle=${cycle} domain=${args.domain} run_id=${runId}`);
 
     // 0) Ingest Tier0 repos (github_repo sources)
-    if (githubRepoSources.length > 0) {
+    if (!args.skipRepoIngest && githubRepoSources.length > 0) {
       ingestGithubRepoSources({ repoRoot, runDir, runId, domain: args.domain, repoSources: githubRepoSources });
     }
 
@@ -856,6 +869,7 @@ async function main() {
         maxTopics,
       ];
       if (args.overwrite) runArgs.push("--overwrite");
+      if (args.overwriteContent) runArgs.push("--overwrite-content");
       if (args.capture) runArgs.push("--capture");
       if (args.captureStrict) runArgs.push("--capture-strict");
       runArgs.push("--cache-dir", args.cacheDir);
@@ -875,6 +889,7 @@ async function main() {
     }
 
     if (!args.loop) break;
+    if (args.maxCycles > 0 && cycle >= args.maxCycles) break;
     if (args.sleepMs > 0) await sleep(args.sleepMs);
     if (args.cycleSleepMs > 0) await sleep(args.cycleSleepMs);
   }

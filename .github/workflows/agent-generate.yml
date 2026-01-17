@@ -11,6 +11,16 @@ on:
         description: "Target branch name (optional)"
         required: false
         type: string
+      domain:
+        description: "Domain to generate (linux|integrations)"
+        required: false
+        type: string
+        default: "linux"
+      topic:
+        description: "Topic id to (re)generate (topic/slug)"
+        required: false
+        type: string
+        default: "filesystem/find-files"
 
 permissions:
   contents: write
@@ -30,23 +40,38 @@ jobs:
           if [ -n "${{ inputs.branch }}" ]; then
             echo "branch=${{ inputs.branch }}" >> "$GITHUB_OUTPUT"
           else
-            echo "branch=bot/linux/${{ github.run_id }}" >> "$GITHUB_OUTPUT"
+            echo "branch=bot/${{ inputs.domain }}/${{ github.run_id }}" >> "$GITHUB_OUTPUT"
           fi
       - name: Configure git identity
         run: |
           git config user.name "skill-bot"
           git config user.email "skill-bot@users.noreply.github.com"
-      - name: Generate skeleton skills (linux)
-        run: node agents/run_local.js --domain linux --out skills
-      - name: Validate skills
-        run: node scripts/validate-skills.js
+      - name: Generate captured skill (strict + safe overwrite)
+        run: |
+          node agents/run_local.js \
+            --domain "${{ inputs.domain }}" \
+            --topic "${{ inputs.topic }}" \
+            --out skills \
+            --overwrite-content \
+            --capture \
+            --capture-strict
+      - name: Validate skills (strict + publish gate)
+        run: node scripts/validate-skills.js --strict --fail-on-license-review-all
+      - name: Detect changes
+        id: diff
+        run: |
+          if [ -n "$(git status --porcelain -- skills)" ]; then
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+          fi
       - name: Auto commit/push (optional)
         run: |
-          args=(--paths skills --remote origin --branch "${{ steps.vars.outputs.branch }}" --message "chore: agent-generate (linux)")
+          args=(--paths skills --remote origin --branch "${{ steps.vars.outputs.branch }}" --message "chore: agent-generate (${{ inputs.domain }} ${{ inputs.topic }})")
           if [ "${{ inputs.dry_run }}" != "true" ]; then args+=(--execute); fi
           node scripts/git-automation.js "${args[@]}"
       - name: Create PR (optional)
-        if: ${{ inputs.dry_run != 'true' }}
+        if: ${{ inputs.dry_run != 'true' && steps.diff.outputs.has_changes == 'true' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -55,6 +80,8 @@ jobs:
 
           - Workflow run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
           - Branch: `${{ steps.vars.outputs.branch }}`
+          - Domain: `${{ inputs.domain }}`
+          - Topic: `${{ inputs.topic }}`
 
           CI (validate + site build) must pass before merge.
           EOF
@@ -62,5 +89,5 @@ jobs:
             --repo "${{ github.repository }}" \
             --head "${{ steps.vars.outputs.branch }}" \
             --base "main" \
-            --title "chore(linux): agent-generate" \
+            --title "chore(${{ inputs.domain }}): agent-generate (${{ inputs.topic }})" \
             --body-file pr_body.md

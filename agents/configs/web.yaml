@@ -1,0 +1,24 @@
+domain: web
+owners: []
+
+sources:
+  primary:
+    - web_react_docs
+
+source_policy:
+  prefer:
+    - official docs
+    - api reference
+  allow_domains:
+    - react.dev
+  deny_domains: []
+
+seeds:
+  - https://react.dev/learn
+  - https://react.dev/reference/react
+
+topics:
+  - id: react/useeffect-data-fetching
+    title: "React useEffect：数据请求与清理（避免竞态/泄漏）"
+    level: bronze
+    risk_level: medium

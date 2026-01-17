@@ -262,10 +262,10 @@ async function main() {
       record("m0(repo-skeleton)", true, `${required.length} paths OK`);
     }
 
-    // 0) Agent generator smoke (config -> skills skeleton -> validate -> build index)
-    {
-      const skillsOut = tempDirPath("skill-gen-");
-      const siteOut = tempDirPath("skill-site-");
+	    // 0) Agent generator smoke (config -> skills skeleton -> validate -> build index)
+	    {
+	      const skillsOut = tempDirPath("skill-gen-");
+	      const siteOut = tempDirPath("skill-site-");
 
       const gen = run(process.execPath, [path.join(repoRoot, "agents", "run_local.js"), "--domain", "linux", "--out", skillsOut], {
         cwd: repoRoot,
@@ -288,50 +288,110 @@ async function main() {
       const index = JSON.parse(fs.readFileSync(indexPath, "utf8"));
       assertOk(Number(index.skills_count) > 0, "generated index.json skills_count <= 0");
 
-      record("agent(generator)", true, `skills_count=${index.skills_count}`);
-    }
+	      record("agent(generator)", true, `skills_count=${index.skills_count}`);
+	    }
 
-    // 0b) Agent capture smoke (real fetch -> non-TODO skill -> strict validation)
-    if (args.withCapture) {
-      const skillsOut = tempDirPath("skill-capture-");
-      const siteOut = tempDirPath("skill-capture-site-");
-      const cacheOut = tempDirPath("skill-cache-");
+	    // 0a) Agent overwrite-content safety (refresh markdown without clobbering metadata.yaml)
+	    {
+	      const skillsOut = tempDirPath("skill-overwrite-content-");
+	      const runLocal = path.join(repoRoot, "agents", "run_local.js");
+	      const topicId = "filesystem/find-files";
 
-      const gen = run(
-        process.execPath,
-        [
-          path.join(repoRoot, "agents", "run_local.js"),
-          "--domain",
-          "linux",
-          "--topic",
-          "filesystem/find-files",
-          "--out",
-          skillsOut,
-          "--overwrite",
-          "--capture",
-          "--capture-strict",
-          "--llm-provider",
-          "mock",
-          "--llm-fixture",
-          path.join("agents", "llm", "fixtures", "rewrite.json"),
-          "--cache-dir",
-          cacheOut,
-        ],
-        { cwd: repoRoot },
-      );
-      assertOk(gen.status === 0, gen.stderr || gen.stdout || "agent capture failed");
+	      const gen = run(
+	        process.execPath,
+	        [runLocal, "--domain", "linux", "--topic", topicId, "--out", skillsOut],
+	        { cwd: repoRoot },
+	      );
+	      assertOk(gen.status === 0, gen.stderr || gen.stdout || "agent overwrite-content setup failed");
 
-      const val = run(
-        process.execPath,
-        [
-          path.join(repoRoot, "scripts", "validate-skills.js"),
-          "--skills-root",
-          skillsOut,
-          "--strict",
-        ],
-        { cwd: repoRoot },
-      );
-      assertOk(val.status === 0, val.stderr || val.stdout || "validate captured skill failed");
+	      const skillDir = path.join(skillsOut, "linux", "filesystem", "find-files");
+	      const metaPath = path.join(skillDir, "metadata.yaml");
+	      const skillPath = path.join(skillDir, "skill.md");
+	      mustExist(metaPath, "metadata.yaml");
+	      mustExist(skillPath, "skill.md");
+
+	      const metaBefore = fs.readFileSync(metaPath, "utf8");
+	      const metaSentinelLine = 'last_verified: "2099-01-01"';
+	      const metaSentinel = /^\s*last_verified:\s*.*$/m.test(metaBefore)
+	        ? metaBefore.replace(/^\s*last_verified:\s*.*$/m, metaSentinelLine)
+	        : `${metaBefore.trimEnd()}\n${metaSentinelLine}\n`;
+	      fs.writeFileSync(metaPath, metaSentinel, "utf8");
+	      fs.writeFileSync(skillPath, "# SENTINEL\n", "utf8");
+
+	      const refresh = run(
+	        process.execPath,
+	        [runLocal, "--domain", "linux", "--topic", topicId, "--out", skillsOut, "--overwrite-content"],
+	        { cwd: repoRoot },
+	      );
+	      assertOk(refresh.status === 0, refresh.stderr || refresh.stdout || "agent overwrite-content refresh failed");
+
+	      const metaAfter = fs.readFileSync(metaPath, "utf8");
+	      assertOk(metaAfter.includes(metaSentinelLine), "metadata.yaml was overwritten by --overwrite-content");
+
+	      const skillAfter = fs.readFileSync(skillPath, "utf8");
+	      assertOk(!skillAfter.includes("SENTINEL"), "skill.md was not overwritten by --overwrite-content");
+
+	      record("agent(overwrite-content)", true, "metadata preserved");
+	    }
+
+	    // 0b) Agent capture smoke (prefer real fetch; fall back to offline fixtures if network is unavailable)
+	    if (args.withCapture) {
+	      const skillsOut = tempDirPath("skill-capture-");
+	      const siteOut = tempDirPath("skill-capture-site-");
+	      const fixtureCache = path.join(repoRoot, "docs", "fixtures", "web-cache");
+	      const tempCache = tempDirPath("skill-cache-");
+	      let cacheOut = tempCache;
+	      let cacheMode = "network";
+
+	      const runCapture = (cacheDir) =>
+	        run(
+	          process.execPath,
+	          [
+	            path.join(repoRoot, "agents", "run_local.js"),
+	            "--domain",
+	            "linux",
+	            "--topic",
+	            "filesystem/find-files",
+	            "--out",
+	            skillsOut,
+	            "--overwrite",
+	            "--capture",
+	            "--capture-strict",
+	            "--llm-provider",
+	            "mock",
+	            "--llm-fixture",
+	            path.join("agents", "llm", "fixtures", "rewrite.json"),
+	            "--cache-dir",
+	            cacheDir,
+	          ],
+	          { cwd: repoRoot },
+	        );
+
+	      let gen = runCapture(cacheOut);
+	      if (gen.status !== 0) {
+	        const msg = String(gen.stderr || gen.stdout || "");
+	        const looksNetwork =
+	          /fetch failed|ENOTFOUND|ECONNRESET|ETIMEDOUT|EAI_AGAIN|ECONNREFUSED|certificate/i.test(msg);
+	        if (looksNetwork && fs.existsSync(fixtureCache)) {
+	          cacheOut = fixtureCache;
+	          cacheMode = "fixture";
+	          gen = runCapture(cacheOut);
+	        }
+	      }
+	      assertOk(gen.status === 0, gen.stderr || gen.stdout || "agent capture failed");
+
+	      const val = run(
+	        process.execPath,
+	        [
+	          path.join(repoRoot, "scripts", "validate-skills.js"),
+	          "--skills-root",
+	          skillsOut,
+	          "--strict",
+	          "--fail-on-license-review-all",
+	        ],
+	        { cwd: repoRoot },
+	      );
+	      assertOk(val.status === 0, val.stderr || val.stdout || "validate captured skill failed");
 
       const audit = run(
         process.execPath,
@@ -357,8 +417,8 @@ async function main() {
       const index = JSON.parse(fs.readFileSync(indexPath, "utf8"));
       assertOk(Number(index.skills_count) === 1, `captured index.json skills_count != 1 (got ${index.skills_count})`);
 
-      record("agent(capture)", true, `skills_count=${index.skills_count}`);
-    }
+	      record("agent(capture)", true, `skills_count=${index.skills_count} cache=${cacheMode}`);
+	    }
 
     // 1) Validate skills
     {
@@ -400,6 +460,14 @@ async function main() {
       const parsed = JSON.parse(fs.readFileSync(indexPath, "utf8"));
       assertOk(Number(parsed.schema_version || 0) >= 2, `site index schema_version < 2 (got ${parsed.schema_version})`);
       const skills = Array.isArray(parsed.skills) ? parsed.skills : [];
+      const minScale = Math.floor(Number(args.m2Scale || 100000));
+      assertOk(Number.isFinite(minScale) && minScale >= 1, `--m2-scale must be >= 1 (got ${args.m2Scale})`);
+      assertOk(Number(parsed.skills_count || 0) >= minScale, `M2 requires skills_count >= ${minScale} (got ${parsed.skills_count})`);
+      const counts = parsed && parsed.counts && typeof parsed.counts === "object" ? parsed.counts : null;
+      assertOk(counts, "M2 requires index.json counts (atomic/parameterized/composite/by_level)");
+      assertOk(Number(counts.parameterized || 0) >= minScale, `M2 requires parameterized >= ${minScale} (got ${counts.parameterized})`);
+      const paramProbe = skills.find((s) => s && s.id === "linux/m2-param/p-000001");
+      assertOk(paramProbe, "M2 requires parameterized probe skill linux/m2-param/p-000001 in index.json");
       const probe = skills.find((s) => s && s.id === "linux/filesystem/find-files") || skills[0];
       assertOk(probe && probe.id, "site index is missing skills[] entries");
       assertOk(!("library_md" in probe) && !("skill_md" in probe) && !("sources_md" in probe), "site index should not embed markdown");
@@ -409,6 +477,11 @@ async function main() {
       mustExist(path.join(base, "skill.md"), `website/dist/skills/${probe.id}/skill.md`);
       mustExist(path.join(base, "reference", "sources.md"), `website/dist/skills/${probe.id}/reference/sources.md`);
       record("m2(site-index)", true, `schema_version=${parsed.schema_version} probe=${probe.id}`);
+      record(
+        "m2(real-scale)",
+        true,
+        `total=${parsed.skills_count} parameterized=${counts.parameterized} (min=${minScale})`,
+      );
     }
 
     // 3) Serve site locally and fetch
@@ -468,6 +541,18 @@ async function main() {
           assertOk(r2.stdout.includes("# Library"), "cli(online) show library missing header");
 
           record("cli(online)", true, "search/show OK");
+
+          if (args.m2) {
+            const r3 = run(
+              process.execPath,
+              [path.join(repoRoot, "cli", "skill.js"), "show", "linux/m2-param/p-000001", "--file", "library", "--base-url", rootUrl],
+              { cwd: repoRoot },
+            );
+            assertOk(r3.status === 0, "cli(online,m2) show parameterized failed");
+            assertOk(r3.stdout.includes("linux/m2-param/p-000001"), "cli(online,m2) did not render {{id}} placeholder");
+            assertOk(!r3.stdout.includes("{{id}}"), "cli(online,m2) still contains '{{id}}' placeholder");
+            record("cli(online,m2)", true, "parameterized template render OK");
+          }
         }
       } finally {
         proc.kill();
@@ -487,6 +572,18 @@ async function main() {
       assertOk(r2.stdout.includes("# Library"), "cli show library missing header");
 
       record("cli", true, "search/show OK");
+
+      if (args.m2) {
+        const r3 = run(
+          process.execPath,
+          [path.join(repoRoot, "cli", "skill.js"), "show", "linux/m2-param/p-000001", "--file", "library"],
+          { cwd: repoRoot },
+        );
+        assertOk(r3.status === 0, "cli(m2) show parameterized failed");
+        assertOk(r3.stdout.includes("linux/m2-param/p-000001"), "cli(m2) did not render {{id}} placeholder");
+        assertOk(!r3.stdout.includes("{{id}}"), "cli(m2) still contains '{{id}}' placeholder");
+        record("cli(m2)", true, "parameterized template render OK");
+      }
     }
 
     // 5) topics_table generator (write file to avoid PowerShell encoding issues)

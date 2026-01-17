@@ -1,0 +1,10 @@
+{
+  "name": "langskills",
+  "private": true,
+  "devDependencies": {
+    "playwright": "1.57.0"
+  },
+  "scripts": {
+    "e2e": "node scripts/e2e-ui.js"
+  }
+}

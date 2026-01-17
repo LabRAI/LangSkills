@@ -1,0 +1,4 @@
+{"domain":"linux","run_id":"linux-orch-weekly","cycle":1,"timestamp":"2026-01-15T00:00:00.000Z","crawl":{"fetched":120,"blocked":2},"extract":{"processed":100,"candidates_written":260}}
+{"domain":"linux","run_id":"linux-orch-weekly","cycle":2,"timestamp":"2026-01-15T00:05:00.000Z","crawl":{"fetched":160,"blocked":4},"extract":{"processed":140,"candidates_written":380}}
+{"domain":"linux","run_id":"linux-orch-weekly","cycle":3,"timestamp":"2026-01-15T00:10:00.000Z","crawl":{"fetched":180,"blocked":5},"extract":{"processed":160,"candidates_written":420}}
+

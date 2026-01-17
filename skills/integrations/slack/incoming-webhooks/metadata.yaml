@@ -1,0 +1,11 @@
+id: integrations/slack/incoming-webhooks
+title: "Slack Incoming Webhooks：安全发送消息（无需 bot token）"
+domain: integrations
+level: bronze
+risk_level: medium
+platforms: []
+tools: []
+tags: []
+last_verified: ""
+owners: []
+aliases: []

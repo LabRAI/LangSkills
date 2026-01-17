@@ -1,0 +1,51 @@
+services:
+  linux_orchestrator:
+    build: .
+    command:
+      [
+        "node",
+        "agents/orchestrator/run.js",
+        "--domain",
+        "linux",
+        "--run-id",
+        "linux-docker",
+        "--loop",
+        "--crawl-max-pages",
+        "200",
+        "--crawl-max-depth",
+        "2",
+        "--extract-max-docs",
+        "200",
+        "--cycle-sleep-ms",
+        "600000",
+      ]
+    volumes:
+      - ./skills:/app/skills
+      - ./runs:/app/runs
+      - ./.cache:/app/.cache
+
+  integrations_orchestrator:
+    build: .
+    command:
+      [
+        "node",
+        "agents/orchestrator/run.js",
+        "--domain",
+        "integrations",
+        "--run-id",
+        "integrations-docker",
+        "--loop",
+        "--crawl-max-pages",
+        "200",
+        "--crawl-max-depth",
+        "2",
+        "--extract-max-docs",
+        "200",
+        "--cycle-sleep-ms",
+        "600000",
+      ]
+    volumes:
+      - ./skills:/app/skills
+      - ./runs:/app/runs
+      - ./.cache:/app/.cache
+

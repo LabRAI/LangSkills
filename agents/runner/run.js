@@ -125,7 +125,7 @@ function usage(exitCode = 0) {
   const msg = `
 Usage:
   node agents/runner/run.js --domain <domain>
-    [--out <skillsRoot>] [--overwrite]
+    [--out <skillsRoot>] [--overwrite] [--overwrite-content]
     [--topic <topic/id>] [--capture] [--capture-strict] [--cache-dir <path>] [--timeout-ms <n>]
     [--llm-provider mock|ollama|openai] [--llm-model <model>] [--llm-base-url <url>] [--llm-api-key <key>] [--llm-fixture <path>] [--llm-timeout-ms <n>] [--llm-strict]
     [--runs-dir <dir>] [--run-id <id>] [--loop] [--sleep-ms <n>] [--cycle-sleep-ms <n>] [--max-topics <n>] [--max-cycles <n>]
@@ -151,6 +151,7 @@ function parseArgs(argv) {
     domain: null,
     out: "skills",
     overwrite: false,
+    overwriteContent: false,
     topic: null,
     capture: false,
     captureStrict: false,
@@ -179,14 +180,15 @@ function parseArgs(argv) {
     if (a === "--domain") {
       args.domain = argv[i + 1] || null;
       i++;
-    } else if (a === "--out") {
-      args.out = argv[i + 1] || args.out;
-      i++;
-    } else if (a === "--overwrite") args.overwrite = true;
-    else if (a === "--topic") {
-      args.topic = argv[i + 1] || null;
-      i++;
-    } else if (a === "--capture") args.capture = true;
+	    } else if (a === "--out") {
+	      args.out = argv[i + 1] || args.out;
+	      i++;
+	    } else if (a === "--overwrite") args.overwrite = true;
+	    else if (a === "--overwrite-content") args.overwriteContent = true;
+	    else if (a === "--topic") {
+	      args.topic = argv[i + 1] || null;
+	      i++;
+	    } else if (a === "--capture") args.capture = true;
     else if (a === "--capture-strict") args.captureStrict = true;
     else if (a === "--cache-dir") {
       args.cacheDir = argv[i + 1] || args.cacheDir;
@@ -305,7 +307,7 @@ function initState({ runId, domain, out, options, topics }) {
   };
 }
 
-function runLocalOnce({ repoRoot, domain, topicId, out, overwrite, options }) {
+function runLocalOnce({ repoRoot, domain, topicId, out, overwrite, overwriteContent, options }) {
   const args = [
     path.join(repoRoot, "agents", "run_local.js"),
     "--domain",
@@ -317,6 +319,7 @@ function runLocalOnce({ repoRoot, domain, topicId, out, overwrite, options }) {
   ];
 
   if (overwrite) args.push("--overwrite");
+  if (overwriteContent) args.push("--overwrite-content");
   if (options.capture) args.push("--capture");
   if (options.captureStrict) args.push("--capture-strict");
   if (options.cacheDir) args.push("--cache-dir", options.cacheDir);
@@ -378,17 +381,18 @@ async function main() {
     const loaded = loadTopicsFromConfig(configPath, args.topic);
     if (loaded.domain !== args.domain) throw new Error(`Config domain mismatch: expected ${args.domain} but got ${loaded.domain}`);
 
-    state = initState({
-      runId: args.runId,
-      domain: args.domain,
-      out: args.out,
-      options: {
-        overwrite: args.overwrite,
-        capture: args.capture,
-        captureStrict: args.captureStrict,
-        cacheDir: args.cacheDir,
-        timeoutMs: args.timeoutMs,
-        llmProvider: args.llmProvider,
+	    state = initState({
+	      runId: args.runId,
+	      domain: args.domain,
+	      out: args.out,
+	      options: {
+	        overwrite: args.overwrite,
+	        overwriteContent: args.overwriteContent,
+	        capture: args.capture,
+	        captureStrict: args.captureStrict,
+	        cacheDir: args.cacheDir,
+	        timeoutMs: args.timeoutMs,
+	        llmProvider: args.llmProvider,
         llmModel: args.llmModel,
         llmBaseUrl: args.llmBaseUrl,
         llmApiKey: args.llmApiKey,
@@ -402,19 +406,27 @@ async function main() {
     writeJsonAtomic(statePath, state);
   }
 
-  if (args.overwrite && !(state.options && state.options.overwrite)) {
-    state.options = state.options || {};
-    state.options.overwrite = true;
-    state.updated_at = utcNowIso();
-    writeJsonAtomic(statePath, state);
-  }
+	  if (args.overwrite && !(state.options && state.options.overwrite)) {
+	    state.options = state.options || {};
+	    state.options.overwrite = true;
+	    state.updated_at = utcNowIso();
+	    writeJsonAtomic(statePath, state);
+	  }
 
-  const outRoot = path.isAbsolute(state.out) ? state.out : path.resolve(repoRoot, state.out);
-  const runOnceOptions = {
-    overwrite: !!(state.options && state.options.overwrite),
-    capture: !!state.options.capture,
-    captureStrict: !!state.options.captureStrict,
-    cacheDir: state.options.cacheDir || ".cache/web",
+	  if (args.overwriteContent && !(state.options && state.options.overwriteContent)) {
+	    state.options = state.options || {};
+	    state.options.overwriteContent = true;
+	    state.updated_at = utcNowIso();
+	    writeJsonAtomic(statePath, state);
+	  }
+
+	  const outRoot = path.isAbsolute(state.out) ? state.out : path.resolve(repoRoot, state.out);
+	  const runOnceOptions = {
+	    overwrite: !!(state.options && state.options.overwrite),
+	    overwriteContent: !!(state.options && state.options.overwriteContent),
+	    capture: !!state.options.capture,
+	    captureStrict: !!state.options.captureStrict,
+	    cacheDir: state.options.cacheDir || ".cache/web",
     timeoutMs: Number.isFinite(state.options.timeoutMs) ? state.options.timeoutMs : 20000,
     llmProvider: state.options.llmProvider || null,
     llmModel: state.options.llmModel || null,
@@ -472,14 +484,15 @@ async function main() {
 
     console.log(`[runner] cycle=${state.cycle} cursor=${state.cursor + 1}/${state.topics.length} topic=${item.id}`);
 
-    const r = runLocalOnce({
-      repoRoot,
-      domain: state.domain,
-      topicId: item.id,
-      out: outRoot,
-      overwrite: runOnceOptions.overwrite,
-      options: runOnceOptions,
-    });
+	    const r = runLocalOnce({
+	      repoRoot,
+	      domain: state.domain,
+	      topicId: item.id,
+	      out: outRoot,
+	      overwrite: runOnceOptions.overwrite,
+	      overwriteContent: runOnceOptions.overwriteContent,
+	      options: runOnceOptions,
+	    });
 
     item.last_finished_at = utcNowIso();
     item.last_exit_code = r.status;

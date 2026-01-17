@@ -2,17 +2,19 @@
 
 > 目标：把“自检已跑通的结果”与 README 里程碑（M0/M1/M2）+ docs/plan.md 的现实需求之间的差距，整理成可追踪清单。
 
-## Snapshot（2026-01-16）
+## Snapshot（2026-01-17）
 
 **已跑通（本地可复现）**
 - `node scripts/self-check.js --m0 --m1 --m2 --skip-remote`：PASS（见 `docs/verify_log.md`）
-- 仓库 skills 规模：`website/dist/index.json` 统计为 `total=2050 (bronze=1775, silver=220, gold=55)`
-- 严格门禁：`node scripts/validate-skills.js --strict`：PASS（仍有 bronze 的 `License: unknown` 警告）
-- Silver/Gold license 门禁：`node scripts/validate-skills.js --strict --fail-on-license-review`：PASS
+- 仓库 skills 规模：`website/dist/index.json` 统计为 `total=102051 (bronze=96776, silver=4720, gold=555)`
+- 严格门禁：`node scripts/validate-skills.js --strict`：PASS
+- 全仓库 license 门禁：`node scripts/validate-skills.js --strict --fail-on-license-review-all`：PASS
 
 **仍未满足（按“现实发布门禁”理解）**
-- 全仓库清零灰名单：`node scripts/validate-skills.js --strict --fail-on-license-review-all`：FAIL（bronze 仍有 `unknown`）
 - Tier0 must-ingest（上游 github_repo）已补齐 ingest MVP（见 `docs/mohu.md` 的 `Missing-007` 已验证）；但尚未形成“从 Tier0 candidates → 生成本仓库 skills”的扩量闭环
+- 浏览器级 e2e 已补齐：`npm run e2e`（Missing-011 已验证）；但 `self-check`/CI 尚未默认纳入该门禁
+- 多 domain 内容覆盖仍薄（见 `docs/mohu.md` Missing-012）
+- 若需要对外证据链：真实 GitHub PR/Release 线上闭环仍缺（见 `docs/mohu.md` Missing-013）
 
 ---
 
@@ -40,16 +42,18 @@
 
 6) 官网 MVP：可搜索、可复制 library、显示等级与来源  
 ✅ 已覆盖“生成与索引链路”：`build-site` + `serve-site(local)` 产出 `website/dist/` 并可被 CLI 使用。  
-⚠️ 未覆盖 UI/交互的浏览器级 e2e（目前 self-check 不跑浏览器）。
+✅ 已提供 UI/交互的浏览器级 e2e：`npm run e2e`（Playwright）。  
+⚠️ `self-check` 目前不跑浏览器（如需作为发布门禁，可在 CI 中纳入）。
 
 7) CLI MVP：search/open/copy + 本地索引  
 ✅ 已满足：`scripts/self-check.js` 的 `cli`/`cli(online)` 覆盖 search/show 基本路径。
 
 8) 插件 MVP：检索/复制/跳转（不做自动执行）  
-⚠️ 仅做了 manifest 与 host_permissions 回归（`plugin(manifest)`）；插件功能本身未做 e2e/集成回归。
+✅ 已提供 popup UI 的浏览器级 e2e：`npm run e2e`（Missing-011 已验证；mock `chrome.*`）。  
+⚠️ 仍保留 manifest/host_permissions 的静态回归（`plugin(manifest)`）；若要“真实加载扩展”的 e2e，需要额外工程化。
 
 9) 发布 v0.1-alpha：Demo GIF + Roadmap + 自动化徽章（CI/link-check/site build）  
-⚠️ 资产/工作流已具备（demo.gif、CI/link-check/build-site），但“release/tag + 对外可访问的报告/站点”仍依赖真实 GitHub Pages/Release 运行结果。
+⚠️ 资产/工作流已具备（demo.gif、CI/link-check/build-site）。若按“放弃 Pages、仅本地检索”口径，则不再要求站点对外可访问；仍建议线上确认 Release/tag 资产确实生成且可访问。
 
 ---
 
@@ -108,7 +112,7 @@
 - 这是把 must-ingest 上游 repo 变成“可跑、可增量、可审计”闭环的关键缺口，直接影响 M1/M2 的扩量与证据链。
 
 2) M1 的“真实周更产物化”  
-- 从“Actions artifact”升级到“release/Pages 可访问的历史报告 + changelog 对齐”。
+- 从“Actions artifact”升级到“release 可访问的历史报告 + changelog 对齐”（不依赖 Pages）。
 
 3) M1/M2 的“真实数据扩量”口径与验收  
 - 明确：什么算 2k/100k（原子/组合/参数化）、去重口径、覆盖统计与质量门禁。

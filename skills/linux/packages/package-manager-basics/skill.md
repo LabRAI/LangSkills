@@ -39,6 +39,6 @@
 - See: reference/troubleshooting.md
 
 ## Sources
-- [1] Debian man: apt-get(8): https://manpages.debian.org/bookworm/apt/apt-get.8.en.html
+- [1] Debian APT User's Guide: https://www.debian.org/doc/manuals/apt-guide/index.en.html
 - [2] DNF docs: command reference: https://dnf.readthedocs.io/en/latest/command_ref.html
 - [3] Arch man: pacman(8): https://man.archlinux.org/man/pacman.8.en.txt

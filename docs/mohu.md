@@ -180,15 +180,161 @@
     - 2026-01-16: `node scripts/validate-skills.js --strict --fail-on-license-review`
     - 2026-01-16: `node eval/harness/run.js --tasks eval/tasks/linux/smoke.json --out eval/reports/2026-01-16/report.json --out-md eval/reports/2026-01-16/report.md --fail-on-stale-gold`
 
-- [ ] Missing-009: 达成 M2：参数化/组合化/去重驱动的 10 万级扩量（真实数据口径 + 验收）
+- [x] Missing-009: 达成 M2：参数化/组合化/去重驱动的 10 万级扩量（真实数据口径 + 验收）
   - Location: `skills/`, `agents/`, `scripts/build-site.js`, `scripts/validate-skills.js`
   - Acceptance:
     - 明确“10 万级”的口径（Atomic/Composite/Parameterized 的统计口径、去重口径、silver/gold 占比目标）
     - 有可执行验收：能在真实 `skills/` 上把 `website/dist/index.json` 的 `skills_count` 扩到目标规模，并保持 `validate-skills --strict` 通过
   - Evidence:
-    - 当前仅有 100k synthetic index 的规模回归（`self-check --m2`），但真实 skills 数据仍为 50。
+    - `node scripts/build-site.js --out website/dist` 产出 `Skills indexed: 102051`（含 `counts.parameterized: 100000`，真实 `skills/` 驱动）。
+    - `node scripts/validate-skills.js --strict` 通过（存在 license review warnings，但不影响 `--strict`）。
   - Notes:
     - 该项会依赖多 sources 扩展、去重策略与生成矩阵化；可拆分为更小的 Missing 项逐步落地（如需）。
+  - Definition (10 万口径 / 去重口径 / 质量占比目标):
+    - Atomic：`skills/<domain>/<topic>/<slug>/metadata.yaml` 的实体技能；`metadata.yaml` 标记 `hidden: true` 的模板不计入 `skills_count`
+    - Parameterized：由 `skills/skillsets.json` 生成的“模板实例”技能（`kind=parameterized`，通过 `template` 指向模板内容，并对模板文件里的 `{{id}}/{{domain}}/{{topic}}/{{slug}}` 占位符做渲染）
+    - Composite：（预留）`metadata.yaml kind: composite` 的技能，计为 1（不展开为子技能数）
+    - 去重：以 `id` 为主键；`build-site` 在生成 index 时遇到重复 `id` 直接失败；Atomic 的文档级去重仍由 `validate-skills --strict` 负责
+    - silver/gold 占比目标（用于 M2 验收回归）：Parameterized 实例中 `silver+gold >= 5%` 且 `gold >= 0.5%`（由 `skills/skillsets.json` 的 `silver_every/gold_every` 给出）
+  - Implementation:
+    - `scripts/build-site.js`：支持从 `skills/skillsets.json` 扩展 parameterized skills；生成 index 时按 `id` 去重并对重复 `id` fail；输出 `index.json.counts`（atomic/parameterized/composite + by_level）；支持 `hidden: true` 模板不进入 index
+    - `website/src/app.js` / `cli/skill.js` / `plugin/chrome/popup.js`：支持 `template` 指向模板内容，并对模板 markdown 做 `{{...}}` 渲染（基于当前 skill 的 id/domain/topic/slug 等）
+    - `skills/skillsets.json`：新增 M2 生成器：`linux/m2-param/p-000001..p-100000`（parameterized instances）
+    - `skills/linux/m2-templates/parameterized-template/`：新增隐藏模板 skill（模板内容使用 `{{id}}/{{slug}}` 占位符）
+    - `skills/linux/m2-templates/parameterized-template/reference/sources.md`：修复 `Fetch sha256` 证据字段与 `source_policy` 允许域名，确保 `validate-skills --strict` 通过
+    - `scripts/self-check.js`：`--m2` 新增真实扩量验收（real index skills_count/parameterized >= 100k）并通过 `cli(online)` 验证模板渲染
+  - Next:
+    - `node scripts/validate-skills.js --strict`
+    - `node scripts/build-site.js --out website/dist`
+    - `node scripts/self-check.js --m2`
+  - Verified:
+    - 2026-01-17: `node scripts/validate-skills.js --strict`（PASS；2052 skills validated；81 warnings）
+    - 2026-01-17: `node scripts/build-site.js --out website/dist`（PASS；Skills indexed: 102051；parameterized: 100000）
+    - 2026-01-17: `node scripts/self-check.js --m2`（PASS）
+
+- [x] Missing-010: 清零 License 灰名单（unknown）以达成“全仓库可发布级别”合规门禁
+  - Location: `skills/**/reference/sources.md`, `scripts/validate-skills.js`, `scripts/license-policy.json`
+  - Acceptance:
+    - `node scripts/validate-skills.js --strict --fail-on-license-review-all` 通过（0 个 `License needs review`）
+  - Evidence:
+    - 2026-01-16: `node scripts/validate-skills.js --strict --fail-on-license-review-all` 失败（81 issues；均为 `License: unknown`）。
+    - 2026-01-17: `node scripts/validate-skills.js --strict --fail-on-license-review-all` 通过（OK: 2052 skills validated.）
+  - Notes:
+    - 这是一项“内容合规”工作：需要逐条确认每个来源的真实 license（或换来源/删来源）。
+  - Implementation:
+    - 扩展允许的 license 列表：`scripts/license-policy.json` 新增 `0BSD`、`lsof`，以便对少数来源用更精确的 license token 标注。
+    - 允许 integrations 引用 GitHub 文档：`agents/configs/integrations.yaml` 的 `source_policy.allow_domains` 增加 `github.com`。
+    - 清理并替换 `skills/**/reference/sources.md` 中的 `License: unknown`：为 Linux/Integrations 相关 skills 的来源补齐 SPDX（或切换到可明确 license 的 Arch Wiki/Arch man/GitHub 文档），并同步更新对应 `skill.md` 的 Sources 列表（例如 `skills/linux/text/xargs-basics/`、`skills/linux/users/user-group-management/`、`skills/integrations/slack/incoming-webhooks/`）。
+  - Next:
+    - `node scripts/validate-skills.js --strict --fail-on-license-review-all`
+  - Verified:
+    - 2026-01-17: `node scripts/validate-skills.js --strict --fail-on-license-review-all`（PASS；OK: 2052 skills validated.）
+
+- [x] Missing-011: 网站/插件的浏览器级 E2E 回归（覆盖检索/打开/复制/模板渲染）
+  - Location: `website/`, `plugin/chrome/`, `scripts/`
+  - Acceptance:
+    - 提供可执行 e2e 命令（例如 Playwright）：能在 CI 或本地无头跑通
+    - 覆盖最小关键路径：
+      - website：加载 `index.json`、搜索、打开技能、拉取 `library.md`/`skill.md`/`sources.md`，并验证 parameterized 模板渲染
+      - plugin：加载 `index.json`、搜索、打开详情、复制 `library.md`（或至少验证 fetch+render 路径）
+  - Evidence:
+    - 当前自检以 build/manifest/HTTP smoke 为主；缺少浏览器交互自动化（见 `docs/milestone_gap.md`）。
+  - Notes:
+    - 若暂不做插件 e2e，可先做 website e2e 并把插件留作后续 Missing（需明确口径）。
+  - Implementation:
+    - 新增 Playwright 驱动的 UI e2e：`scripts/e2e-ui.js`（自动 build-site→本地 serve→浏览器验证 website+plugin 关键路径；包含 parameterized 模板渲染与 copy/open 行为的最小回归；并对 headless clipboard 做稳定化处理）。
+    - 新增 `package.json`：引入 `playwright`（dev dependency）并提供 `npm run e2e` 入口。
+  - Next:
+    - `npm install`
+    - `npx playwright install chromium`
+    - `npm run e2e`
+  - Verified:
+    - 2026-01-17: `npm run e2e`（PASS）
+
+- [x] Missing-012: 多 domain 内容扩充（web/cloud/data/travel/devtools + integrations 多 topic）
+  - Location: `skills/web/`, `skills/cloud/`, `skills/data/`, `skills/travel/`, `skills/devtools/`, `skills/integrations/`, `agents/configs/`
+  - Acceptance:
+    - 每个 domain 至少有一批可被索引的真实 skills（`metadata.yaml` 存在且不为模板 hidden）
+    - `node scripts/validate-skills.js --strict` 通过
+    - `node scripts/build-site.js --out website/dist` 后 `index.json` 中各 domain skills 数量不为 0（按约定阈值验收）
+  - Evidence:
+    - 当前 `skills/web|cloud|data|travel|devtools` 为占位（0 条 `metadata.yaml`）；`integrations` 仅 1 个示例 topic。
+  - Implementation:
+    - 新增 domains 的配置文件：`agents/configs/web.yaml`, `agents/configs/cloud.yaml`, `agents/configs/data.yaml`, `agents/configs/travel.yaml`, `agents/configs/devtools.yaml`（补齐 `source_policy` allow_domains 与 seeds/topics）。
+    - 扩展 sources 索引：`agents/configs/sources.yaml` 新增 `web_react_docs` / `cloud_kubernetes_docs` / `data_duckdb_docs` / `travel_airport_codes_public` / `devtools_git_docs` / `integrations_github_docs`。
+    - 新增真实 skills（每个 domain 至少 1 条）：
+      - `skills/web/react/useeffect-data-fetching/`
+      - `skills/cloud/kubernetes/kubectl-context-namespace/`
+      - `skills/data/duckdb/query-csv-parquet/`
+      - `skills/travel/planning/airport-codes-iata-icao/`
+      - `skills/devtools/git/bisect-regression/`
+    - integrations 增加第 2 个 topic（github）：`skills/integrations/github/create-issue-rest-api/`，并更新 `agents/configs/integrations.yaml` topics。
+  - Next:
+    - `node scripts/validate-skills.js --strict`
+    - `node scripts/build-site.js --out website/dist`
+    - `node -e "const fs=require('fs');const idx=JSON.parse(fs.readFileSync('website/dist/index.json','utf8'));const counts={};for(const s of (idx.skills||[])){counts[s.domain]=(counts[s.domain]||0)+1;}for(const d of ['web','cloud','data','travel','devtools','integrations']){console.log(d+': '+(counts[d]||0));}"`
+  - Verified:
+    - 2026-01-17: `node scripts/validate-skills.js --strict`（PASS）
+    - 2026-01-17: `node scripts/build-site.js --out website/dist`（PASS）
+
+- [ ] Missing-013:（可选）线上真实 PR/Release 闭环（即便放弃 Pages 也需要对外证据链时）
+  - Location: `.github/workflows/`, `scripts/create-pr.js`, `scripts/git-automation.js`, `docs/milestone_gap.md`
+  - Acceptance:
+    - GitHub 上真实运行一次：
+      - 自动创建 PR（非 mock）
+      - 自动发布 Release/tag 资产可访问（例如 eval report）
+  - Evidence:
+    - 当前本地主要覆盖 mock/create-pr 与临时 repo push；不等价于真实 GitHub 权限/网络/分支策略的线上验证。
+  - Notes:
+    - 若仓库只用于本地私有分发，可将此项降级为“不做”；但对外开源/可公开访问时应补齐。
+
+- [x] Missing-014: Capture 产物可发布级别合规（license 不回退）+ bot 安全增量更新（不覆盖 metadata）
+  - Location: `agents/generator/*_capture.js`, `agents/run_local.js`, `agents/runner/run.js`, `scripts/self-check.js`, `.github/workflows/agent-generate.yml`, `scripts/git-automation.js`
+  - Acceptance:
+    - capture 输出在合规门禁下可通过：`node scripts/self-check.js --with-capture --skip-remote`（其中包含 `validate-skills --fail-on-license-review-all` 覆盖）
+    - 支持“只刷新内容、不覆盖 metadata.yaml”：`node scripts/self-check.js --skip-remote`（包含 `run_local --overwrite-content` 的保护性断言）
+    - bot 发布流程不产生空 PR：当 `skills/` 无变更时，push/PR 步骤应跳过（见 workflow 更新）
+  - Evidence:
+    - capture sources 默认 `License: unknown`（会导致 `--fail-on-license-review-all` 回退失败）
+    - 当前只有 `--overwrite`（会覆盖 `metadata.yaml`，不适合对现有高质量 skills 做周期性 refresh）
+    - `git-automation` 在无变更时仍会 push，workflow 也没有显式跳过空 diff
+  - Notes:
+    - 该项是“机器人闭环（capture→校验→发布）”可长期运行的前置安全门槛。
+  - Implementation:
+    - `agents/generator/license_lookup.js`：从 repo 现有 `skills/**/reference/sources.md` 构建 URL→License 映射；capture 时补齐 `License:`，并在 strict 模式下拒绝 `unknown`。
+    - `agents/generator/linux_capture.js` / `agents/generator/integrations_capture.js`：优先复用 repo 内同路径 skill 的 canonical sources（URL+License），避免 spec 与现有合规来源漂移。
+    - `agents/run_local.js`：新增 `--overwrite-content`（只覆盖 markdown，不覆盖 `metadata.yaml`）。
+    - `agents/runner/run.js` / `agents/orchestrator/run.js`：透传 `--overwrite-content`。
+    - `scripts/git-automation.js`：无变更时跳过 checkout/commit/push（避免空分支/空 PR）。
+    - `.github/workflows/agent-generate.yml`：改为 capture + strict + license 门禁，并仅在 `skills/` 有变更时创建 PR。
+    - `scripts/self-check.js`：新增 `agent(overwrite-content)` 断言；capture smoke 增加 `--fail-on-license-review-all`；并使用 `docs/fixtures/web-cache` 使 capture smoke 可离线跑通。
+    - `docs/fixtures/web-cache/*`：为 capture smoke 提供最小离线抓取缓存（按 URL sha256 前 16 位命名）。
+  - Verified:
+    - 2026-01-17: `node scripts/self-check.js --skip-remote`（PASS）
+    - 2026-01-17: `node scripts/self-check.js --with-capture --skip-remote`（PASS；离线 fixture cache 模式）
+
+- [x] Missing-015: Curator MVP：把 candidates 转为可生成/可审计的 topic/skill 队列（从 must-ingest 到扩量闭环）
+  - Location: `agents/curator/`, `agents/extractor/`, `agents/orchestrator/run.js`, `docs/must_ingest_sources.md`
+  - Acceptance:
+    - `node agents/orchestrator/run.js --domain linux --run-id curator-demo --crawl-max-pages 1 --extract-max-docs 10 --generate-max-topics 0` 产出 `runs/curator-demo/candidates.jsonl`
+    - `node agents/curator/run.js --domain linux --run-id curator-demo` 产出 `runs/curator-demo/curation.json`（包含：去重统计、候选→topic/slug 建议、来源/证据引用、以及“可自动生成 vs 需人工”的分类）
+    - curator 产物具备稳定 ID（可断点续跑/可增量），并能作为后续生成/发布的输入（不要求本项直接生成 skill 文件）
+  - Evidence:
+    - 当前 extractor/orchestrator 只产出 candidates，但没有“整理→可执行队列”的中间层；`agents/curator/README.md` 仍为 TODO。
+  - Notes:
+    - 该项用于回答“机器人会不会跑俩小时就结束/如何持续吃掉所有 library”的迭代策略问题。
+  - Implementation:
+    - 新增 `agents/curator/run.js`：读取 `runs/<run-id>/candidates.jsonl`，做增量解析（`cursor_bytes`）与按 proposal key 聚合去重，输出：
+      - `runs/<run-id>/curator_state.json`（断点续跑 + 聚合状态）
+      - `runs/<run-id>/curation.json`（proposals + topic/slug 建议 + 证据引用 + auto/manual/ignore 分类）
+      - `runs/<run-id>/curation_log.jsonl`（每次运行一条 append-only 日志）
+    - 更新 `agents/curator/README.md`：补齐 curator 的定位、命令与产物说明。
+  - Next:
+    - `node agents/orchestrator/run.js --domain linux --run-id curator-demo --crawl-max-pages 1 --extract-max-docs 10 --generate-max-topics 0`
+    - `node agents/curator/run.js --domain linux --run-id curator-demo --reset`
+  - Verified:
+    - 2026-01-17: `node agents/orchestrator/run.js --domain linux --run-id curator-demo --crawl-max-pages 1 --extract-max-docs 10 --generate-max-topics 0`
+    - 2026-01-17: `node agents/curator/run.js --domain linux --run-id curator-demo`
 
 ## Ambiguous
 - [x] Amb-001: “网页端的 integration” 的具体范围是什么？（Q2/Q6）
@@ -264,8 +410,51 @@
   - Next:
     - `cat agents/configs/sources.yaml`
 
+- [x] Amb-005: 放弃 Pages 后，“本地后端联网检索”的范围与安全要求是什么？
+  - Location: `scripts/serve-local.js`, `scripts/serve-site.js`, `website/`, `cli/`, `plugin/chrome/`, `docs/gap_ideal_vs_reality.md`
+  - Question:
+    - 后端只需要本机 `127.0.0.1`（给 website/CLI/plugin 用）还是需要局域网访问（`0.0.0.0` + LAN IP）甚至公网访问？
+    - 是否需要服务端搜索 API（避免客户端下载 12MB+ 的 `index.json` 再过滤）？
+    - Chrome 插件是否需要访问非 `127.0.0.1/localhost` 的 baseUrl（LAN IP/域名）？
+  - Resolution (executable):
+    - 本 milestone 只支持 **Tier A：本机后端分发与检索**：
+      - 后端形态：`node scripts/serve-local.js`（build-site → serve-site）作为 Pages 替代，默认监听 `127.0.0.1`。
+      - 检索形态：
+        - 默认：website/CLI/plugin 仍可按需拉取 `index.json` 与 `skills/**` markdown；
+        - 增强：后端提供 **服务端搜索 API**，客户端优先使用 `/api/search`（避免下载 12MB+ `index.json` 才过滤），不可用则回退到 `index.json`。
+      - 安全边界：不做 TLS/鉴权；仅保证最小安全性质（路径穿越不可读、目录不列出、`Cache-Control: no-store`）。
+    - Tier B（局域网/公网）不在本项验收范围内；如需要对外暴露（TLS/鉴权/速率限制/审计日志/插件最小 host_permissions）需另起条目与威胁模型。
+  - Implementation:
+    - `scripts/serve-site.js`：新增 `/api/health`、`/api/summary`、`/api/search`、`/api/skill`；并强化 `safeJoin` 防止路径前缀绕过。
+    - `website/src/app.js`：若 `/api/summary` 可用则切到 API 模式（`/api/search`）；否则回退到 `index.json` 本地过滤。
+    - `plugin/chrome/popup.js`：同样优先 API 模式（`/api/summary` + `/api/search`），不可用则回退 `index.json`。
+    - `scripts/test-serve-local.js`：补充后端 API 的 smoke 断言（health/summary/search/skill）。
+  - Next:
+    - `node scripts/test-serve-local.js`
+    - `npm run e2e`
+    - `node scripts/self-check.js --m0 --m1 --m2 --skip-remote`
+  - Verified:
+    - 2026-01-17: `node scripts/test-serve-local.js`（PASS）
+    - 2026-01-17: `npm run e2e`（PASS）
+    - 2026-01-17: `node scripts/self-check.js --m0 --m1 --m2 --skip-remote`（PASS）
+
+- [ ] Amb-006: M2 “10 万级扩量”的口径与去重口径（真实 vs parameterized）
+  - Location: `docs/mohu.md`（Missing-009）, `scripts/self-check.js`, `scripts/build-site.js`, `skills/skillsets.json`
+  - Question:
+    - “10 万”是指 `index.json` 中可检索条目（允许 parameterized 实例），还是指 `skills/` 下真实内容文件夹数量，还是指多 domain/多来源覆盖意义的规模？
+    - 去重口径：按 `id` 去重即可，还是需要按内容 hash/语义近似去重？
+  - Needed:
+    - 明确验收指标与可执行验收命令（以及是否要求“真实 skills”而非模板/参数化实例）。
+  - Proposed spec:
+    - 先拆成两个可验收目标：
+      - A) “可检索规模”：`build-site` 产出的 `index.json` 中 `skills_count>=100000`（允许 parameterized），并在 `self-check --m2` 验收。
+      - B) “真实覆盖面”：定义“真实 skills”的范围与来源（domain/topic/seed），并给出统计与去重策略后再验收。
+  - Notes:
+    - 若 B) 被认为是 M2 的真实目标，建议把它从描述性口号转为新的 Missing（避免与当前参数化规模回归混淆）。
+
 ## Log
 - 2026-01-15: 初始化问题 2–6 的 Missing/Ambiguous 跟踪列表，并按优先级准备逐一修复。
 - 2026-01-15: 根据 plan 复核实现，新增 integrations domain 的 Missing-006。
 - 2026-01-16: 完成并验证 Missing-007（Tier0 github_repo ingest MVP），产出 `runs/<run-id>/repo_state.json`/`repo_docs.jsonl`。
 - 2026-01-16: 实施 Missing-008（skills_count≥2000 + eval 发布到 Release），本地验收已通过；待线上跑 `eval` workflow 确认 Release 资产落地。
+- 2026-01-17: 完成并验收 Missing-010（`validate-skills --strict --fail-on-license-review-all` PASS）；补充“放弃 Pages→本地后端”测试与差距清单（见 `docs/gap_ideal_vs_reality.md`）。

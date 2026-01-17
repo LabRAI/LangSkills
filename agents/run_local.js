@@ -6,6 +6,7 @@ const fs = require("fs");
 const path = require("path");
 
 const { captureLinuxSkill } = require("./generator/linux_capture");
+const { captureIntegrationsSkill } = require("./generator/integrations_capture");
 const { createLLM, rewriteMarkdown } = require("./llm");
 
 process.stdout.on("error", (err) => {
@@ -39,6 +40,13 @@ function writeText(filePath, content, overwrite) {
   ensureDir(path.dirname(filePath));
   fs.writeFileSync(filePath, ensureNewline(content), "utf8");
   return { written: true };
+}
+
+function writeJsonAtomic(filePath, obj) {
+  ensureDir(path.dirname(filePath));
+  const tmp = `${filePath}.${crypto.randomBytes(4).toString("hex")}.tmp`;
+  fs.writeFileSync(tmp, JSON.stringify(obj, null, 2) + "\n", "utf8");
+  fs.renameSync(tmp, filePath);
 }
 
 function stripBom(text) {
@@ -532,9 +540,10 @@ function templateDomainReadme(domain, topics) {
 function usage(exitCode = 0) {
   const msg = `
 Usage:
-  node agents/run_local.js --domain <domain> [--topic <topic/id>] [--out <skillsRoot>] [--overwrite] [--dry-run] [--capture]
+  node agents/run_local.js --domain <domain> [--topic <topic/id>] [--out <skillsRoot>] [--overwrite] [--overwrite-content] [--dry-run] [--capture]
     [--llm-provider mock|ollama|openai] [--llm-model <model>] [--llm-base-url <url>] [--llm-api-key <key>]
     [--llm-fixture <path>] [--llm-timeout-ms <n>] [--llm-strict]
+    [--llm-capture] [--report-json <path>]
 
 Examples:
   node agents/run_local.js --domain linux --out skills
@@ -549,6 +558,7 @@ Notes:
   - Generates: skills/<domain>/<topic>/<slug>/* (skeleton templates)
   - With --capture: tries to fetch sources and write non-TODO content for supported topics
   - With --llm-provider: rewrites captured markdown (skill/library) for quality (keeps citations/commands)
+  - With --llm-capture: writes LLM request/response JSON under each skill's reference/llm/
 `;
   if (exitCode === 0) console.log(msg.trim());
   else console.error(msg.trim());
@@ -561,6 +571,7 @@ function parseArgs(argv) {
     topic: null,
     out: "skills",
     overwrite: false,
+    overwriteContent: false,
     dryRun: false,
     capture: false,
     captureStrict: false,
@@ -573,6 +584,8 @@ function parseArgs(argv) {
     llmFixture: null,
     llmTimeoutMs: 60000,
     llmStrict: false,
+    llmCapture: false,
+    reportJson: null,
   };
 
   for (let i = 0; i < argv.length; i++) {
@@ -587,6 +600,7 @@ function parseArgs(argv) {
       args.out = argv[i + 1] || "skills";
       i++;
     } else if (a === "--overwrite") args.overwrite = true;
+    else if (a === "--overwrite-content") args.overwriteContent = true;
     else if (a === "--dry-run") args.dryRun = true;
     else if (a === "--capture") args.capture = true;
     else if (a === "--capture-strict") args.captureStrict = true;
@@ -616,6 +630,11 @@ function parseArgs(argv) {
       args.llmTimeoutMs = Number(argv[i + 1] || "60000");
       i++;
     } else if (a === "--llm-strict") args.llmStrict = true;
+    else if (a === "--llm-capture") args.llmCapture = true;
+    else if (a === "--report-json") {
+      args.reportJson = argv[i + 1] || null;
+      i++;
+    }
     else if (a === "-h" || a === "--help") usage(0);
     else throw new Error(`Unknown arg: ${a}`);
   }
@@ -658,6 +677,15 @@ async function main() {
     })
     : null;
 
+  const report = {
+    version: 1,
+    generated_at: new Date().toISOString(),
+    domain: cfg.domain,
+    out_root: path.relative(repoRoot, outRoot),
+    llm: llm ? { provider: llm.provider, model: llm.model, base_url: llm.baseUrl || "" } : null,
+    topics: [],
+  };
+
   let created = 0;
   let updated = 0;
   let skipped = 0;
@@ -694,30 +722,62 @@ async function main() {
     const refDir = path.join(skillDir, "reference");
 
     let payload = null;
-    if (args.capture && cfg.domain === "linux") {
-      try {
-        payload = await captureLinuxSkill({
-          topic,
-          slug,
-          title,
-          riskLevel,
-          cacheDir: path.resolve(repoRoot, args.cacheDir),
-          timeoutMs: Number.isFinite(args.timeoutMs) ? args.timeoutMs : 20000,
-          log: true,
-          strict: args.captureStrict,
-          sourcePolicy: cfg.source_policy || null,
-        });
-      } catch (e) {
-        if (args.captureStrict) throw e;
-        console.error(`[capture] failed for linux/${topic}/${slug}: ${String(e && e.message ? e.message : e)}`);
-        payload = null;
+    if (args.capture) {
+      const captureFn =
+        cfg.domain === "linux" ? captureLinuxSkill : cfg.domain === "integrations" ? captureIntegrationsSkill : null;
+      if (captureFn) {
+        try {
+          payload = await captureFn({
+            topic,
+            slug,
+            title,
+            riskLevel,
+            cacheDir: path.resolve(repoRoot, args.cacheDir),
+            timeoutMs: Number.isFinite(args.timeoutMs) ? args.timeoutMs : 20000,
+            log: true,
+            strict: args.captureStrict,
+            sourcePolicy: cfg.source_policy || null,
+          });
+        } catch (e) {
+          if (args.captureStrict) throw e;
+          console.error(
+            `[capture] failed for ${cfg.domain}/${topic}/${slug}: ${String(e && e.message ? e.message : e)}`,
+          );
+          payload = null;
+        }
       }
     }
 
     if (payload && llm) {
       try {
-        payload.skillMd = await rewriteMarkdown({ markdown: payload.skillMd, llm, kind: "skill.md" });
-        payload.libraryMd = await rewriteMarkdown({ markdown: payload.libraryMd, llm, kind: "library.md" });
+        const llmDir = path.join(refDir, "llm");
+        const captureEnabled = !!args.llmCapture;
+        if (captureEnabled && !args.dryRun) ensureDir(llmDir);
+
+        payload.skillMd = await rewriteMarkdown({
+          markdown: payload.skillMd,
+          llm,
+          kind: "skill.md",
+          capture:
+            captureEnabled && !args.dryRun
+              ? {
+                path: path.join(llmDir, "rewrite_skill.md.json"),
+                meta: { domain: cfg.domain, topic, slug, id: `${cfg.domain}/${topic}/${slug}` },
+              }
+              : null,
+        });
+        payload.libraryMd = await rewriteMarkdown({
+          markdown: payload.libraryMd,
+          llm,
+          kind: "library.md",
+          capture:
+            captureEnabled && !args.dryRun
+              ? {
+                path: path.join(llmDir, "rewrite_library.md.json"),
+                meta: { domain: cfg.domain, topic, slug, id: `${cfg.domain}/${topic}/${slug}` },
+              }
+              : null,
+        });
       } catch (e) {
         if (args.llmStrict) throw e;
         console.error(`[llm] rewrite failed for ${cfg.domain}/${topic}/${slug}: ${String(e && e.message ? e.message : e)}`);
@@ -742,16 +802,56 @@ async function main() {
         continue;
       }
       const before = exists(w.p);
-      const r = writeText(w.p, w.c, args.overwrite);
+      const isMetadata = path.basename(w.p) === "metadata.yaml";
+      const overwrite = args.overwrite || (!!args.overwriteContent && !isMetadata);
+      const r = writeText(w.p, w.c, overwrite);
       if (!r.written) skipped++;
       else if (before) updated++;
       else created++;
+    }
+
+    const relSkillDir = path.relative(repoRoot, skillDir);
+    const record = {
+      id: `${cfg.domain}/${topic}/${slug}`,
+      title,
+      skill_dir: relSkillDir,
+      files: {
+        metadata_yaml: path.relative(repoRoot, path.join(skillDir, "metadata.yaml")),
+        skill_md: path.relative(repoRoot, path.join(skillDir, "skill.md")),
+        library_md: path.relative(repoRoot, path.join(skillDir, "library.md")),
+        sources_md: path.relative(repoRoot, path.join(refDir, "sources.md")),
+      },
+      llm_captures: args.llmCapture && payload && llm
+        ? {
+          rewrite_skill: path.relative(repoRoot, path.join(refDir, "llm", "rewrite_skill.md.json")),
+          rewrite_library: path.relative(repoRoot, path.join(refDir, "llm", "rewrite_library.md.json")),
+        }
+        : null,
+    };
+    report.topics.push(record);
+
+    if (args.topic || args.reportJson) {
+      console.log(`[run_local] skill_dir: ${relSkillDir}`);
+      if (record.llm_captures) {
+        console.log(`[run_local] llm_capture: ${record.llm_captures.rewrite_skill}`);
+        console.log(`[run_local] llm_capture: ${record.llm_captures.rewrite_library}`);
+      }
     }
   }
 
   console.log(
     `Done. domain=${cfg.domain} topics=${topicsToGenerate.length} out=${outRoot} created=${created} updated=${updated} skipped=${skipped} overwrite=${args.overwrite} dry_run=${args.dryRun}`,
   );
+
+  if (args.reportJson) {
+    const reportPath = path.isAbsolute(args.reportJson) ? args.reportJson : path.resolve(repoRoot, args.reportJson);
+    if (args.dryRun) {
+      console.log(`[dry-run] write ${path.relative(repoRoot, reportPath)}`);
+    } else {
+      writeJsonAtomic(reportPath, report);
+      console.log(`[run_local] report_json: ${path.relative(repoRoot, reportPath)}`);
+    }
+  }
 }
 
 main().catch((err) => {

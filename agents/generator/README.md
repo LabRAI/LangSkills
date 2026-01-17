@@ -33,4 +33,7 @@ node agents/run_local.js --domain linux --topic filesystem/find-files --out skil
 
 # Generate all linux skills with real capture (recommended)
 node agents/run_local.js --domain linux --out skills --overwrite --capture --capture-strict
+
+# Integrations domain (example: Slack Incoming Webhooks)
+node agents/run_local.js --domain integrations --topic slack/incoming-webhooks --out skills --overwrite --capture --capture-strict
 ```
