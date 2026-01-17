@@ -90,6 +90,17 @@ node scripts/audit-run.js --run-id <run-id>
 - `runs/<run-id>/reports/audit_run.md`
 - `runs/<run-id>/reports/skill_locations.tsv`
 
+逐一确认本轮每个 source page（URL）的抓取/抽取/生成覆盖情况：
+
+```bash
+node scripts/audit-source-pages.js --run-id <run-id>
+```
+
+输出：
+
+- `runs/<run-id>/reports/source_pages_audit.md`
+- `runs/<run-id>/reports/source_pages_audit.tsv`
+
 ## 本地预览（可选：网站检索）
 
 ```bash
