@@ -230,18 +230,38 @@ async function fetchWithCache({ url, cacheDir, timeoutMs }) {
     };
   }
 
-  const r = await fetchText(url, timeoutMs);
-  const text = r.text || "";
-  fs.writeFileSync(cachePath, text, "utf8");
-  return {
-    cache: "miss",
-    status: r.status,
-    contentType: r.contentType || "",
-    text,
-    bytes: Buffer.byteLength(text, "utf8"),
-    sha256: sha256Hex(text),
-    cacheFile: path.basename(cachePath),
-  };
+  // Avoid duplicate network fetches and cache file races when multiple workers request the same URL.
+  // Key by cachePath (URL-hash) to dedupe in-process.
+  // eslint-disable-next-line no-use-before-define
+  if (!fetchWithCache._inflight) fetchWithCache._inflight = new Map();
+  const inflight = fetchWithCache._inflight;
+  if (inflight.has(cachePath)) return inflight.get(cachePath);
+
+  const p = (async () => {
+    const r = await fetchText(url, timeoutMs);
+    const text = r.text || "";
+    const tmp = `${cachePath}.${crypto.randomBytes(4).toString("hex")}.tmp`;
+    fs.writeFileSync(tmp, text, "utf8");
+    fs.renameSync(tmp, cachePath);
+    return {
+      cache: "miss",
+      status: r.status,
+      contentType: r.contentType || "",
+      text,
+      bytes: Buffer.byteLength(text, "utf8"),
+      sha256: sha256Hex(text),
+      cacheFile: path.basename(cachePath),
+    };
+  })().finally(() => {
+    try {
+      inflight.delete(cachePath);
+    } catch {
+      // ignore
+    }
+  });
+
+  inflight.set(cachePath, p);
+  return p;
 }
 
 function looksLikeHtml(text) {
@@ -540,7 +560,8 @@ function templateMetadataYaml({ id, title, domain, level, riskLevel, tags }) {
 }
 
 function renderDomainReadme({ domain, runId, outRoot, results, inputs, llm }) {
-  const list = Array.isArray(results) ? results : [];
+  const listRaw = Array.isArray(results) ? results : [];
+  const list = [...listRaw].sort((a, b) => String(a && a.id ? a.id : "").localeCompare(String(b && b.id ? b.id : "")));
   const lines = [];
   lines.push(`# ${domain} Skills (SkillGen)`);
   lines.push("");
@@ -588,7 +609,7 @@ Usage:
   node agents/skillgen/run.js --domain <domain>
     [--runs-dir runs] [--run-id <id>] [--curation <path>] [--out <skillsRoot>]
     [--cache-dir .cache/web] [--timeout-ms <n>]
-    [--max-skills <n>] [--actions auto|manual|auto,manual] [--overwrite]
+    [--max-skills <n>] [--concurrency <n>] [--actions auto|manual|auto,manual] [--overwrite]
     [--llm-provider mock|ollama|openai] [--llm-model <model>] [--llm-base-url <url>] [--llm-api-key <key>]
     [--llm-fixture <path>] [--llm-timeout-ms <n>] [--llm-strict]
     [--llm-capture] [--llm-prompt-system <path>] [--llm-prompt-user <path>]
@@ -609,6 +630,7 @@ function parseArgs(argv) {
     cacheDir: ".cache/web",
     timeoutMs: 20000,
     maxSkills: 5,
+    concurrency: 1,
     actions: "auto",
     overwrite: false,
 
@@ -651,6 +673,9 @@ function parseArgs(argv) {
       i++;
     } else if (a === "--max-skills") {
       args.maxSkills = Number(argv[i + 1] || "0");
+      i++;
+    } else if (a === "--concurrency") {
+      args.concurrency = Number(argv[i + 1] || "1");
       i++;
     } else if (a === "--actions") {
       args.actions = argv[i + 1] || args.actions;
@@ -696,6 +721,7 @@ function parseArgs(argv) {
   if (!Number.isFinite(args.timeoutMs) || args.timeoutMs <= 0) args.timeoutMs = 20000;
   if (!Number.isFinite(args.llmTimeoutMs) || args.llmTimeoutMs <= 0) args.llmTimeoutMs = 60000;
   if (!Number.isFinite(args.maxSkills) || args.maxSkills < 0) args.maxSkills = 0;
+  if (!Number.isFinite(args.concurrency) || args.concurrency < 1) args.concurrency = 1;
   return args;
 }
 
@@ -1020,7 +1046,11 @@ async function main() {
   console.log(`[skillgen] out=${outRoot}`);
   console.log(`[skillgen] curation=${curationPath}`);
 
-  for (let i = 0; i < planned.length; i++) {
+  const totalPlanned = planned.length;
+  const concurrency = Math.max(1, Math.min(Number(args.concurrency || 1), totalPlanned || 1));
+  console.log(`[skillgen] concurrency=${concurrency}`);
+
+  async function processOne(i) {
     const item = planned[i];
     const proposal = item.proposal;
     const suggested = item.suggested;
@@ -1044,7 +1074,7 @@ async function main() {
         skill_dir: path.relative(repoRoot, skillDir),
       });
       console.log(`[skillgen] [${i + 1}/${planned.length}] skip (exists): ${skillId}`);
-      continue;
+      return;
     }
 
     console.log(`[skillgen] [${i + 1}/${planned.length}] generate: ${skillId} — ${title}`);
@@ -1257,6 +1287,36 @@ async function main() {
     const tokensStr = llmUsage && llmUsage.total_tokens != null ? ` tokens=${llmUsage.total_tokens}` : "";
     console.log(`[skillgen] done: ${skillId}${tokensStr}`);
   }
+
+  let nextIndex = 0;
+  async function worker() {
+    while (true) {
+      const i = nextIndex;
+      nextIndex += 1;
+      if (i >= totalPlanned) return;
+      try {
+        // eslint-disable-next-line no-await-in-loop
+        await processOne(i);
+      } catch (e) {
+        report.stats.errors += 1;
+        const item = planned[i];
+        const suggested = item && item.suggested ? item.suggested : null;
+        const skillId = suggested && suggested.id ? String(suggested.id) : "";
+        const title = suggested && suggested.title ? String(suggested.title) : "";
+        report.results.push({
+          id: skillId,
+          title,
+          status: "error",
+          error: String(e && e.message ? e.message : e),
+        });
+        console.error(`[skillgen] [${i + 1}/${totalPlanned}] error: ${skillId || "(unknown)"}: ${String(e && e.message ? e.message : e)}`);
+      }
+    }
+  }
+
+  const workers = [];
+  for (let w = 0; w < concurrency; w++) workers.push(worker());
+  await Promise.all(workers);
 
   const domainReadmePath = path.join(outRoot, args.domain, "README.md");
   const domainReadme = renderDomainReadme({

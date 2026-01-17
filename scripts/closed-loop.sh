@@ -14,13 +14,15 @@ CRAWL_MAX_DEPTH="2"
 EXTRACT_MAX_DOCS="20"
 SKIP_REPO_INGEST="0"
 
-CURATOR_LLM_PROVIDER="${CURATOR_LLM_PROVIDER:-openai}"
+# Note: use `${VAR-default}` (not `${VAR:-default}`) so users can explicitly pass empty to disable LLM.
+CURATOR_LLM_PROVIDER="${CURATOR_LLM_PROVIDER-openai}"
 CURATOR_LLM_TARGET_ACTIONS="${CURATOR_LLM_TARGET_ACTIONS:-manual}"
 CURATOR_LLM_MAX_PROPOSALS="${CURATOR_LLM_MAX_PROPOSALS:-50}"
 
-SKILLGEN_LLM_PROVIDER="${SKILLGEN_LLM_PROVIDER:-openai}"
+SKILLGEN_LLM_PROVIDER="${SKILLGEN_LLM_PROVIDER-openai}"
 SKILLGEN_ACTIONS="${SKILLGEN_ACTIONS:-auto,manual}"
 MAX_SKILLS="${MAX_SKILLS:-5}"
+SKILLGEN_CONCURRENCY="${SKILLGEN_CONCURRENCY:-1}"
 
 VALIDATE_STRICT="1"
 
@@ -48,6 +50,7 @@ Options:
   --skillgen-llm-provider <p>  Default: openai (or env SKILLGEN_LLM_PROVIDER)
   --skillgen-actions <set>     Default: auto,manual (or env SKILLGEN_ACTIONS)
   --max-skills <n>             Default: 5 (or env MAX_SKILLS)
+  --skillgen-concurrency <n>   Default: 1 (or env SKILLGEN_CONCURRENCY)
 
   --no-validate                Skip validate-skills --strict
 
@@ -74,6 +77,7 @@ while [[ $# -gt 0 ]]; do
     --skillgen-llm-provider) SKILLGEN_LLM_PROVIDER="${2:-}"; shift 2;;
     --skillgen-actions) SKILLGEN_ACTIONS="${2:-}"; shift 2;;
     --max-skills) MAX_SKILLS="${2:-}"; shift 2;;
+    --skillgen-concurrency) SKILLGEN_CONCURRENCY="${2:-}"; shift 2;;
     --no-validate) VALIDATE_STRICT="0"; shift;;
     -h|--help) usage; exit 0;;
     *) echo "Unknown arg: $1" >&2; usage >&2; exit 2;;
@@ -154,6 +158,7 @@ node "${REPO_ROOT}/agents/skillgen/run.js" \
   --out "${OUT_DIR}" \
   --cache-dir "${CACHE_DIR}" \
   --max-skills "${MAX_SKILLS}" \
+  --concurrency "${SKILLGEN_CONCURRENCY}" \
   --actions "${SKILLGEN_ACTIONS}" \
   --llm-provider "${SKILLGEN_LLM_PROVIDER}" \
   --llm-capture \
