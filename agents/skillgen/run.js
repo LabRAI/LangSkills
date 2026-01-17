@@ -6,6 +6,7 @@ const fs = require("fs");
 const path = require("path");
 
 const { createLLM } = require("../llm");
+const { getRepoUrlLicenseMap, lookupLicenseForUrl } = require("../generator/license_lookup");
 
 process.stdout.on("error", (err) => {
   if (err && err.code === "EPIPE") process.exit(0);
@@ -95,6 +96,164 @@ function parseInlineYamlList(value) {
       .filter(Boolean);
   }
   return [unquoteScalar(v)];
+}
+
+function normalizeLicenseToken(raw) {
+  let t = String(raw || "").trim();
+  if (!t) return "";
+
+  // Normalize common license URLs → canonical tokens.
+  const url = t.match(/^https?:\/\/\S+$/i) ? t : null;
+  if (url) {
+    if (/^https?:\/\/creativecommons\.org\/licenses\/by\/4\.0\/?/i.test(url)) return "cc-by-4.0";
+    if (/^https?:\/\/creativecommons\.org\/licenses\/by-sa\/4\.0\/?/i.test(url)) return "cc-by-sa-4.0";
+    if (/^https?:\/\/creativecommons\.org\/publicdomain\/zero\/1\.0\/?/i.test(url)) return "cc0-1.0";
+    if (/^https?:\/\/www\.gnu\.org\/copyleft\/fdl\.html/i.test(url)) return "gfdl-1.3-or-later";
+    if (/^https?:\/\/www\.gnu\.org\/licenses\/gpl-3\.0/i.test(url)) return "gpl-3.0-or-later";
+    if (/^https?:\/\/www\.gnu\.org\/licenses\/gpl-2\.0/i.test(url)) return "gpl-2.0-or-later";
+    if (/^https?:\/\/opensource\.org\/licenses\/MIT/i.test(url)) return "mit";
+    if (/^https?:\/\/opensource\.org\/licenses\/Apache-2\.0/i.test(url)) return "apache-2.0";
+  }
+
+  t = t.replace(/\blicen[cs]e\b/gi, "").trim();
+  t = t.replace(/\s+/g, " ").trim();
+  t = t.replace(/[–—]/g, "-");
+  t = t.replace(/[_\s]+/g, "-");
+  t = t.replace(/[^a-zA-Z0-9.+-]/g, "-");
+  t = t.replace(/-+/g, "-").replace(/^-+/, "").replace(/-+$/, "");
+  return t.toLowerCase();
+}
+
+function loadLicensePolicy(policyPath) {
+  const p = String(policyPath || "").trim();
+  if (!p) throw new Error("Missing license policy path");
+  if (!exists(p)) throw new Error(`Missing license policy file: ${p}`);
+  let parsed = null;
+  try {
+    parsed = JSON.parse(readText(p));
+  } catch (e) {
+    throw new Error(`Invalid license policy JSON: ${p} (${String(e && e.message ? e.message : e)})`);
+  }
+  const allowed = new Set((parsed.allowed || []).map(normalizeLicenseToken).filter(Boolean));
+  const review = new Set((parsed.review || []).map(normalizeLicenseToken).filter(Boolean));
+  const denied = new Set((parsed.denied || []).map(normalizeLicenseToken).filter(Boolean));
+  return { allowed, review, denied, raw: parsed, path: p };
+}
+
+function classifyLicense(rawLicense, policy) {
+  const normalized = normalizeLicenseToken(rawLicense);
+  if (!normalized) return { classification: "review", normalized };
+  if (policy.denied.has(normalized)) return { classification: "denied", normalized };
+  if (policy.allowed.has(normalized)) return { classification: "allowed", normalized };
+  if (policy.review.has(normalized)) return { classification: "review", normalized };
+  return { classification: "review", normalized };
+}
+
+function canonicalLicense(normalized) {
+  const n = normalizeLicenseToken(normalized);
+  const map = {
+    "0bsd": "0BSD",
+    "mit": "MIT",
+    "apache-2.0": "Apache-2.0",
+    "bsd-2-clause": "BSD-2-Clause",
+    "bsd-3-clause": "BSD-3-Clause",
+    "bsd-4-clause": "BSD-4-Clause",
+    "isc": "ISC",
+    "mpl-2.0": "MPL-2.0",
+    "gpl-2.0-only": "GPL-2.0-only",
+    "gpl-2.0-or-later": "GPL-2.0-or-later",
+    "gpl-3.0-only": "GPL-3.0-only",
+    "gpl-3.0-or-later": "GPL-3.0-or-later",
+    "lgpl-2.1-only": "LGPL-2.1-only",
+    "lgpl-2.1-or-later": "LGPL-2.1-or-later",
+    "lgpl-3.0-only": "LGPL-3.0-only",
+    "lgpl-3.0-or-later": "LGPL-3.0-or-later",
+    "agpl-3.0-only": "AGPL-3.0-only",
+    "agpl-3.0-or-later": "AGPL-3.0-or-later",
+    "cc0-1.0": "CC0-1.0",
+    "cc-by-4.0": "CC-BY-4.0",
+    "cc-by-sa-4.0": "CC-BY-SA-4.0",
+    "gfdl-1.3-only": "GFDL-1.3-only",
+    "gfdl-1.3-or-later": "GFDL-1.3-or-later",
+    "public-domain": "Public-Domain",
+    "curl": "curl",
+    "lsof": "lsof",
+    "unknown": "unknown",
+    "needs-review": "needs-review",
+    "unclear": "unclear",
+    "custom": "custom",
+    "unlisted": "unlisted",
+    "all-rights-reserved": "all-rights-reserved",
+    "source-available": "source-available",
+    "proprietary": "proprietary",
+    "noncommercial": "noncommercial",
+    "non-commercial": "non-commercial",
+    "no-derivatives": "no-derivatives",
+    "no-derivative": "no-derivative",
+    "paywalled": "paywalled",
+    "internal-only": "internal-only",
+    "nda": "nda",
+  };
+  return map[n] || (n ? n : "");
+}
+
+function inferLicenseFromHtml({ url, html }) {
+  const text = String(html || "");
+  if (!text) return "";
+  const lower = text.toLowerCase();
+
+  // Strongest signal: rel="license" links.
+  const relHref =
+    text.match(/rel=["']license["'][^>]*href=["']([^"']+)["']/i) ||
+    text.match(/href=["']([^"']+)["'][^>]*rel=["']license["']/i);
+  if (relHref) {
+    const href = String(relHref[1] || "").trim();
+    const token = normalizeLicenseToken(href);
+    if (token) return canonicalLicense(token);
+  }
+
+  if (lower.includes("creativecommons.org/licenses/by-sa/4.0")) return "CC-BY-SA-4.0";
+  if (lower.includes("creativecommons.org/licenses/by/4.0")) return "CC-BY-4.0";
+  if (lower.includes("creativecommons.org/publicdomain/zero/1.0")) return "CC0-1.0";
+
+  if (lower.includes("gnu.org/copyleft/fdl.html")) return "GFDL-1.3-or-later";
+  if (lower.includes("gnu free documentation license")) return "GFDL-1.3-or-later";
+
+  // Be conservative with GPL inference: only infer for the license text page itself,
+  // or when the page contains the canonical GPL grant language.
+  try {
+    const u = new URL(String(url || ""));
+    if (u.hostname.endsWith("gnu.org") && /\/licenses\/gpl-3\.0/i.test(u.pathname)) return "GPL-3.0-or-later";
+    if (u.hostname.endsWith("gnu.org") && /\/licenses\/gpl-2\.0/i.test(u.pathname)) return "GPL-2.0-or-later";
+  } catch {
+    // ignore
+  }
+  if (
+    lower.includes("gnu general public license") &&
+    (lower.includes("this program is free software") || lower.includes("you can redistribute it and/or modify"))
+  ) {
+    if (/\bversion\s*3\b/i.test(text)) return "GPL-3.0-or-later";
+    if (/\bversion\s*2\b/i.test(text)) return "GPL-2.0-or-later";
+  }
+
+  if (lower.includes("apache license") && /\b2\.0\b/.test(lower)) return "Apache-2.0";
+  if (lower.includes("mit license")) return "MIT";
+
+  // Domain-specific heuristics (last resort; low confidence).
+  try {
+    const host = new URL(String(url || "")).hostname.toLowerCase();
+    if (host === "wiki.archlinux.org") return "GFDL-1.3-or-later";
+  } catch {
+    // ignore
+  }
+
+  return "";
+}
+
+function normalizeLicenseMode(raw) {
+  const v = String(raw || "").trim().toLowerCase();
+  if (v === "allowed_only" || v === "allowed-only" || v === "strict") return "allowed_only";
+  return "allow_review";
 }
 
 function parseDomainSourcePolicy(yamlText) {
@@ -610,6 +769,8 @@ Usage:
     [--runs-dir runs] [--run-id <id>] [--curation <path>] [--out <skillsRoot>]
     [--cache-dir .cache/web] [--timeout-ms <n>]
     [--max-skills <n>] [--concurrency <n>] [--actions auto|manual|auto,manual] [--overwrite]
+    [--license-policy <path>] [--license-mode allow_review|allowed_only]
+    [--max-source-candidates <n>] [--min-source-bytes <n>]
     [--llm-provider mock|ollama|openai] [--llm-model <model>] [--llm-base-url <url>] [--llm-api-key <key>]
     [--llm-fixture <path>] [--llm-timeout-ms <n>] [--llm-strict]
     [--llm-capture] [--llm-prompt-system <path>] [--llm-prompt-user <path>]
@@ -633,6 +794,11 @@ function parseArgs(argv) {
     concurrency: 1,
     actions: "auto",
     overwrite: false,
+
+    licensePolicy: "scripts/license-policy.json",
+    licenseMode: "allow_review",
+    maxSourceCandidates: 20,
+    minSourceBytes: 1,
 
     llmProvider: null,
     llmModel: null,
@@ -681,6 +847,19 @@ function parseArgs(argv) {
       args.actions = argv[i + 1] || args.actions;
       i++;
     } else if (a === "--overwrite") args.overwrite = true;
+    else if (a === "--license-policy") {
+      args.licensePolicy = argv[i + 1] || args.licensePolicy;
+      i++;
+    } else if (a === "--license-mode") {
+      args.licenseMode = argv[i + 1] || args.licenseMode;
+      i++;
+    } else if (a === "--max-source-candidates") {
+      args.maxSourceCandidates = Number(argv[i + 1] || String(args.maxSourceCandidates));
+      i++;
+    } else if (a === "--min-source-bytes") {
+      args.minSourceBytes = Number(argv[i + 1] || String(args.minSourceBytes));
+      i++;
+    }
     else if (a === "--llm-provider") {
       args.llmProvider = argv[i + 1] || null;
       i++;
@@ -722,6 +901,9 @@ function parseArgs(argv) {
   if (!Number.isFinite(args.llmTimeoutMs) || args.llmTimeoutMs <= 0) args.llmTimeoutMs = 60000;
   if (!Number.isFinite(args.maxSkills) || args.maxSkills < 0) args.maxSkills = 0;
   if (!Number.isFinite(args.concurrency) || args.concurrency < 1) args.concurrency = 1;
+  args.licenseMode = normalizeLicenseMode(args.licenseMode);
+  if (!Number.isFinite(args.maxSourceCandidates) || args.maxSourceCandidates < 3) args.maxSourceCandidates = 20;
+  if (!Number.isFinite(args.minSourceBytes) || args.minSourceBytes < 0) args.minSourceBytes = 1;
   return args;
 }
 
@@ -762,7 +944,7 @@ function parseSuggested(suggested, domain) {
   return { id, domain, topic, slug, title };
 }
 
-function pickSourceUrlsFromProposal(proposal, policy) {
+function pickSourceUrlsFromProposal(proposal, policy, max = 3) {
   const urls = [];
   const samples = proposal && proposal.samples && typeof proposal.samples === "object" ? proposal.samples : null;
   const rawSources = samples && Array.isArray(samples.sources) ? samples.sources : [];
@@ -777,7 +959,7 @@ function pickSourceUrlsFromProposal(proposal, policy) {
     if (!/^https?:\/\//i.test(url)) continue;
     if (policy && !isUrlAllowed(url, policy)) continue;
     if (!urls.includes(url)) urls.push(url);
-    if (urls.length >= 3) break;
+    if (urls.length >= max) break;
   }
   return urls;
 }
@@ -975,6 +1157,12 @@ async function main() {
   const runDir = path.join(runsRoot, args.runId);
   ensureDir(runDir);
 
+  const licensePolicyPath = path.isAbsolute(args.licensePolicy)
+    ? args.licensePolicy
+    : path.resolve(repoRoot, args.licensePolicy);
+  const licensePolicy = loadLicensePolicy(licensePolicyPath);
+  const repoLicenseMap = getRepoUrlLicenseMap(repoRoot);
+
   const outRoot = args.out
     ? (path.isAbsolute(args.out) ? args.out : path.resolve(repoRoot, args.out))
     : path.join(runDir, "skills");
@@ -1080,54 +1268,61 @@ async function main() {
     console.log(`[skillgen] [${i + 1}/${planned.length}] generate: ${skillId} — ${title}`);
 
     // 1) pick sources
-    let urls = pickSourceUrlsFromProposal(proposal, policy);
-    if (urls.length < 3) {
-      const fallback = loadFallbackSeedUrls({ repoRoot, domain: args.domain }).filter((u) => {
-        try {
-          return !policy || isUrlAllowed(u, policy);
-        } catch {
-          return false;
-        }
-      });
+    const candidateUrls = [];
+    const pushUnique = (u) => {
+      const v = String(u || "").trim();
+      if (!v) return;
+      if (!/^https?:\/\//i.test(v)) return;
+      try {
+        if (policy && !isUrlAllowed(v, policy)) return;
+      } catch {
+        return;
+      }
+      if (!candidateUrls.includes(v)) candidateUrls.push(v);
+    };
+
+    for (const u of pickSourceUrlsFromProposal(proposal, policy, args.maxSourceCandidates)) pushUnique(u);
+
+    if (candidateUrls.length < args.maxSourceCandidates) {
+      const fallback = loadFallbackSeedUrls({ repoRoot, domain: args.domain });
       for (const u of fallback) {
-        if (urls.length >= 3) break;
-        if (!urls.includes(u)) urls.push(u);
+        if (candidateUrls.length >= args.maxSourceCandidates) break;
+        pushUnique(u);
       }
     }
-    if (urls.length < 3) {
+
+    if (candidateUrls.length < args.maxSourceCandidates) {
       const hardFallback = args.domain === "linux"
         ? [
           "https://man7.org/linux/man-pages/index.html",
-          "https://www.gnu.org/software/coreutils/manual/coreutils.html",
           "https://wiki.archlinux.org/",
+          "https://pubs.opengroup.org/onlinepubs/9699919799/",
+          "https://docs.kernel.org/",
+          "https://curl.se/docs/",
         ]
         : [];
       for (const u of hardFallback) {
-        if (urls.length >= 3) break;
-        if (!urls.includes(u)) urls.push(u);
+        if (candidateUrls.length >= args.maxSourceCandidates) break;
+        pushUnique(u);
       }
     }
 
-    if (urls.length < 3) {
+    if (candidateUrls.length < args.maxSourceCandidates) {
       const allow = Array.isArray(policy && policy.allow_domains ? policy.allow_domains : null) ? policy.allow_domains : [];
       for (const d of allow) {
-        if (urls.length >= 3) break;
+        if (candidateUrls.length >= args.maxSourceCandidates) break;
         const host = normalizeDomainPattern(d);
         if (!host) continue;
-        const u = `https://${host}/`;
-        try {
-          if (policy && !isUrlAllowed(u, policy)) continue;
-        } catch {
-          continue;
-        }
-        if (!urls.includes(u)) urls.push(u);
+        pushUnique(`https://${host}/`);
       }
     }
-    urls = urls.slice(0, 3);
 
-    const fetchedSources = [];
-    const materials = [];
-    for (const u of urls) {
+    const targetSources = 3;
+    const mode = args.licenseMode;
+    const fetchedByUrl = new Map();
+
+    const fetchCandidate = async (u) => {
+      if (fetchedByUrl.has(u)) return fetchedByUrl.get(u);
       let fetched = null;
       try {
         fetched = await fetchWithCache({ url: u, cacheDir: cacheDirAbs, timeoutMs: args.timeoutMs });
@@ -1143,17 +1338,55 @@ async function main() {
           error: String(e && e.message ? e.message : e),
         };
       }
+      fetchedByUrl.set(u, fetched);
+      return fetched;
+    };
+
+    const resolveLicense = (u, fetchedText) => {
+      const fromMap = lookupLicenseForUrl(u, repoLicenseMap);
+      const inferred = !fromMap ? inferLicenseFromHtml({ url: u, html: fetchedText }) : "";
+      const raw = fromMap || inferred || "unknown";
+      return canonicalLicense(raw) || "unknown";
+    };
+
+    const isFetchUsable = (fetched) => {
+      const st = Number(fetched && fetched.status ? fetched.status : 0);
+      const bytes = Number(fetched && fetched.bytes ? fetched.bytes : 0);
+      return st >= 200 && st < 300 && bytes >= args.minSourceBytes;
+    };
+
+    const fetchedSources = [];
+    const materials = [];
+    const rejected = [];
+
+    for (const u of candidateUrls.slice(0, args.maxSourceCandidates)) {
+      if (fetchedSources.length >= targetSources) break;
+      const fetched = await fetchCandidate(u);
+      if (!isFetchUsable(fetched)) {
+        rejected.push({ url: u, reason: "fetch_unusable", status: fetched.status, bytes: fetched.bytes });
+        continue;
+      }
 
       const rawText = fetched.text || "";
       const plain = looksLikeHtml(rawText) ? stripHtmlToText(rawText) : normalizeText(rawText);
       const snippet = plain.slice(0, 2000);
+      const license = resolveLicense(u, rawText) || "unknown";
+      const licClass = classifyLicense(license, licensePolicy);
+      if (licClass.classification === "denied") {
+        rejected.push({ url: u, reason: "license_denied", license });
+        continue;
+      }
+      if (mode === "allowed_only" && licClass.classification !== "allowed") {
+        rejected.push({ url: u, reason: "license_not_allowed", license });
+        continue;
+      }
 
       fetchedSources.push({
         url: u,
         label: new URL(u).hostname,
         summary: "Reference used to build this skill.",
         supports: "Steps 1-3",
-        license: "unknown",
+        license,
         fetched: {
           cache: fetched.cache,
           bytes: fetched.bytes,
@@ -1169,6 +1402,47 @@ async function main() {
           (fetched.error ? `Error: ${fetched.error}\n` : "") +
           (snippet ? `${snippet}\n` : "(empty)\n"),
       );
+    }
+
+    // Fallback: if we couldn't collect enough sources, relax fetch requirement (still excludes denied).
+    if (fetchedSources.length < targetSources) {
+      for (const u of candidateUrls.slice(0, args.maxSourceCandidates)) {
+        if (fetchedSources.length >= targetSources) break;
+        if (fetchedSources.some((s) => s.url === u)) continue;
+        const fetched = await fetchCandidate(u);
+        const rawText = fetched.text || "";
+        const plain = looksLikeHtml(rawText) ? stripHtmlToText(rawText) : normalizeText(rawText);
+        const snippet = plain.slice(0, 2000);
+        const license = resolveLicense(u, rawText) || "unknown";
+        const licClass = classifyLicense(license, licensePolicy);
+        if (licClass.classification === "denied") continue;
+        if (mode === "allowed_only" && licClass.classification !== "allowed") continue;
+        fetchedSources.push({
+          url: u,
+          label: new URL(u).hostname,
+          summary: "Reference used to build this skill.",
+          supports: "Steps 1-3",
+          license,
+          fetched: {
+            cache: fetched.cache,
+            bytes: fetched.bytes,
+            sha256: fetched.sha256,
+            cache_file: fetched.cacheFile,
+            status: fetched.status,
+          },
+          snippet,
+        });
+        materials.push(
+          `# Source: ${u}\n` +
+            (fetched.error ? `Error: ${fetched.error}\n` : "") +
+            (snippet ? `${snippet}\n` : "(empty)\n"),
+        );
+      }
+    }
+
+    if (fetchedSources.length < targetSources) {
+      const note = `[skillgen] warn: insufficient sources for ${skillId} (got ${fetchedSources.length}/${targetSources}); rejected=${rejected.length}`;
+      console.error(note);
     }
 
     const materialsText = materials.join("\n\n").slice(0, 8000);

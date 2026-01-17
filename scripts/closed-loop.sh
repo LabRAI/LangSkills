@@ -23,6 +23,10 @@ SKILLGEN_LLM_PROVIDER="${SKILLGEN_LLM_PROVIDER-openai}"
 SKILLGEN_ACTIONS="${SKILLGEN_ACTIONS:-auto,manual}"
 MAX_SKILLS="${MAX_SKILLS:-5}"
 SKILLGEN_CONCURRENCY="${SKILLGEN_CONCURRENCY:-1}"
+SKILLGEN_LICENSE_POLICY="${SKILLGEN_LICENSE_POLICY:-scripts/license-policy.json}"
+SKILLGEN_LICENSE_MODE="${SKILLGEN_LICENSE_MODE:-allow_review}"
+SKILLGEN_MAX_SOURCE_CANDIDATES="${SKILLGEN_MAX_SOURCE_CANDIDATES:-20}"
+SKILLGEN_MIN_SOURCE_BYTES="${SKILLGEN_MIN_SOURCE_BYTES:-1}"
 
 VALIDATE_STRICT="1"
 
@@ -51,6 +55,10 @@ Options:
   --skillgen-actions <set>     Default: auto,manual (or env SKILLGEN_ACTIONS)
   --max-skills <n>             Default: 5 (or env MAX_SKILLS)
   --skillgen-concurrency <n>   Default: 1 (or env SKILLGEN_CONCURRENCY)
+  --skillgen-license-mode <m>  Default: allow_review (or env SKILLGEN_LICENSE_MODE)
+  --skillgen-license-policy <p> Default: scripts/license-policy.json (or env SKILLGEN_LICENSE_POLICY)
+  --skillgen-max-source-candidates <n> Default: 20 (or env SKILLGEN_MAX_SOURCE_CANDIDATES)
+  --skillgen-min-source-bytes <n> Default: 1 (or env SKILLGEN_MIN_SOURCE_BYTES)
 
   --no-validate                Skip validate-skills --strict
 
@@ -78,6 +86,10 @@ while [[ $# -gt 0 ]]; do
     --skillgen-actions) SKILLGEN_ACTIONS="${2:-}"; shift 2;;
     --max-skills) MAX_SKILLS="${2:-}"; shift 2;;
     --skillgen-concurrency) SKILLGEN_CONCURRENCY="${2:-}"; shift 2;;
+    --skillgen-license-mode) SKILLGEN_LICENSE_MODE="${2:-}"; shift 2;;
+    --skillgen-license-policy) SKILLGEN_LICENSE_POLICY="${2:-}"; shift 2;;
+    --skillgen-max-source-candidates) SKILLGEN_MAX_SOURCE_CANDIDATES="${2:-}"; shift 2;;
+    --skillgen-min-source-bytes) SKILLGEN_MIN_SOURCE_BYTES="${2:-}"; shift 2;;
     --no-validate) VALIDATE_STRICT="0"; shift;;
     -h|--help) usage; exit 0;;
     *) echo "Unknown arg: $1" >&2; usage >&2; exit 2;;
@@ -160,6 +172,10 @@ node "${REPO_ROOT}/agents/skillgen/run.js" \
   --max-skills "${MAX_SKILLS}" \
   --concurrency "${SKILLGEN_CONCURRENCY}" \
   --actions "${SKILLGEN_ACTIONS}" \
+  --license-policy "${SKILLGEN_LICENSE_POLICY}" \
+  --license-mode "${SKILLGEN_LICENSE_MODE}" \
+  --max-source-candidates "${SKILLGEN_MAX_SOURCE_CANDIDATES}" \
+  --min-source-bytes "${SKILLGEN_MIN_SOURCE_BYTES}" \
   --llm-provider "${SKILLGEN_LLM_PROVIDER}" \
   --llm-capture \
   --report-json "${REPORTS_DIR}/skillgen.json" \

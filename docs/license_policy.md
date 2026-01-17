@@ -36,6 +36,19 @@ node scripts/validate-skills.js --strict --fail-on-license-review
 node scripts/validate-skills.js --strict --fail-on-license-review-all
 ```
 
+## 3.1) 生成阶段的过滤（可选）
+
+默认策略是：**记录 License 字段 + 生成后由 validator 门禁审计**（黑名单阻断、灰名单警告/可升级为失败）。
+
+如果你希望在生成阶段就尽量避免“灰/黑 license”来源，可在 SkillGen / 闭环脚本中开启更严格的过滤：
+
+```bash
+# 仅允许白名单 license（可能导致可用来源不足，从而生成数量变少）
+bash scripts/closed-loop.sh --domain linux --run-id linux-allowed-only \
+  --skip-repo-ingest --crawl-max-pages 50 --extract-max-docs 50 \
+  --max-skills 20 --skillgen-license-mode allowed_only
+```
+
 ## 4) License 字段的写法（示例）
 
 推荐写法：优先填 SPDX（或常见的规范写法）；不确定就用灰名单 token（例如 `unknown`）并在 review 时补齐。

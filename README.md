@@ -49,6 +49,15 @@ bash scripts/closed-loop.sh --domain linux --run-id linux-500 \
   --max-skills 500 --skillgen-concurrency 8
 ```
 
+更严格的来源 license 过滤（仅允许白名单 license；不推荐作为默认，因为很多网页 license 仍需人工确认）：
+
+```bash
+bash scripts/closed-loop.sh --domain linux --run-id linux-allowed-only \
+  --skip-repo-ingest --crawl-max-pages 50 --extract-max-docs 50 \
+  --max-skills 20 --skillgen-concurrency 4 \
+  --skillgen-license-mode allowed_only
+```
+
 低成本 smoke（fixture cache + 不调用 LLM；仍会生成并跑 validator）：
 
 ```bash
@@ -100,6 +109,17 @@ node scripts/audit-source-pages.js --run-id <run-id>
 
 - `runs/<run-id>/reports/source_pages_audit.md`
 - `runs/<run-id>/reports/source_pages_audit.tsv`
+
+对本轮 skill 的 markdown“质量信号”做抽检（启发式报告；用于回答是否过于泛/是否包含 URL/是否缺少命令等）：
+
+```bash
+node scripts/audit-skill-quality.js --run-id <run-id>
+```
+
+输出：
+
+- `runs/<run-id>/reports/skill_quality_audit.md`
+- `runs/<run-id>/reports/skill_quality_audit.tsv`
 
 ## 本地预览（可选：网站检索）
 
