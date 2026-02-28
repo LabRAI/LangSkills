@@ -88,7 +88,9 @@ python3 langskills_cli.py capture "Docker networking@15"
 | 🗂️ other | 14,983 | Uncategorized |
 | | **101,330** | **21 SQLite bundles** |
 
-### 🔍 How to Use the Library
+<details>
+<summary><b>🔍 How to Use the Library</b></summary>
+<br/>
 
 ```bash
 # Install a domain bundle (downloads from GitHub Releases)
@@ -107,7 +109,11 @@ python3 langskills_cli.py skill-search "CRISPR" --domain research --min-score 4.
 python3 langskills_cli.py skill-search "React hooks" --content --format markdown
 ```
 
-### 📦 Skill Package Structure
+</details>
+
+<details>
+<summary><b>📦 Skill Package Structure</b></summary>
+<br/>
 
 Each skill is a structured Markdown package with full traceability:
 
@@ -120,11 +126,15 @@ skills/by-skill/<domain>/<topic>/
 
 > Every skill traces to real sources — never hallucination-only.
 
+</details>
+
 ---
 
 ## 🔧 The Pipeline
 
-### 📋 Step-by-Step Usage
+<details>
+<summary><b>📋 Step-by-Step Usage</b></summary>
+<br/>
 
 **1. Explore sources** (optional)
 
@@ -171,7 +181,11 @@ python3 langskills_cli.py runner                          # start worker
 python3 langskills_cli.py queue-watch                     # monitor
 ```
 
-### 📂 Pipeline Output
+</details>
+
+<details>
+<summary><b>📂 Pipeline Output</b></summary>
+<br/>
 
 ```
 captures/<run-id>/
@@ -182,6 +196,8 @@ captures/<run-id>/
 │       └── skill.md
 └── quality_report.md      # Validation summary
 ```
+
+</details>
 
 ---
 
