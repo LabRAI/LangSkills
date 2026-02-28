@@ -9,8 +9,8 @@ import asyncio
 import logging
 from datetime import datetime
 from typing import List, Optional, Set
-from langskills.sources.journals.models import PaperRecord
-from langskills.sources.journals.journal_config import JournalFamily, NATURE_FAMILY, SCIENCE_FAMILY, CELL_FAMILY, PLOS_FAMILY, ELIFE_FAMILY, PMC_FAMILY, OTHER_FAMILY
+from core.sources.journals.models import PaperRecord
+from core.sources.journals.journal_config import JournalFamily, NATURE_FAMILY, SCIENCE_FAMILY, CELL_FAMILY, PLOS_FAMILY, ELIFE_FAMILY, PMC_FAMILY, OTHER_FAMILY
 from .config import CrawlConfig
 from .http_client import AsyncHTTPClient
 from .discovery import ArticleDiscovery

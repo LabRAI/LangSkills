@@ -15,7 +15,7 @@ from typing import List, Optional, Tuple
 Optional = Optional
 Tuple = Tuple
 import xml.etree.ElementTree, etree
-from langskills.sources.journals.models import DataSource, FigureInfo, PaperRecord
+from core.sources.journals.models import DataSource, FigureInfo, PaperRecord
 DATA_REPO_PATTERNS = [
     ('GSE\\d{4,8}', 'GEO', 'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc={}'),
     ('GSM\\d{4,8}', 'GEO', 'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc={}'),

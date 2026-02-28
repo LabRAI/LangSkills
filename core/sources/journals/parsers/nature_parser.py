@@ -13,7 +13,7 @@ Strategy:
 '''
 import re
 from typing import List, Optional, Tuple
-from langskills.sources.journals.models import DataSource, FigureInfo, PaperRecord
+from core.sources.journals.models import DataSource, FigureInfo, PaperRecord
 from .pmc_parser import DATA_REPO_PATTERNS
 
 def build_springer_api_url(issn, journal_slug, start, page_size = None, api_key = None, year_from = None, year_to = ('', '', 1, 100, '', 2020, 2026, ''), subject = ('issn', str, 'journal_slug', str, 'start', int, 'page_size', int, 'api_key', str, 'year_from', int, 'year_to', int, 'subject', str, 'return', str)):

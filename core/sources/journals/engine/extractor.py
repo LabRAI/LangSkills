@@ -11,12 +11,12 @@ Unsupported opcode: PUSH_EXC_INFO (105)
 import re
 import logging
 from typing import List
-from langskills.sources.journals.models import PaperRecord
-from langskills.sources.journals.parsers.pmc_parser import build_efetch_url, parse_efetch_xml
-from langskills.sources.journals.parsers.nature_parser import parse_nature_article_html
-from langskills.sources.journals.parsers.plos_parser import extract_plos_figures_from_html, extract_plos_data_from_html, _doi_to_plos_slug
-from langskills.sources.journals.parsers.elife_parser import build_elife_article_url, parse_elife_article_json
-from langskills.sources.journals.parsers.html_parser import extract_figures_bs4, extract_data_availability_bs4, extract_fulltext_sections_bs4
+from core.sources.journals.models import PaperRecord
+from core.sources.journals.parsers.pmc_parser import build_efetch_url, parse_efetch_xml
+from core.sources.journals.parsers.nature_parser import parse_nature_article_html
+from core.sources.journals.parsers.plos_parser import extract_plos_figures_from_html, extract_plos_data_from_html, _doi_to_plos_slug
+from core.sources.journals.parsers.elife_parser import build_elife_article_url, parse_elife_article_json
+from core.sources.journals.parsers.html_parser import extract_figures_bs4, extract_data_availability_bs4, extract_fulltext_sections_bs4
 from .config import CrawlConfig
 from .http_client import AsyncHTTPClient
 logger = logging.getLogger('science_crawler')

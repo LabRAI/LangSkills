@@ -11,15 +11,18 @@ import time
 from contextlib import suppress
 from pathlib import Path
 from typing import Any
-from langskills.env import load_dotenv
-from langskills.scripts.validate_skills.core import validate_skills
-from langskills.skills.publish import publish_run_to_skills_library
-from langskills.sources.artifacts import write_source_artifact
-from langskills.sources.journals.engine import CrawlConfig, CrawlStats, crawl_journals
-from langskills.sources.journals.normalize import paper_primary_url, paper_to_extracted_text, paper_to_raw_json
-from langskills.utils.fs import ensure_dir, make_run_dir, write_json_atomic
-from langskills.utils.paths import repo_root as _repo_root
-from langskills.utils.time import utc_now_iso_z
+from core.env import load_dotenv
+try:
+    from core.scripts.validate_skills.core import validate_skills
+except ImportError:
+    validate_skills = None
+from core.skills.publish import publish_run_to_skills_library
+from core.sources.artifacts import write_source_artifact
+from core.sources.journals.engine import CrawlConfig, CrawlStats, crawl_journals
+from core.sources.journals.normalize import paper_primary_url, paper_to_extracted_text, paper_to_raw_json
+from core.utils.fs import ensure_dir, make_run_dir, write_json_atomic
+from core.utils.paths import repo_root as _repo_root
+from core.utils.time import utc_now_iso_z
 from .cli_args import parse_journal_pipeline_args
 _PAPER_SKILL_KINDS = [
     'paper.idea_intro',

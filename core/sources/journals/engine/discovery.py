@@ -8,11 +8,11 @@ Unsupported opcode: RETURN_GENERATOR (109)
 '''Article discovery from various APIs.'''
 import logging
 from typing import List
-from langskills.sources.journals.models import PaperRecord
-from langskills.sources.journals.parsers.pmc_parser import build_esearch_url, parse_esearch_response
-from langskills.sources.journals.parsers.nature_parser import build_springer_api_url, parse_springer_api_response, springer_record_to_paper
-from langskills.sources.journals.parsers.plos_parser import build_plos_search_url, parse_plos_search_response, plos_doc_to_paper
-from langskills.sources.journals.parsers.elife_parser import build_elife_search_url, parse_elife_search_response, elife_item_to_paper_stub
+from core.sources.journals.models import PaperRecord
+from core.sources.journals.parsers.pmc_parser import build_esearch_url, parse_esearch_response
+from core.sources.journals.parsers.nature_parser import build_springer_api_url, parse_springer_api_response, springer_record_to_paper
+from core.sources.journals.parsers.plos_parser import build_plos_search_url, parse_plos_search_response, plos_doc_to_paper
+from core.sources.journals.parsers.elife_parser import build_elife_search_url, parse_elife_search_response, elife_item_to_paper_stub
 from .config import CrawlConfig
 from .http_client import AsyncHTTPClient
 logger = logging.getLogger('science_crawler')
