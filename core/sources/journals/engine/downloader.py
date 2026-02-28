@@ -1,6 +1,3 @@
-Unsupported opcode: RETURN_GENERATOR (109)
-# Source Generated with Decompyle++
-# File: downloader.pyc (Python 3.12)
 
 '''Figure image downloader.'''
 import os

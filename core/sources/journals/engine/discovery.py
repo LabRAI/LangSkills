@@ -1,9 +1,3 @@
-Unsupported opcode: RETURN_GENERATOR (109)
-Unsupported opcode: RETURN_GENERATOR (109)
-Unsupported opcode: RETURN_GENERATOR (109)
-Unsupported opcode: RETURN_GENERATOR (109)
-# Source Generated with Decompyle++
-# File: discovery.pyc (Python 3.12)
 
 '''Article discovery from various APIs.'''
 import logging
