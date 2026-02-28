@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "langskills"
+version = "0.1.0"
+description = "Turn any topic into an evidence-backed skills library — automatically"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.10"
+authors = [
+    { name = "Responsible AI Lab @ FSU" },
+]
+
+dependencies = [
+    "httpx>=0.27",
+    "requests>=2.31",
+    "PyYAML>=6.0",
+    "rich>=13.0",
+    "tiktoken>=0.7",
+    "regex>=2024.1",
+    "pdfminer.six>=20231228",
+]
+
+[project.optional-dependencies]
+playwright = ["playwright>=1.40"]
+tavily = ["tavily-python>=0.5"]
+dist = ["zstandard>=0.22"]
+dev = [
+    "pytest>=8.0",
+    "Pygments>=2.17",
+]
+
+[project.scripts]
+langskills = "langskills.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["langskills", "langskills.*"]

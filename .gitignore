@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+*.egg
+
+# Build artifacts
+dist/
+
+# OS
+.DS_Store
+__MACOSX/
+
+# Baidu cloud temp files
+*.baiduyun.uploading.cfg
+
+# IDE
+.vscode/
+.idea/
+
+# Environment
+.env
+*.env.local
