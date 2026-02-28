@@ -19,3 +19,15 @@ __MACOSX/
 # Environment
 .env
 *.env.local
+
+# Runtime data
+runs/
+var/
+captures/run-*/
+sources/
+skills/by-skill/
+skills/by-source/
+
+# SQLite WAL/SHM files
+*.sqlite-wal
+*.sqlite-shm
