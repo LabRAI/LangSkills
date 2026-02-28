@@ -1,8 +1,3 @@
-Unsupported opcode: BEFORE_WITH (108)
-Unsupported opcode: BEFORE_WITH (108)
-Unsupported opcode: BEFORE_WITH (108)
-# Source Generated with Decompyle++
-# File: storage.pyc (Python 3.12)
 
 '''Data storage: save crawled data to disk.'''
 import json
