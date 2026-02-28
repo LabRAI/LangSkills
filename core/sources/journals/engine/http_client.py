@@ -1,13 +1,3 @@
-Unsupported opcode: RETURN_GENERATOR (109)
-Unsupported opcode: RETURN_GENERATOR (109)
-Unsupported opcode: RETURN_GENERATOR (109)
-Unsupported opcode: RETURN_GENERATOR (109)
-Unsupported opcode: RETURN_GENERATOR (109)
-Unsupported opcode: RETURN_GENERATOR (109)
-Unsupported opcode: RETURN_GENERATOR (109)
-Unsupported opcode: RETURN_GENERATOR (109)
-# Source Generated with Decompyle++
-# File: http_client.pyc (Python 3.12)
 
 import asyncio
 import aiohttp
