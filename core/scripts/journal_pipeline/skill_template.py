@@ -7,10 +7,10 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
-from langskills.utils.hashing import slugify
-from langskills.utils.time import utc_now_iso_z
-from langskills.utils.yaml_simple import write_metadata_yaml_text
-from langskills.utils.fs import ensure_dir, write_text_atomic
+from core.utils.hashing import slugify
+from core.utils.time import utc_now_iso_z
+from core.utils.yaml_simple import write_metadata_yaml_text
+from core.utils.fs import ensure_dir, write_text_atomic
 JournalSkillOutput = <NODE:12>()
 _SkillId = <NODE:12>()
 

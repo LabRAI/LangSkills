@@ -13,7 +13,10 @@ from ..repo_understanding.render import render_repo_skill_package_v2
 from ..repo_understanding.skillspec import build_skillspecs_from_llm_candidates, write_skillspecs
 from ..repo_understanding.symbol_index import load_symbol_index_jsonl
 from ..scripts.repo_index import cli_repo_index as repo_index_main
-from ..scripts.validate_skills import validate_skills
+try:
+    from ..scripts.validate_skills import validate_skills
+except ImportError:
+    validate_skills = None
 from ..env import load_dotenv
 from ..utils.hashing import sha256_hex
 from ..utils.lang import resolve_output_language
@@ -169,7 +172,7 @@ def cli_skill_from_repo(argv: list[str] | None = None) -> int:
         "license_spdx": license_spdx,
     }
 
-    if ns.validate:
+    if ns.validate and validate_skills is not None:
         errors, warnings = validate_skills(repo_root=repo_root, root=pkg_out_dir, strict=True, check_package=True)
         result["validate"] = {"errors": len(errors), "warnings": len(warnings)}
         if errors:

@@ -9,8 +9,8 @@ from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Any
-from langskills.sources.journals.journal_config import CELL_FAMILY, ELIFE_FAMILY, NATURE_FAMILY, OTHER_FAMILY, PMC_FAMILY, PLOS_FAMILY, SCIENCE_FAMILY, JournalFamily
-from langskills.sources.journals.models import PaperRecord
+from core.sources.journals.journal_config import CELL_FAMILY, ELIFE_FAMILY, NATURE_FAMILY, OTHER_FAMILY, PMC_FAMILY, PLOS_FAMILY, SCIENCE_FAMILY, JournalFamily
+from core.sources.journals.models import PaperRecord
 from .config import CrawlConfig
 from .discovery import ArticleDiscovery
 from .downloader import FigureDownloader

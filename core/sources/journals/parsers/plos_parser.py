@@ -13,7 +13,7 @@ The PLOS Search API is based on Solr and returns structured JSON.
 import re
 from urllib.parse import urljoin
 from typing import List, Tuple, Optional
-from langskills.sources.journals.models import DataSource, FigureInfo, PaperRecord
+from core.sources.journals.models import DataSource, FigureInfo, PaperRecord
 from .pmc_parser import DATA_REPO_PATTERNS
 PLOS_JOURNAL_KEYS = {
     'plosone': 'PLoS ONE',

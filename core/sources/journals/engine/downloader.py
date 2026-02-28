@@ -4,10 +4,10 @@ Unsupported opcode: RETURN_GENERATOR (109)
 
 '''Figure image downloader.'''
 import os
-from langskills.sources.journals.models import PaperRecord
+from core.sources.journals.models import PaperRecord
 from .config import CrawlConfig
 from .http_client import AsyncHTTPClient
-from langskills.utils.hashing import slugify
+from core.utils.hashing import slugify
 
 def _guess_extension(url = None):
     '''Guess file extension from URL.'''
