@@ -1,12 +1,5 @@
 <div align="center">
 
-<img
-  src="https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAERBehpmBcDJ7eUyeIkSDKaNHv_p1ExEwACtR0AAmDbwVSoU_2cAWNAuzoE.png"
-  alt="LangSkills Logo"
-  width="200"
-  style="border-radius: 15px;"
-/>
-
 # LangSkills: Evidence-Backed Skills for Vibe Research & Vibe Coding
 
 <p>
