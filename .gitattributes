@@ -1,0 +1,4 @@
+dist/*.html filter=lfs diff=lfs merge=lfs -text
+dist/*.sqlite filter=lfs diff=lfs merge=lfs -text
+dist/*.json filter=lfs diff=lfs merge=lfs -text
+dist/*.sha256 filter=lfs diff=lfs merge=lfs -text
