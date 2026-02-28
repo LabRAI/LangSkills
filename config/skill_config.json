@@ -1,0 +1,801 @@
+{
+  "schema_version": 1,
+  "env": {
+    "LLM_PROVIDER": "",
+    "OPENAI_BASE_URL": "",
+    "OPENAI_API_KEY": "",
+    "OPENAI_MODEL": "",
+    "OPENAI_MODEL_FALLBACKS": "",
+    "BIGMODEL_BASE_URL": "",
+    "BIGMODEL_API_KEY": "",
+    "BIGMODEL_MODEL": "",
+    "OPENAI_API_BASE": "",
+    "OLLAMA_BASE_URL": "",
+    "OLLAMA_MODEL": "",
+    "OLLAMA_API_KEY": "",
+    "TAVILY_API_KEY": "",
+    "TAVILY_TOKEN": "",
+    "GITHUB_TOKEN": "",
+    "GH_TOKEN": "",
+    "QUEUE_BACKEND": "",
+    "QUEUE_PATH": "",
+    "QUEUE_MAX_ATTEMPTS": "",
+    "QUEUE_LEASE_SECONDS": "",
+    "QUEUE_BACKOFF_BASE_SECONDS": "",
+    "QUEUE_BACKOFF_MAX_SECONDS": "",
+    "QUEUE_CONCURRENCY_GLOBAL": "",
+    "QUEUE_CONCURRENCY_PER_SOURCE_TYPE": "",
+    "QUEUE_ENABLE_IMPROVE_STAGE": "",
+    "QUEUE_ENABLE_PUBLISH_STAGE": "",
+    "QUEUE_DRAIN": "",
+    "LLM_RATE_LIMIT_RPS": "",
+    "LLM_MAX_CONCURRENCY": "",
+    "LANGSKILLS_DOMAIN_CONFIG": "",
+    "LANGSKILLS_RUNTIME_CONFIG": "",
+    "LANGSKILLS_OFFLINE": "",
+    "LANGSKILLS_PIPELINE": "",
+    "LANGSKILLS_AUTO_IMPROVE": "",
+    "LANGSKILLS_PROGRESS": "",
+    "LANGSKILLS_PRETTY": "",
+    "LANGSKILLS_TOTAL": "",
+    "LANGSKILLS_PER_SOURCE": "",
+    "LANGSKILLS_WEB_SEARCH_PROVIDERS": "",
+    "LANGSKILLS_PLAYWRIGHT_WEBPAGE_FALLBACK": "",
+    "LANGSKILLS_PLAYWRIGHT_AUTH_DIR": "",
+    "LANGSKILLS_PLAYWRIGHT_USER_DATA_DIR": "",
+    "LANGSKILLS_PLAYWRIGHT_TIMEOUT_MS": "",
+    "LANGSKILLS_PLAYWRIGHT_HEADLESS": "",
+    "LANGSKILLS_PLAYWRIGHT_LOCALE": "",
+    "LANGSKILLS_PLAYWRIGHT_USER_AGENT": "",
+    "LANGSKILLS_PLAYWRIGHT_ACCEPT_LANGUAGE": "",
+    "LANGSKILLS_PLAYWRIGHT_VIEWPORT": "",
+    "LANGSKILLS_ZHIHU_LOGIN_TYPE": "",
+    "LANGSKILLS_ZHIHU_COOKIES": "",
+    "LANGSKILLS_ZHIHU_LOGIN_TIMEOUT_SEC": "",
+    "LANGSKILLS_XHS_LOGIN_TYPE": "",
+    "LANGSKILLS_XHS_COOKIES": "",
+    "LANGSKILLS_XHS_PHONE": "",
+    "LANGSKILLS_XHS_SMS_CODE": "",
+    "LANGSKILLS_XHS_LOGIN_TIMEOUT_SEC": "",
+    "LANGSKILLS_SAVE_SOURCE_TEXT": "",
+    "LANGSKILLS_SOURCE_TEXT_MAX_CHARS": "",
+    "LANGSKILLS_GLOBAL_SOURCES": "",
+    "LANGSKILLS_REDACT_URLS": "",
+    "LANGSKILLS_SAVE_LLM_ARTIFACTS": "",
+    "LANGSKILLS_LLM_TIMEOUT_MS": "",
+    "LANGSKILLS_LLM_MAX_TOKENS": "",
+    "LANGSKILLS_LLM_MAX_TOKENS_GENERATE": "",
+    "LANGSKILLS_LLM_MAX_TOKENS_PACKAGE": "",
+    "LANGSKILLS_LLM_MAX_TOKENS_GATE": "",
+    "LANGSKILLS_LLM_MAX_TOKENS_IMPROVE": "",
+    "LANGSKILLS_LLM_MAX_TOKENS_EVIDENCE": "",
+    "LANGSKILLS_SKILL_ACTIONABLE_MAX_CHARS": "",
+    "LANGSKILLS_GATE_ACTIONABLE_MAX_CHARS": "",
+    "LANGSKILLS_GENERATE_PACKAGE_V2": "",
+    "LANGSKILLS_IMPROVE_PACKAGE_V2": "",
+    "LANGSKILLS_PUBLISH_GENERATE_PACKAGE_V2": "",
+    "LANGSKILLS_DEDUPE_THRESHOLD": "",
+    "LANGSKILLS_MAX_COMBOS": "",
+    "LANGSKILLS_PUBLISH": "",
+    "LANGSKILLS_PUBLISH_OVERWRITE": "",
+    "LANGSKILLS_PUBLISH_ALLOW_NEEDS_REVIEW": "",
+    "LANGSKILLS_PUBLISH_LEGACY_VIEW": "",
+    "LANGSKILLS_PUBLISH_ALLOW_MOCK": "",
+    "LANGSKILLS_IMPROVE_PASSES": "",
+    "LANGSKILLS_IMPROVE_FETCH_SOURCE": "",
+    "LANGSKILLS_IMPROVE_ONLY": "",
+    "LANGSKILLS_VALIDATE_INCLUDE_LEGACY": "",
+    "LANGSKILLS_REQUIRE_EVIDENCE": "",
+    "LANGSKILLS_REQUIRE_SKILL_KIND": "",
+    "LANGSKILLS_REQUIRE_VERIFICATION": "",
+    "LANGSKILLS_REPO_INDEX_CHANGED": "",
+    "LANGSKILLS_REPO_INDEX_BIG_FILE_BYTES": ""
+  },
+  "domain_config": {
+    "linux": {
+      "display_name": "Linux",
+      "default_topic": "linux",
+      "crawl": {
+        "webpage": {
+          "allow_hosts": [],
+          "deny_hosts": []
+        },
+        "github": {
+          "allow_hosts": [
+            "github.com"
+          ],
+          "deny_hosts": []
+        },
+        "forum": {
+          "allow_hosts": [
+            "stackoverflow.com"
+          ],
+          "deny_hosts": []
+        }
+      },
+      "web_urls": [
+        "https://manpages.ubuntu.com/manpages/jammy/en/man1/find.1.html",
+        "https://manpages.ubuntu.com/manpages/jammy/en/man1/grep.1.html",
+        "https://manpages.ubuntu.com/manpages/jammy/en/man1/sed.1.html",
+        "https://manpages.ubuntu.com/manpages/jammy/en/man1/gawk.1.html",
+        "https://manpages.ubuntu.com/manpages/jammy/en/man1/tar.1.html",
+        "https://manpages.ubuntu.com/manpages/jammy/en/man1/rsync.1.html",
+        "https://manpages.ubuntu.com/manpages/jammy/en/man1/curl.1.html",
+        "https://manpages.ubuntu.com/manpages/jammy/en/man1/ssh.1.html",
+        "https://manpages.ubuntu.com/manpages/jammy/en/man1/journalctl.1.html",
+        "https://manpages.ubuntu.com/manpages/jammy/en/man1/systemctl.1.html",
+        "https://manpages.ubuntu.com/manpages/jammy/en/man1/xargs.1.html",
+        "https://manpages.ubuntu.com/manpages/jammy/en/man1/ps.1.html"
+      ],
+      "github": {
+        "query": "linux cli",
+        "min_stars": 2000,
+        "pushed_after": ""
+      },
+      "forum": {
+        "tagged": "linux",
+        "query": "linux command line"
+      }
+    },
+    "devtools": {
+      "display_name": "DevTools",
+      "default_topic": "git",
+      "crawl": {
+        "webpage": {
+          "allow_hosts": [],
+          "deny_hosts": []
+        },
+        "github": {
+          "allow_hosts": [
+            "github.com"
+          ],
+          "deny_hosts": []
+        },
+        "forum": {
+          "allow_hosts": [
+            "stackoverflow.com"
+          ],
+          "deny_hosts": []
+        }
+      },
+      "web_urls": [
+        "https://git-scm.com/docs/git-bisect",
+        "https://git-scm.com/docs/git-rebase",
+        "https://git-scm.com/docs/git-worktree",
+        "https://git-scm.com/docs/git-stash",
+        "https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions",
+        "https://docs.github.com/en/actions/learn-github-actions/understanding-github-actions",
+        "https://docs.github.com/en/actions/using-workflows/caching-dependencies-to-speed-up-workflows",
+        "https://docs.npmjs.com/cli/v10/commands/npm-run-script",
+        "https://docs.python.org/3/tutorial/venv.html",
+        "https://developer.mozilla.org/en-US/docs/Learn/Tools_and_testing/Understanding_client-side_tools/Overview",
+        "https://git-scm.com/docs/git-merge",
+        "https://docs.npmjs.com/cli/v10/commands/npm-ci"
+      ],
+      "github": {
+        "query": "topic:git",
+        "min_stars": 5000,
+        "pushed_after": ""
+      },
+      "forum": {
+        "tagged": "git",
+        "query": "developer workflow"
+      }
+    },
+    "cloud": {
+      "display_name": "Cloud",
+      "default_topic": "kubernetes",
+      "crawl": {
+        "webpage": {
+          "allow_hosts": [],
+          "deny_hosts": []
+        },
+        "github": {
+          "allow_hosts": [
+            "github.com"
+          ],
+          "deny_hosts": []
+        },
+        "forum": {
+          "allow_hosts": [
+            "stackoverflow.com"
+          ],
+          "deny_hosts": []
+        }
+      },
+      "web_urls": [
+        "https://kubernetes.io/docs/tasks/access-application-cluster/configure-access-multiple-clusters/",
+        "https://kubernetes.io/docs/reference/kubectl/generated/kubectl_config/",
+        "https://kubernetes.io/docs/concepts/workloads/controllers/deployment/",
+        "https://kubernetes.io/docs/concepts/services-networking/service/",
+        "https://kubernetes.io/docs/concepts/configuration/configmap/",
+        "https://kubernetes.io/docs/concepts/configuration/secret/",
+        "https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
+        "https://kubernetes.io/docs/concepts/policy/resource-quotas/",
+        "https://kubernetes.io/docs/tasks/debug/debug-application/",
+        "https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/",
+        "https://kubernetes.io/docs/concepts/cluster-administration/logging/",
+        "https://kubernetes.io/docs/tasks/tools/"
+      ],
+      "github": {
+        "query": "kubernetes",
+        "min_stars": 5000,
+        "pushed_after": ""
+      },
+      "forum": {
+        "tagged": "kubernetes",
+        "query": "kubernetes troubleshooting"
+      }
+    },
+    "data": {
+      "display_name": "Data",
+      "default_topic": "duckdb",
+      "crawl": {
+        "webpage": {
+          "allow_hosts": [],
+          "deny_hosts": []
+        },
+        "github": {
+          "allow_hosts": [
+            "github.com"
+          ],
+          "deny_hosts": []
+        },
+        "forum": {
+          "allow_hosts": [
+            "stackoverflow.com"
+          ],
+          "deny_hosts": []
+        }
+      },
+      "web_urls": [
+        "https://duckdb.org/docs/guides/import/csv_import.html",
+        "https://duckdb.org/docs/guides/import/parquet_import.html",
+        "https://duckdb.org/docs/data/parquet/overview.html",
+        "https://duckdb.org/docs/sql/window_functions.html",
+        "https://duckdb.org/docs/sql/introduction.html",
+        "https://duckdb.org/docs/guides/overview.html",
+        "https://www.postgresql.org/docs/current/using-explain.html",
+        "https://www.postgresql.org/docs/current/indexes.html",
+        "https://pandas.pydata.org/docs/user_guide/groupby.html",
+        "https://sqlite.org/windowfunctions.html",
+        "https://duckdb.org/docs/guides/file_formats/overview.html",
+        "https://duckdb.org/docs/data/csv/overview.html"
+      ],
+      "github": {
+        "query": "duckdb",
+        "min_stars": 200,
+        "pushed_after": ""
+      },
+      "forum": {
+        "tagged": "duckdb",
+        "query": ""
+      }
+    },
+    "security": {
+      "display_name": "Security",
+      "default_topic": "security",
+      "crawl": {
+        "webpage": {
+          "allow_hosts": [],
+          "deny_hosts": []
+        },
+        "github": {
+          "allow_hosts": [
+            "github.com"
+          ],
+          "deny_hosts": []
+        },
+        "forum": {
+          "allow_hosts": [
+            "stackoverflow.com"
+          ],
+          "deny_hosts": []
+        }
+      },
+      "web_urls": [
+        "https://owasp.org/www-project-top-ten/",
+        "https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html",
+        "https://cheatsheetseries.owasp.org/cheatsheets/JSON_Web_Token_for_Java_Cheat_Sheet.html",
+        "https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html",
+        "https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html",
+        "https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html",
+        "https://cheatsheetseries.owasp.org/cheatsheets/Transport_Layer_Security_Cheat_Sheet.html",
+        "https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Strict_Transport_Security_Cheat_Sheet.html",
+        "https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html",
+        "https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html",
+        "https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-63-3.pdf",
+        "https://man.openbsd.org/sshd_config",
+        "https://ssl-config.mozilla.org/"
+      ],
+      "github": {
+        "query": "owasp security",
+        "min_stars": 2000,
+        "pushed_after": ""
+      },
+      "forum": {
+        "tagged": "security;owasp;oauth;jwt;tls;xss;csrf",
+        "query": "web security authentication"
+      }
+    },
+    "observability": {
+      "display_name": "Observability",
+      "default_topic": "observability",
+      "crawl": {
+        "webpage": {
+          "allow_hosts": [],
+          "deny_hosts": []
+        },
+        "github": {
+          "allow_hosts": [
+            "github.com"
+          ],
+          "deny_hosts": []
+        },
+        "forum": {
+          "allow_hosts": [
+            "stackoverflow.com"
+          ],
+          "deny_hosts": []
+        }
+      },
+      "web_urls": [
+        "https://prometheus.io/docs/introduction/overview/",
+        "https://prometheus.io/docs/concepts/data_model/",
+        "https://prometheus.io/docs/prometheus/latest/querying/basics/",
+        "https://prometheus.io/docs/prometheus/latest/configuration/recording_rules/",
+        "https://prometheus.io/docs/prometheus/latest/configuration/alerting_rules/",
+        "https://grafana.com/docs/grafana/latest/dashboards/",
+        "https://grafana.com/docs/grafana/latest/alerting/",
+        "https://opentelemetry.io/docs/concepts/signals/",
+        "https://opentelemetry.io/docs/specs/semconv/",
+        "https://opentelemetry.io/docs/concepts/signals/traces/",
+        "https://opentelemetry.io/docs/concepts/signals/metrics/",
+        "https://opentelemetry.io/docs/concepts/signals/logs/",
+        "https://www.jaegertracing.io/docs/latest/",
+        "https://grafana.com/docs/tempo/latest/"
+      ],
+      "github": {
+        "query": "opentelemetry",
+        "min_stars": 1500,
+        "pushed_after": ""
+      },
+      "forum": {
+        "tagged": "opentelemetry;prometheus;grafana;jaeger",
+        "query": "tracing metrics logging alerting"
+      }
+    },
+    "web": {
+      "display_name": "Web",
+      "default_topic": "web",
+      "crawl": {
+        "webpage": {
+          "allow_hosts": [],
+          "deny_hosts": []
+        },
+        "github": {
+          "allow_hosts": [
+            "github.com"
+          ],
+          "deny_hosts": []
+        },
+        "forum": {
+          "allow_hosts": [
+            "stackoverflow.com"
+          ],
+          "deny_hosts": []
+        }
+      },
+      "web_urls": [
+        "https://developer.mozilla.org/en-US/docs/Web/HTTP",
+        "https://developer.mozilla.org/en-US/docs/Web/API",
+        "https://developer.mozilla.org/en-US/docs/Learn/Getting_started_with_the_web",
+        "https://react.dev/reference/react",
+        "https://react.dev/learn",
+        "https://nextjs.org/docs/app",
+        "https://nextjs.org/docs/app/building-your-application/routing",
+        "https://nextjs.org/docs/app/building-your-application/data-fetching",
+        "https://web.dev/learn/performance/",
+        "https://web.dev/learn/accessibility/",
+        "https://www.typescriptlang.org/docs/handbook/intro.html",
+        "https://www.typescriptlang.org/docs/handbook/2/everyday-types.html"
+      ],
+      "github": {
+        "query": "react",
+        "min_stars": 8000,
+        "pushed_after": ""
+      },
+      "forum": {
+        "tagged": "javascript;typescript;reactjs;next.js;css;html",
+        "query": "react hooks css layout fetch api"
+      }
+    },
+    "ml": {
+      "display_name": "ML",
+      "default_topic": "ml",
+      "crawl": {
+        "webpage": {
+          "allow_hosts": [],
+          "deny_hosts": []
+        },
+        "github": {
+          "allow_hosts": [
+            "github.com"
+          ],
+          "deny_hosts": []
+        },
+        "forum": {
+          "allow_hosts": [
+            "stackoverflow.com"
+          ],
+          "deny_hosts": []
+        }
+      },
+      "web_urls": [
+        "https://pytorch.org/docs/stable/index.html",
+        "https://pytorch.org/docs/stable/amp.html",
+        "https://pytorch.org/docs/stable/distributed.html",
+        "https://pytorch.org/tutorials/beginner/saving_loading_models.html",
+        "https://huggingface.co/docs/transformers/index",
+        "https://huggingface.co/docs/transformers/main_classes/trainer",
+        "https://huggingface.co/docs/datasets/index",
+        "https://huggingface.co/docs/peft/index",
+        "https://scikit-learn.org/stable/modules/model_evaluation.html",
+        "https://scikit-learn.org/stable/modules/cross_validation.html",
+        "https://mlflow.org/docs/latest/tracking.html",
+        "https://mlflow.org/docs/latest/model-registry.html",
+        "https://faiss.ai/"
+      ],
+      "github": {
+        "query": "transformers lora finetune",
+        "min_stars": 5000,
+        "pushed_after": ""
+      },
+      "forum": {
+        "tagged": "pytorch;huggingface-transformers;scikit-learn;mlflow;faiss",
+        "query": "training distributed amp checkpoint"
+      }
+    },
+    "kubernetes": {
+      "display_name": "Kubernetes",
+      "default_topic": "kubernetes",
+      "crawl": {
+        "webpage": {
+          "allow_hosts": [],
+          "deny_hosts": []
+        },
+        "github": {
+          "allow_hosts": [
+            "github.com"
+          ],
+          "deny_hosts": []
+        },
+        "forum": {
+          "allow_hosts": [
+            "stackoverflow.com"
+          ],
+          "deny_hosts": []
+        }
+      },
+      "web_urls": [
+        "https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects/",
+        "https://kubernetes.io/docs/concepts/workloads/controllers/deployment/",
+        "https://kubernetes.io/docs/concepts/services-networking/service/",
+        "https://kubernetes.io/docs/concepts/configuration/configmap/",
+        "https://kubernetes.io/docs/concepts/configuration/secret/",
+        "https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/",
+        "https://kubernetes.io/docs/tasks/debug/debug-application/",
+        "https://kubernetes.io/docs/concepts/cluster-administration/logging/",
+        "https://kubernetes.io/docs/reference/kubectl/",
+        "https://kubernetes.io/docs/reference/kubectl/generated/",
+        "https://helm.sh/docs/",
+        "https://kustomize.io/"
+      ],
+      "github": {
+        "query": "kubernetes",
+        "min_stars": 2000,
+        "pushed_after": ""
+      },
+      "forum": {
+        "tagged": "kubernetes;kubectl;helm;kustomize;minikube",
+        "query": "kubernetes troubleshooting"
+      }
+    },
+    "programming": {
+      "display_name": "Programming",
+      "default_topic": "programming",
+      "crawl": {
+        "webpage": {
+          "allow_hosts": [],
+          "deny_hosts": []
+        },
+        "github": {
+          "allow_hosts": [
+            "github.com"
+          ],
+          "deny_hosts": []
+        },
+        "forum": {
+          "allow_hosts": [
+            "stackoverflow.com"
+          ],
+          "deny_hosts": []
+        }
+      },
+      "web_urls": [
+        "https://docs.python.org/3/tutorial/index.html",
+        "https://docs.python.org/3/library/argparse.html",
+        "https://docs.python.org/3/library/logging.html",
+        "https://go.dev/doc/",
+        "https://go.dev/doc/effective_go",
+        "https://doc.rust-lang.org/book/",
+        "https://doc.rust-lang.org/std/index.html",
+        "https://nodejs.org/api/",
+        "https://docs.oracle.com/en/java/javase/21/docs/api/index.html"
+      ],
+      "github": {
+        "query": "",
+        "min_stars": 500,
+        "pushed_after": ""
+      },
+      "forum": {
+        "tagged": "python;go;rust;java;javascript;c++;c#",
+        "query": "best practices"
+      }
+    },
+    "distributed-systems": {
+      "display_name": "Distributed Systems",
+      "default_topic": "distributed systems",
+      "crawl": {
+        "webpage": {
+          "allow_hosts": [],
+          "deny_hosts": []
+        },
+        "github": {
+          "allow_hosts": [
+            "github.com"
+          ],
+          "deny_hosts": []
+        },
+        "forum": {
+          "allow_hosts": [
+            "stackoverflow.com"
+          ],
+          "deny_hosts": []
+        }
+      },
+      "web_urls": [
+        "https://kafka.apache.org/documentation/",
+        "https://etcd.io/docs/",
+        "https://grpc.io/docs/",
+        "https://redis.io/docs/latest/",
+        "https://www.consul.io/docs",
+        "https://nats.io/documentation/",
+        "https://raft.github.io/",
+        "https://www.cockroachlabs.com/docs/stable/",
+        "https://opentelemetry.io/docs/concepts/signals/traces/",
+        "https://prometheus.io/docs/introduction/overview/"
+      ],
+      "github": {
+        "query": "distributed systems",
+        "min_stars": 500,
+        "pushed_after": ""
+      },
+      "forum": {
+        "tagged": "apache-kafka;grpc;etcd;redis;consul",
+        "query": "consensus replication sharding"
+      }
+    },
+    "research": {
+      "display_name": "Research",
+      "default_topic": "research",
+      "crawl": {
+        "webpage": {
+          "allow_hosts": [],
+          "deny_hosts": []
+        },
+        "github": {
+          "allow_hosts": [
+            "github.com"
+          ],
+          "deny_hosts": []
+        },
+        "forum": {
+          "allow_hosts": [
+            "stackoverflow.com"
+          ],
+          "deny_hosts": []
+        }
+      },
+      "web_urls": [
+        "https://www.overleaf.com/learn",
+        "https://www.zotero.org/support/",
+        "https://www.latex-project.org/help/documentation/",
+        "https://www.gnu.org/software/bibtex/",
+        "https://pandoc.org/MANUAL.html"
+      ],
+      "github": {
+        "query": "research reproducibility",
+        "min_stars": 200,
+        "pushed_after": ""
+      },
+      "forum": {
+        "tagged": "latex;zotero;overleaf;bibtex;markdown",
+        "query": "reproducibility paper writing"
+      }
+    },
+    "llm": {
+      "display_name": "LLM",
+      "default_topic": "llm",
+      "crawl": {
+        "webpage": {
+          "allow_hosts": [],
+          "deny_hosts": []
+        },
+        "github": {
+          "allow_hosts": [
+            "github.com"
+          ],
+          "deny_hosts": []
+        },
+        "forum": {
+          "allow_hosts": [
+            "stackoverflow.com"
+          ],
+          "deny_hosts": []
+        }
+      },
+      "web_urls": [
+        "https://platform.openai.com/docs",
+        "https://platform.openai.com/docs/guides/text-generation",
+        "https://platform.openai.com/docs/guides/embeddings",
+        "https://huggingface.co/docs/transformers/index",
+        "https://huggingface.co/docs/datasets/index",
+        "https://docs.vllm.ai/en/latest/",
+        "https://python.langchain.com/docs/",
+        "https://docs.llamaindex.ai/en/stable/"
+      ],
+      "github": {
+        "query": "llm",
+        "min_stars": 1000,
+        "pushed_after": ""
+      },
+      "forum": {
+        "tagged": "openai-api;huggingface-transformers;langchain;llama;llm",
+        "query": "prompt embeddings retrieval"
+      }
+    }
+  },
+  "license_policy": {
+    "schema_version": 1,
+    "notes": "License policy used by strict validation. Decisions: allow | needs_review | deny.",
+    "defaults": {
+      "unknown": "needs_review"
+    },
+    "by_source_type": {
+      "webpage": {
+        "unknown": "allow"
+      },
+      "forum": {
+        "license_spdx": {
+          "CC-BY-SA-4.0": "allow",
+          "CC-BY-SA-3.0": "allow"
+        },
+        "unknown": "allow"
+      },
+      "journal": {
+        "allow_spdx": [
+          "CC-BY-4.0"
+        ],
+        "unknown": "needs_review"
+      },
+      "repo": {
+        "allow_spdx": [
+          "MIT",
+          "Apache-2.0",
+          "BSD-3-Clause",
+          "BSD-2-Clause",
+          "ISC",
+          "MPL-2.0",
+          "Unlicense"
+        ],
+        "deny_spdx": [
+          "GPL-3.0",
+          "AGPL-3.0",
+          "GPL-2.0",
+          "LGPL-3.0",
+          "LGPL-2.1"
+        ],
+        "unknown": "needs_review"
+      },
+      "github_repo": {
+        "allow_spdx": [
+          "MIT",
+          "Apache-2.0",
+          "BSD-3-Clause",
+          "BSD-2-Clause",
+          "ISC",
+          "MPL-2.0",
+          "Unlicense"
+        ],
+        "deny_spdx": [
+          "GPL-3.0",
+          "AGPL-3.0",
+          "GPL-2.0",
+          "LGPL-3.0",
+          "LGPL-2.1"
+        ],
+        "unknown": "needs_review"
+      },
+      "github": {
+        "allow_spdx": [
+          "MIT",
+          "Apache-2.0",
+          "BSD-3-Clause",
+          "BSD-2-Clause",
+          "ISC",
+          "MPL-2.0",
+          "Unlicense"
+        ],
+        "deny_spdx": [
+          "GPL-3.0",
+          "AGPL-3.0",
+          "GPL-2.0",
+          "LGPL-3.0",
+          "LGPL-2.1"
+        ],
+        "unknown": "needs_review"
+      }
+    }
+  },
+  "canonicalization": {
+    "schema_version": 1,
+    "notes": "Canonicalization knobs for source URLs. These mirror the logic in langskills.config.canonicalize_source_url.",
+    "drop_exact_params": [
+      "gclid",
+      "fbclid",
+      "igshid",
+      "mc_cid",
+      "mc_eid",
+      "mkt_tok",
+      "yclid"
+    ],
+    "drop_prefix_params": [
+      "utm_"
+    ],
+    "host_specific": {
+      "github.com": {
+        "strip_dot_git": true
+      },
+      "stackoverflow.com": {
+        "collapse_question_slug": true
+      }
+    },
+    "trailing_slash": {
+      "remove": true
+    }
+  },
+  "quality_gates": {
+    "schema_version": 1,
+    "notes": "Quality gate defaults for skills. These are advisory; enforce via validate/publish.",
+    "requirements": {
+      "evidence_required": true,
+      "verification_required": true,
+      "max_steps": 12,
+      "min_code_blocks": 1,
+      "forbid_mock_publish": true,
+      "plagiarism_ratio_threshold": 0.35,
+      "require_skill_kind": false
+    },
+    "metrics": {
+      "track": [
+        "lint_errors",
+        "lint_warnings",
+        "has_evidence",
+        "verification_runnable",
+        "license_decision",
+        "source_freshness_days"
+      ]
+    }
+  }
+}

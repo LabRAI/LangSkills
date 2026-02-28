@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "profile_id": "default",
+  "python": "",
+  "ui": {
+    "mode": "auto",
+    "refresh_ms": 500,
+    "tail_lines": 12,
+    "plain_interval_sec": 5
+  },
+  "server": {
+    "enabled": true,
+    "host": "127.0.0.1",
+    "port": 8010,
+    "reload": false
+  },
+  "scheduler": {
+    "enabled": true,
+    "config_path": "schedule.json",
+    "tick_sec": 30
+  },
+  "worker": {
+    "enabled": true,
+    "interval_ms": 3000,
+    "limit": 4,
+    "worker_id": "autopilot-worker",
+    "watchdog_stale_sec": 900,
+    "watchdog_log_interval_sec": 30,
+    "auto_capture_cmd": "",
+    "auto_capture_interval_sec": 900
+  },
+  "evolve": {
+    "enabled": true,
+    "interval_sec": 600,
+    "max_new": 2,
+    "reason": "autopilot"
+  }
+}
+

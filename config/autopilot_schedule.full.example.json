@@ -1,0 +1,103 @@
+{
+  "timezone": "UTC",
+  "profiles": [
+    {
+      "profile_id": "default",
+      "jobs": [
+        {
+          "job_id": "daily_digest",
+          "enabled": true,
+          "cadence": "daily",
+          "at": "23:50",
+          "tool": "reports.generate",
+          "input": {
+            "report_id": "digest.daily",
+            "store": true,
+            "overwrite": false
+          },
+          "backfill_days": 2
+        },
+        {
+          "job_id": "weekly_report",
+          "enabled": true,
+          "cadence": "weekly",
+          "weekday": 0,
+          "at": "23:55",
+          "tool": "reports.generate",
+          "input": {
+            "report_id": "report.weekly",
+            "store": true,
+            "overwrite": false
+          }
+        },
+        {
+          "job_id": "weekly_memory_rollup",
+          "enabled": true,
+          "cadence": "weekly",
+          "weekday": 0,
+          "at": "23:56",
+          "tool": "memory.rollup",
+          "input": {
+            "period_end": "",
+            "window_days": 7,
+            "max_chars": 2500,
+            "overwrite": false,
+            "dry_run": false,
+            "commit": true
+          }
+        },
+        {
+          "job_id": "rag_index_interval",
+          "enabled": true,
+          "cadence": "interval",
+          "interval_sec": 21600,
+          "tool": "rag.index",
+          "input": {}
+        },
+        {
+          "job_id": "planner_daily",
+          "enabled": true,
+          "cadence": "daily",
+          "at": "23:40",
+          "tool": "planner.run_once",
+          "allow_risk_levels": [
+            "low",
+            "medium"
+          ],
+          "allow_requires_approval": true,
+          "input": {
+            "reason": "scheduler:planner_daily",
+            "allow_risk_levels": [
+              "low"
+            ],
+            "allow_requires_approval": false,
+            "defer_blocked_to_tasks": true,
+            "dry_run": false,
+            "max_actions": 8
+          }
+        },
+        {
+          "job_id": "evolve_interval",
+          "enabled": false,
+          "cadence": "interval",
+          "interval_sec": 1800,
+          "tool": "evolve.run_once",
+          "allow_risk_levels": [
+            "low",
+            "medium"
+          ],
+          "allow_requires_approval": true,
+          "input": {
+            "max_new": 2,
+            "run_worker": false,
+            "worker_limit": 2,
+            "worker_id": "evolve-worker",
+            "topic": "",
+            "reason": "scheduler:evolve_interval"
+          }
+        }
+      ]
+    }
+  ]
+}
+

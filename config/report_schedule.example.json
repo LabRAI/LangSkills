@@ -1,0 +1,65 @@
+{
+  "timezone": "UTC",
+  "profiles": [
+    {
+      "profile_id": "default",
+      "jobs": [
+        {
+          "job_id": "daily_digest",
+          "enabled": true,
+          "cadence": "daily",
+          "at": "23:50",
+          "tool": "reports.generate",
+          "input": {
+            "report_id": "digest.daily",
+            "store": true,
+            "overwrite": false
+          },
+          "backfill_days": 2
+        },
+        {
+          "job_id": "weekly_report",
+          "enabled": true,
+          "cadence": "weekly",
+          "weekday": 0,
+          "at": "23:55",
+          "tool": "reports.generate",
+          "input": {
+            "report_id": "report.weekly",
+            "store": true,
+            "overwrite": false
+          }
+        },
+        {
+          "job_id": "weekly_memory_rollup",
+          "enabled": true,
+          "cadence": "weekly",
+          "weekday": 0,
+          "at": "23:56",
+          "tool": "memory.rollup",
+          "input": {
+            "period_end": "",
+            "window_days": 7,
+            "max_chars": 2500,
+            "overwrite": false,
+            "dry_run": false,
+            "commit": true
+          }
+        },
+        {
+          "job_id": "monthly_report",
+          "enabled": true,
+          "cadence": "monthly",
+          "day": 1,
+          "at": "23:58",
+          "tool": "reports.generate",
+          "input": {
+            "report_id": "report.monthly",
+            "store": true,
+            "overwrite": false
+          }
+        }
+      ]
+    }
+  ]
+}
