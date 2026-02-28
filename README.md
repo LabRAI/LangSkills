@@ -443,7 +443,7 @@ Each result includes: **title**, **domain**, **quality score** (0-5), **source U
 
 ## ⚙️ Configuration
 
-Master config: **`config/skill_config.json`** — domains, URL rules, quality gates, license policy.
+Master config: **`config/langskills.json`** — domains, URL rules, quality gates, license policy.
 
 <details>
 <summary>🤖 <b>LLM & API Keys</b></summary>
