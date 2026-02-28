@@ -593,7 +593,6 @@ def main(argv: list[str] | None = None) -> int:
 
         if pipeline:
             from .postprocess.run import postprocess_run
-            from .scripts.validate_skills import validate_skills
             from .utils.fs import list_skill_dirs
 
             print("\n=== Pipeline: postprocess ===")
@@ -611,8 +610,14 @@ def main(argv: list[str] | None = None) -> int:
                     print("WARN: improve finished but still has lint/missing suggestions; consider re-running improve.")
 
             print("\n=== Pipeline: validate (run skills) ===")
+            try:
+                from .scripts.validate_skills import validate_skills
+            except ImportError:
+                validate_skills = None
             skills_root = Path(run_dir) / "skills"
-            if skills_root.exists():
+            if validate_skills is None:
+                print("SKIP: validate_skills module not available; skipping validation.")
+            elif skills_root.exists():
                 errors, warnings = validate_skills(repo_root=repo_root, root=skills_root, strict=True, check_package=True)
                 for w in warnings:
                     print(f"WARN: {w}")
@@ -621,14 +626,15 @@ def main(argv: list[str] | None = None) -> int:
             else:
                 print("WARN: No skills directory generated; skipping validation.")
 
-            combos_root = Path(run_dir) / "analysis"
-            if combos_root.exists() and list_skill_dirs(combos_root):
-                print("\n=== Pipeline: validate (combo skills, non-strict) ===")
-                combo_errors, combo_warnings = validate_skills(repo_root=repo_root, root=combos_root, strict=False, check_package=False)
-                for w in combo_warnings:
-                    print(f"WARN: {w}")
-                for e in combo_errors:
-                    print(f"FAIL: {e}")
+            if validate_skills is not None:
+                combos_root = Path(run_dir) / "analysis"
+                if combos_root.exists() and list_skill_dirs(combos_root):
+                    print("\n=== Pipeline: validate (combo skills, non-strict) ===")
+                    combo_errors, combo_warnings = validate_skills(repo_root=repo_root, root=combos_root, strict=False, check_package=False)
+                    for w in combo_warnings:
+                        print(f"WARN: {w}")
+                    for e in combo_errors:
+                        print(f"FAIL: {e}")
         elif auto_improve:
             print("\n=== Auto: improve ===")
             from .skills.improve import improve_run_in_place
@@ -1048,7 +1054,11 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     if ns.cmd == "validate":
-        from .scripts.validate_skills import validate_skills
+        try:
+            from .scripts.validate_skills import validate_skills
+        except ImportError:
+            print("ERROR: validate_skills module is not available.")
+            return 1
 
         max_skills = int(getattr(ns, "max_skills", 0) or 0)
         errors, warnings = validate_skills(

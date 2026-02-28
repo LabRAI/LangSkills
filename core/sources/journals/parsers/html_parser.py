@@ -7,7 +7,7 @@ Unsupported opcode: MAKE_CELL (225)
 __doc__ = '\nGeneric HTML parser for journal article pages.\n\nUses BeautifulSoup for robust extraction of figures, captions, and data availability.\nWorks as a fallback for journals not covered by specific parsers (Science, Cell, etc.).\n'
 import re
 from typing import List, Tuple
-from langskills.sources.journals.models import DataSource, FigureInfo
+from core.sources.journals.models import DataSource, FigureInfo
 from .pmc_parser import DATA_REPO_PATTERNS
 
 def extract_figures_bs4(html = None, base_url = None):

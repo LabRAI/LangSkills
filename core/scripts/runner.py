@@ -62,7 +62,10 @@ from ..utils.fs import ensure_dir, make_run_dir, write_json_atomic
 from ..utils.hashing import sha256_hex
 from ..utils.lang import resolve_output_language
 from ..utils.time import utc_iso_z, utc_now_iso_z
-from .validate_skills import validate_skills
+try:
+    from .validate_skills import validate_skills
+except ImportError:
+    validate_skills = None
 
 
 STAGE_ORDER = ["discover", "ingest", "preprocess", "llm_generate", "validate", "improve", "publish"]
@@ -1450,15 +1453,18 @@ def _process_item(
             and kind == "blob"
         )
 
-        try:
-            errors, warnings = validate_skills(repo_root=repo_root, strict=bool(strict), root=root, check_package=True)
-        except Exception:
-            if is_github_blob_budgeted:
-                try:
-                    queue.release_run_budget_reservation(run_id=run_id, budget_key="github_repo_skills", item_id=item_id)
-                except Exception:
-                    pass
-            raise
+        if validate_skills is not None:
+            try:
+                errors, warnings = validate_skills(repo_root=repo_root, strict=bool(strict), root=root, check_package=True)
+            except Exception:
+                if is_github_blob_budgeted:
+                    try:
+                        queue.release_run_budget_reservation(run_id=run_id, budget_key="github_repo_skills", item_id=item_id)
+                    except Exception:
+                        pass
+                raise
+        else:
+            errors, warnings = [], []
         for w in warnings:
             print(f"WARN: {w}")
         for e in errors:

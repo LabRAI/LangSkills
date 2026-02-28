@@ -6,7 +6,7 @@ Unsupported opcode: RETURN_GENERATOR (109)
 __doc__ = '\neLife parser — eLife REST API.\n\neLife is fully OA and has an excellent API.\nAPI docs: https://api.elifesciences.org\n'
 import re
 from typing import List, Tuple, Optional
-from langskills.sources.journals.models import DataSource, FigureInfo, PaperRecord
+from core.sources.journals.models import DataSource, FigureInfo, PaperRecord
 from .pmc_parser import DATA_REPO_PATTERNS
 
 def build_elife_search_url(page = None, per_page = None, year_from = None, subject = (1, 100, 2020, '', 'desc'), order = ('page', int, 'per_page', int, 'year_from', int, 'subject', str, 'order', str, 'return', str)):

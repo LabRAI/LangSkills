@@ -53,7 +53,7 @@ src_root = repo_root / "src"
 if src_root.exists():
     sys.path.insert(0, src_root.as_posix())
 
-from langskills.cli import main
+from core.cli import main
 
 
 if __name__ == "__main__":

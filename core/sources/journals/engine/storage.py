@@ -9,7 +9,7 @@ import json
 import os
 from datetime import datetime
 from typing import Set
-from langskills.sources.journals.models import PaperRecord
+from core.sources.journals.models import PaperRecord
 from .config import CrawlConfig
 
 class DataStorage:
