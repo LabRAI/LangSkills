@@ -24,7 +24,7 @@ __MACOSX/
 runs/
 var/
 captures/run-*/
-sources/
+/sources/
 skills/by-skill/
 skills/by-source/
 
