@@ -571,6 +571,14 @@ Copyright (c) 2026 [Responsible AI (RAI) Lab](https://github.com/LabRAI) @ Flori
 
 ---
 
+
+## 🙏 Credits
+
+- **Authors:** [Tianming Sha](https://shatianming5.github.io/) (Stony Brook University), [Dr. Yue Zhao](https://viterbi-web.usc.edu/~yzhao010/) (University of Southern California), [Dr. Lichao Sun](https://lichao-sun.github.io/) (Lehigh University), [Dr. Yushun Dong](https://yushundong.github.io/) (Florida State University)
+- **Design:** Modular pipeline architecture with multi-source intelligence, built for extensibility and offline-first search
+- **Skills:** 101,330 evidence-backed skills generated from 62K+ papers and 23K+ tech sources via LLM-powered quality gates
+- **Sources:** Every skill traces to real web pages, academic papers, or code repositories (arXiv, PMC, PLOS, Nature, eLife, GitHub, etc.)
+
 <p align="center">
   <a href="https://star-history.com/#LabRAI/LangSkills&Date">
     <img src="https://api.star-history.com/svg?repos=LabRAI/LangSkills&type=Date" width="600" alt="Star History" />
