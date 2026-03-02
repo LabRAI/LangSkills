@@ -348,6 +348,8 @@ langskills-rai bundle-install --auto
 
 ```bash
 langskills-rai skill-search "<query>" [options]
+langskills-rai skill-search --domains
+langskills-rai skill-search --kinds
 ```
 
 ### Parameters
@@ -355,7 +357,10 @@ langskills-rai skill-search "<query>" [options]
 | Flag | Description | Default |
 |:---|:---|:---|
 | `--top N` | Number of results | 5 |
+| `--domains` | List available domains and exit | off |
+| `--kinds` | List available skill kinds and exit | off |
 | `--domain <d>` | Filter by domain | all |
+| `--show-path` | Show local `skill.md` path for each result | off |
 | `--min-score N` | Minimum quality score (0-5) | 0 |
 | `--content` | Include full skill body | off |
 | `--format markdown` | Output as Markdown | text |
@@ -364,6 +369,7 @@ langskills-rai skill-search "<query>" [options]
 
 ```bash
 langskills-rai skill-search "CRISPR gene editing" --domain research --top 3 --content --format markdown
+langskills-rai skill-search "kubernetes networking" --top 5 --show-path
 ```
 
 ## Reading Results
