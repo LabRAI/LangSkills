@@ -62,7 +62,7 @@ def main(argv: list[str] | None = None) -> int:
     if args_in and args_in[0].lower() not in known_cmds and not args_in[0].startswith("-"):
         args_in = ["capture", *args_in]
 
-    parser = argparse.ArgumentParser(prog="langskills")
+    parser = argparse.ArgumentParser(prog="langskills-rai")
     sub = parser.add_subparsers(dest="cmd", required=True)
 
     p_capture = sub.add_parser("capture", help="Generate a new capture run under captures/")

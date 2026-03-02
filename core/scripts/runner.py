@@ -1779,7 +1779,7 @@ def _migrate_state_json(state_path: Path, queue: QueueStore, settings: QueueSett
 
 
 def cli_runner(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="langskills runner")
+    parser = argparse.ArgumentParser(prog="langskills-rai runner")
     parser.add_argument("--state", default="runs/queue.db", help="Legacy: queue DB path (or old runner_state.json)")
     parser.add_argument("--queue", default="", help="Queue DB path (default: runs/queue.db)")
     parser.add_argument("--once", action="store_true")

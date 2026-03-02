@@ -1,10 +1,10 @@
 [build-system]
-requires = ["setuptools>=68.0", "wheel"]
+requires = ["setuptools>=68.0", "setuptools-scm>=8.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "langskills"
-version = "0.1.0"
+name = "langskills-rai"
+dynamic = ["version"]
 description = "Turn any topic into an evidence-backed skills library — automatically"
 readme = "README.md"
 license = "MIT"
@@ -12,6 +12,20 @@ requires-python = ">=3.10"
 authors = [
     { name = "Responsible AI Lab @ FSU" },
 ]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Libraries",
+]
+keywords = ["skills", "evidence", "research", "llm", "knowledge-base", "rag"]
 
 dependencies = [
     "httpx>=0.27",
@@ -32,9 +46,19 @@ dev = [
     "Pygments>=2.17",
 ]
 
+[project.urls]
+Homepage = "https://github.com/LabRAI/LangSkills"
+Repository = "https://github.com/LabRAI/LangSkills"
+Documentation = "https://labrai.github.io/LangSkills/"
+Issues = "https://github.com/LabRAI/LangSkills/issues"
+
 [project.scripts]
-langskills = "core.cli:main"
+langskills-rai = "core.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["core", "core.*"]
+
+[tool.setuptools_scm]
+write_to = "core/_version.py"
+fallback_version = "0.1.0"

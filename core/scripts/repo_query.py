@@ -9,7 +9,7 @@ from ..repo_understanding.symbol_index import load_symbol_index_jsonl
 
 
 def cli_repo_query(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="langskills repo-query")
+    parser = argparse.ArgumentParser(prog="langskills-rai repo-query")
     parser.add_argument("question", help="Question to answer (lexical evidence-backed search)")
     parser.add_argument("--index", default="captures/symbol_index.jsonl", help="Path to symbol_index.jsonl")
     parser.add_argument("--top", type=int, default=8)

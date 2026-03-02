@@ -5,7 +5,7 @@ from __future__ import annotations
 import argparse
 
 def parse_journal_pipeline_args(argv = None):
-    parser = argparse.ArgumentParser(prog = 'langskills journal-pipeline')
+    parser = argparse.ArgumentParser(prog = 'langskills-rai journal-pipeline')
     parser.add_argument('--max-papers', '-n', type = int, default = 10000)
     parser.add_argument('--families', '-f', nargs = '+', default = None, choices = [
         'Nature',

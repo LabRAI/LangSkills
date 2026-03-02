@@ -99,7 +99,7 @@ def _copy_tree(
 
 
 def cli_repo_export(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="langskills repo-export")
+    parser = argparse.ArgumentParser(prog="langskills-rai repo-export")
     parser.add_argument("--out", required=True, help="Output directory for the export bundle")
     parser.add_argument("--captures", default="captures", help="Path to captures/ (default: captures)")
     parser.add_argument("--docs", default="docs", help="Path to docs/ (default: docs)")

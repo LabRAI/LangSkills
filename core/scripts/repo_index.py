@@ -23,7 +23,7 @@ from ..utils.time import utc_now_iso_z
 
 
 def cli_repo_index(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="langskills repo-index")
+    parser = argparse.ArgumentParser(prog="langskills-rai repo-index")
     parser.add_argument("--out-dir", default="captures", help="Output directory (default: captures)")
     parser.add_argument("--repo", default="", help="Remote GitHub repo (URL or owner/repo). When set, index that repo snapshot instead of local.")
     parser.add_argument("--ref", default="", help="Remote ref (branch/tag/sha). Default: repo default branch.")

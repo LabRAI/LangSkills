@@ -122,7 +122,7 @@ def run_self_check(*, repo_root: str | Path, skip_remote: bool) -> int:
 
 
 def cli_self_check(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="langskills self-check")
+    parser = argparse.ArgumentParser(prog="langskills-rai self-check")
     parser.add_argument("--skip-remote", action="store_true")
     ns = parser.parse_args(argv)
     repo_root = Path(__file__).resolve().parents[2]

@@ -143,9 +143,9 @@ def rebuild_index(repo_root: Path) -> int:
 
 
 def cli_rebuild_index(argv: list[str] | None = None) -> int:
-    """CLI entry point for ``langskills bundle-rebuild``."""
+    """CLI entry point for ``langskills-rai bundle-rebuild``."""
     parser = argparse.ArgumentParser(
-        prog="langskills bundle-rebuild",
+        prog="langskills-rai bundle-rebuild",
         description="Rebuild skills/index.sqlite from skills/index.json",
     )
     parser.add_argument(

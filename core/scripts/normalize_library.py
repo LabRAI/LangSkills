@@ -230,7 +230,7 @@ def normalize_library(*, repo_root: Path, root: Path, dry_run: bool) -> dict[str
 
 
 def cli_normalize_library(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="langskills normalize-library")
+    parser = argparse.ArgumentParser(prog="langskills-rai normalize-library")
     parser.add_argument("--root", default="skills")
     parser.add_argument("--dry-run", action="store_true")
     ns = parser.parse_args(argv)

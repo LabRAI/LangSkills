@@ -111,7 +111,7 @@ def build_index(*, repo_root: Path, root: Path) -> dict[str, Any]:
 
 
 def cli_reindex_skills(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="langskills reindex-skills")
+    parser = argparse.ArgumentParser(prog="langskills-rai reindex-skills")
     parser.add_argument("--root", default="skills/by-skill", help="Root dir to index (default: skills/by-skill)")
     ns = parser.parse_args(argv)
 

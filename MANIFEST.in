@@ -1,0 +1,17 @@
+include LICENSE
+include README.md
+include pyproject.toml
+
+# Include core package
+recursive-include core *.py
+
+# Exclude tracked directories that shouldn't go to PyPI
+prune dist
+prune captures
+prune config
+prune .github
+
+# Exclude tracked root files not needed in the package
+exclude langskills_cli.py
+exclude index.html
+exclude requirements.txt

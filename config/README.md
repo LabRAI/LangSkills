@@ -7,15 +7,15 @@ This directory contains LangSkills configuration files (primarily `config/skill_
 | Path | Purpose |
 |---|---|
 | `skill_config.json` | Master runtime configuration (domains, canonicalization, quality gates, license policy, env surface). |
-| `autopilot.example.json` | Autopilot supervisor config template (used by `langskills autopilot-init`). |
+| `autopilot.example.json` | Autopilot supervisor config template (used by `langskills-rai autopilot-init`). |
 | `autopilot_schedule.safe.example.json` | Safe scheduler template (low-risk tools only). |
 | `autopilot_schedule.full.example.json` | Full scheduler template (includes medium-risk tools; requires explicit allowlist). |
-| `report_schedule.example.json` | Example report scheduler config for `langskills report-scheduler`. |
+| `report_schedule.example.json` | Example report scheduler config for `langskills-rai report-scheduler`. |
 | `解析.md` | Notes about the config surface (debugging pointers). |
 
 ## Key files (details)
 
-- `skill_config.json`: master runtime configuration used by `langskills/config.py`.
+- `skill_config.json`: master runtime config used by `langskills/config.py`.
   - Defines `domain_config` (seed URLs + GitHub/forum queries)
   - Defines `canonicalization` rules (URL normalization before hashing)
   - Defines validation/quality gates and license policy defaults
@@ -30,7 +30,7 @@ This directory contains LangSkills configuration files (primarily `config/skill_
 
 ## Autopilot templates
 
-- `autopilot.example.json`: Autopilot supervisor config template (used by `langskills autopilot-init`).
+- `autopilot.example.json`: Autopilot supervisor config template (used by `langskills-rai autopilot-init`).
 - `autopilot_schedule.safe.example.json`: Safe scheduler template (low-risk tools only).
 - `autopilot_schedule.full.example.json`: Full scheduler template (includes medium-risk tools like planner/evolve; requires explicit allowlist in the schedule).
 

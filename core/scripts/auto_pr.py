@@ -31,7 +31,7 @@ def _has_command(name: str, *, cwd: Path) -> bool:
 
 
 def cli_auto_pr(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="langskills auto-pr")
+    parser = argparse.ArgumentParser(prog="langskills-rai auto-pr")
     parser.add_argument("--dry-run", action="store_true", default=True, dest="dry_run", help=argparse.SUPPRESS)
     parser.add_argument("--push", action="store_true")
     parser.add_argument("--pr", action="store_true")

@@ -257,36 +257,27 @@ const road=[
 
 const aiPrompt=`Do the following steps in order. Do NOT skip any step.
 
-1. Clone the repo and enter the directory:
-   git clone https://github.com/LabRAI/LangSkills.git && cd LangSkills
+1. Install langskills-rai from PyPI:
+   pip install langskills-rai
 
-2. Create a Python 3.10+ virtual environment and activate it:
-   python3 -m venv .venv && source .venv/bin/activate
+2. Auto-detect my project and install matching skill bundles:
+   langskills-rai bundle-install --auto
 
-3. Upgrade pip and install all dependencies:
-   pip install -U pip && pip install -r requirements.txt
+3. Run the self-check to verify everything is working:
+   langskills-rai self-check --skip-remote
 
-4. Copy the environment template:
-   cp .env.example .env
+4. Run a quick smoke test:
+   langskills-rai skill-search "machine learning" --top 3
 
-5. Ask me for my OPENAI_API_KEY and OPENAI_BASE_URL,
-   then write them into .env.
+5. If I want to generate NEW skills (not just search), ask me for my
+   OPENAI_API_KEY and OPENAI_BASE_URL, then set them as environment variables.
 
-6. Run the self-check to verify everything is working:
-   python3 langskills_cli.py self-check --skip-remote
-
-7. Auto-detect my project and install matching skill bundles:
-   python3 langskills_cli.py bundle-install --auto
-
-8. Run a quick smoke test:
-   python3 langskills_cli.py skill-search "machine learning" --top 3
-
-Done. Report the results of steps 6, 7 and 8.`;
+Done. Report the results of steps 3 and 4.`;
 
 const tabs={
-  quick:{lines:[{c:"# Clone, install, go. 🧪"},{cmd:"git clone https://github.com/LabRAI/LangSkills.git && cd LangSkills"},{cmd:"pip install -r requirements.txt && cp .env.example .env"},{c:"# → Fill OPENAI_API_KEY + OPENAI_BASE_URL in .env, then:"},{cmd:"python3 langskills_cli.py bundle-install --auto"}],hint:"Works on macOS, Linux & Windows. Python 3.10+ required. Bundles auto-download from GitHub Releases.",copy:"git clone https://github.com/LabRAI/LangSkills.git && cd LangSkills\npip install -r requirements.txt && cp .env.example .env\npython3 langskills_cli.py bundle-install --auto"},
+  quick:{lines:[{c:"# Install from PyPI 🧪"},{cmd:"pip install langskills-rai"},{c:"# Auto-detect your project and install matching bundles:"},{cmd:"langskills-rai bundle-install --auto"},{c:"# Search 101K skills offline:"},{cmd:'langskills-rai skill-search "kubernetes networking" --top 5'}],hint:"Works on macOS, Linux & Windows. Python 3.10+ required. Bundles auto-download from GitHub Releases.",copy:"pip install langskills-rai\nlangskills-rai bundle-install --auto\nlangskills-rai skill-search \"kubernetes networking\" --top 5"},
   ai:{lines:null,hint:"Paste into Claude Code / Cursor / Codex / Windsurf — the agent handles everything automatically.",copy:aiPrompt},
-  search:{lines:[{c:"# Search 101K skills offline"},{cmd:'python3 langskills_cli.py skill-search "CRISPR" --domain research --top 5'},{cmd:'python3 langskills_cli.py skill-search "React hooks" --content --format markdown'},{c:"# Generate new skills from any topic"},{cmd:'python3 langskills_cli.py capture "Docker networking@15"'}],hint:"Results are structured Markdown — feed directly to any AI agent, RAG pipeline, or knowledge base.",copy:'python3 langskills_cli.py skill-search "CRISPR" --domain research --top 5'}
+  search:{lines:[{c:"# Search 101K skills offline"},{cmd:'langskills-rai skill-search "CRISPR" --domain research --top 5'},{cmd:'langskills-rai skill-search "React hooks" --content --format markdown'},{c:"# Generate new skills from any topic"},{cmd:'langskills-rai capture "Docker networking@15"'}],hint:"Results are structured Markdown — feed directly to any AI agent, RAG pipeline, or knowledge base.",copy:'langskills-rai skill-search "CRISPR" --domain research --top 5'}
 };
 
 /* ═══ RENDER ═══ */

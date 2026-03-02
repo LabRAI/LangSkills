@@ -623,7 +623,7 @@ SHA-256 checksums are provided as `.sha256` sidecar files.
 def cli_build_bundle(argv: list[str] | None = None) -> int:
     """CLI entry point for ``langskills build-bundle``."""
     parser = argparse.ArgumentParser(
-        prog="langskills build-bundle",
+        prog="langskills-rai build-bundle",
         description="Build a self-contained SQLite skill bundle",
     )
     parser.add_argument(
