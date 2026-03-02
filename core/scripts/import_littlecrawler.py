@@ -132,7 +132,7 @@ def _artifact_extra(*, platform: str, item: dict[str, Any], input_path: Path, in
 
 
 def cli_import_littlecrawler(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="langskills import-littlecrawler")
+    parser = argparse.ArgumentParser(prog="langskills-rai import-littlecrawler")
     parser.add_argument("platform", choices=["zhihu", "xhs"])
     parser.add_argument("--input", required=True, help="Path to LittleCrawler search_contents_*.json")
     parser.add_argument("--queue", default="", help="Queue DB path (default: runs/queue_<platform>.db)")

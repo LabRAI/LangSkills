@@ -861,7 +861,7 @@ def _process_one_source(
 
 
 def cli_arxiv_pipeline(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="langskills arxiv-pipeline")
+    parser = argparse.ArgumentParser(prog="langskills-rai arxiv-pipeline")
     parser.add_argument("--topic", required=True)
     parser.add_argument("--max-results", type=int, default=3)
     parser.add_argument("--profile", default="research")

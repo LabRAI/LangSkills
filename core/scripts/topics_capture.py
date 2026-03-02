@@ -25,7 +25,7 @@ def load_topics(path: Path) -> list[dict[str, Any]]:
 
 
 def cli_topics_capture(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="langskills topics-capture")
+    parser = argparse.ArgumentParser(prog="langskills-rai topics-capture")
     parser.add_argument("--topics-file", default="topics/topics.yaml")
     parser.add_argument("--limit", type=int, default=0, help="Limit number of topics (0 = all)")
     parser.add_argument("--queue", default="", help="Queue DB path (default: runs/queue.db)")

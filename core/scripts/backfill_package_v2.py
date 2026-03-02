@@ -17,7 +17,7 @@ def _has_package_files(skill_dir: Path) -> bool:
 
 
 def cli_backfill_package_v2(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="langskills backfill-package-v2")
+    parser = argparse.ArgumentParser(prog="langskills-rai backfill-package-v2")
     parser.add_argument("--root", default="skills")
     parser.add_argument("--provider", dest="provider", default=None)
     parser.add_argument("--llm", dest="provider", help=argparse.SUPPRESS, default=argparse.SUPPRESS)

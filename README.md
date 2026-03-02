@@ -3,6 +3,8 @@
 # LangSkills: Evidence-Backed Skills for Vibe Research & Vibe Coding
 
 <p>
+  <a href="https://pypi.org/project/langskills-rai/"><img alt="PyPI" src="https://img.shields.io/pypi/v/langskills-rai?style=flat-square&logo=pypi&logoColor=white" /></a>
+  <a href="https://pepy.tech/projects/langskills-rai"><img alt="Downloads" src="https://img.shields.io/pepy/dt/langskills-rai?style=flat-square&logo=python&logoColor=white" /></a>
   <a href="https://www.python.org/downloads/"><img alt="Python 3.10+" src="https://img.shields.io/badge/python-3.10+-3776AB?style=flat-square&logo=python&logoColor=white" /></a>
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-green?style=flat-square" /></a>
   <a href="https://github.com/LabRAI/LangSkills"><img alt="GitHub stars" src="https://img.shields.io/github/stars/LabRAI/LangSkills?style=flat-square&logo=github" /></a>
@@ -54,18 +56,17 @@
 ## 🚀 Quick Start
 
 ```bash
-git clone https://github.com/LabRAI/LangSkills.git && cd LangSkills
-pip install -r requirements.txt && cp .env.example .env
-# → Fill in OPENAI_API_KEY and OPENAI_BASE_URL in .env
+pip install langskills-rai
 
 # Auto-detect your project and install only matching bundles (~50-200 MB)
-python3 langskills_cli.py bundle-install --auto
+langskills-rai bundle-install --auto
 
 # Search the pre-built skill library (Vibe Research)
-python3 langskills_cli.py skill-search "kubernetes networking" --top 5
+langskills-rai skill-search "kubernetes networking" --top 5
 
 # Generate new skills from any topic (Vibe Coding)
-python3 langskills_cli.py capture "Docker networking@15"
+cp .env.example .env   # fill OPENAI_API_KEY + OPENAI_BASE_URL
+langskills-rai capture "Docker networking@15"
 ```
 
 > Full setup details → [Installation](#-installation)
@@ -97,19 +98,19 @@ python3 langskills_cli.py capture "Docker networking@15"
 
 ```bash
 # Install a domain bundle (downloads from GitHub Releases)
-python3 langskills_cli.py bundle-install --domain linux
+langskills-rai bundle-install --domain linux
 
 # Or auto-detect your project type and install matching bundles
-python3 langskills_cli.py bundle-install --auto
+langskills-rai bundle-install --auto
 
 # Search skills offline (FTS5 full-text search)
-python3 langskills_cli.py skill-search "container orchestration" --top 10
+langskills-rai skill-search "container orchestration" --top 10
 
 # Filter by domain and minimum quality score
-python3 langskills_cli.py skill-search "CRISPR" --domain research --min-score 4.0
+langskills-rai skill-search "CRISPR" --domain research --min-score 4.0
 
 # Get full skill content as Markdown
-python3 langskills_cli.py skill-search "React hooks" --content --format markdown
+langskills-rai skill-search "React hooks" --content --format markdown
 ```
 
 </details>
@@ -142,21 +143,21 @@ skills/by-skill/<domain>/<topic>/
 **1. Explore sources** (optional)
 
 ```bash
-python3 langskills_cli.py search tavily "Linux journalctl" --limit 20
-python3 langskills_cli.py search github "journalctl" --limit 10
+langskills-rai search tavily "Linux journalctl" --limit 20
+langskills-rai search github "journalctl" --limit 10
 ```
 
 **2. Capture skills from a topic**
 
 ```bash
 # Basic
-python3 langskills_cli.py capture "journalctl@15"
+langskills-rai capture "journalctl@15"
 
 # Target a specific domain
-python3 langskills_cli.py capture "React hooks@20" --domain web
+langskills-rai capture "React hooks@20" --domain web
 
 # All domains
-python3 langskills_cli.py capture "Kubernetes" --all --total 30
+langskills-rai capture "Kubernetes" --all --total 30
 ```
 
 > `@N` is shorthand for `--total N`. The pipeline auto-runs: search → fetch → generate → dedupe → improve → validate.
@@ -164,24 +165,24 @@ python3 langskills_cli.py capture "Kubernetes" --all --total 30
 **3. Validate & publish**
 
 ```bash
-python3 langskills_cli.py validate --strict --package
-python3 langskills_cli.py reindex-skills --root skills/by-skill
+langskills-rai validate --strict --package
+langskills-rai reindex-skills --root skills/by-skill
 ```
 
 **4. Build bundles & site**
 
 ```bash
-python3 langskills_cli.py build-site
-python3 langskills_cli.py build-bundle --split-by-domain
+langskills-rai build-site
+langskills-rai build-bundle --split-by-domain
 ```
 
 **5. Batch processing** (large-scale)
 
 ```bash
-python3 langskills_cli.py queue-seed                     # seed from config
-python3 langskills_cli.py topics-capture topics/arxiv.txt # or from file
-python3 langskills_cli.py runner                          # start worker
-python3 langskills_cli.py queue-watch                     # monitor
+langskills-rai queue-seed                     # seed from config
+langskills-rai topics-capture topics/arxiv.txt # or from file
+langskills-rai runner                          # start worker
+langskills-rai queue-watch                     # monitor
 ```
 
 </details>
@@ -208,6 +209,23 @@ captures/<run-id>/
 
 LangSkills supports **Linux**, **macOS**, and **Windows**. Python 3.10+ required.
 
+### Option A: pip install (recommended)
+
+```bash
+pip install langskills-rai
+
+# Download skill bundles (auto-detect your project type)
+langskills-rai bundle-install --auto
+
+# Or install a specific domain
+langskills-rai bundle-install --domain linux
+
+# Verify
+langskills-rai self-check --skip-remote
+```
+
+### Option B: From source (for development / skill generation)
+
 <details>
 <summary><b>🐧 Linux / 🍎 macOS</b></summary>
 <br/>
@@ -215,10 +233,10 @@ LangSkills supports **Linux**, **macOS**, and **Windows**. Python 3.10+ required
 ```bash
 git clone https://github.com/LabRAI/LangSkills.git && cd LangSkills
 python3 -m venv .venv && source .venv/bin/activate
-pip install -U pip && pip install -r requirements.txt
+pip install -e ".[dev]"
 playwright install chromium          # optional: Baidu/Zhihu/XHS sources
 cp .env.example .env                 # fill OPENAI_API_KEY + OPENAI_BASE_URL
-python3 langskills_cli.py self-check --skip-remote
+langskills-rai self-check --skip-remote
 ```
 
 </details>
@@ -230,9 +248,9 @@ python3 langskills_cli.py self-check --skip-remote
 ```cmd
 git clone https://github.com/LabRAI/LangSkills.git && cd LangSkills
 python -m venv .venv && .venv\Scripts\activate
-pip install -U pip && pip install -r requirements.txt
+pip install -e ".[dev]"
 copy .env.example .env               # fill OPENAI_API_KEY + OPENAI_BASE_URL
-python langskills_cli.py self-check --skip-remote
+langskills-rai self-check --skip-remote
 ```
 
 </details>
@@ -264,31 +282,22 @@ python langskills_cli.py self-check --skip-remote
 ```text
 Do the following steps in order. Do NOT skip any step.
 
-1. Clone the repo and enter the directory:
-   git clone https://github.com/LabRAI/LangSkills.git && cd LangSkills
+1. Install langskills-rai from PyPI:
+   pip install langskills-rai
 
-2. Create a Python 3.10+ virtual environment and activate it:
-   python3 -m venv .venv && source .venv/bin/activate
+2. Auto-detect my project and install matching skill bundles:
+   langskills-rai bundle-install --auto
 
-3. Upgrade pip and install all dependencies:
-   pip install -U pip && pip install -r requirements.txt
+3. Run the self-check to verify everything is working:
+   langskills-rai self-check --skip-remote
 
-4. (Optional) Install Playwright Chromium for Baidu/Zhihu/XHS source providers:
-   playwright install chromium
+4. If self-check passes, run a quick smoke test — search the built-in library:
+   langskills-rai skill-search "machine learning" --top 3
 
-5. Copy the environment template:
-   cp .env.example .env
+5. If I want to generate NEW skills (not just search), ask me for my
+   OPENAI_API_KEY and OPENAI_BASE_URL, then set them as environment variables.
 
-6. Ask me for my OPENAI_API_KEY and OPENAI_BASE_URL, then write them into .env.
-   If I also have a TAVILY_API_KEY or GITHUB_TOKEN, write those too.
-
-7. Run the self-check to verify everything is working:
-   python3 langskills_cli.py self-check --skip-remote
-
-8. If self-check passes, run a quick smoke test — search the built-in library:
-   python3 langskills_cli.py skill-search "machine learning" --top 3
-
-Done. Report the results of steps 7 and 8.
+Done. Report the results of steps 3 and 4.
 ```
 
 ---
@@ -330,16 +339,15 @@ Search 101,330 evidence-backed skills covering 62K+ research papers and 23K+ cod
 ## First-Time Setup
 
 ```bash
-git clone https://github.com/LabRAI/LangSkills.git && cd LangSkills
-pip install -r requirements.txt
+pip install langskills-rai
 # Install all bundles (~1 GB) or pick a domain:
-python3 langskills_cli.py bundle-install --auto
+langskills-rai bundle-install --auto
 ```
 
 ## Search Command
 
 ```bash
-python3 langskills_cli.py skill-search "<query>" [options]
+langskills-rai skill-search "<query>" [options]
 ```
 
 ### Parameters
@@ -355,7 +363,7 @@ python3 langskills_cli.py skill-search "<query>" [options]
 ### Example
 
 ```bash
-python3 langskills_cli.py skill-search "CRISPR gene editing" --domain research --top 3 --content --format markdown
+langskills-rai skill-search "CRISPR gene editing" --domain research --top 3 --content --format markdown
 ```
 
 ## Reading Results
@@ -377,7 +385,7 @@ Each result includes: **title**, **domain**, **quality score** (0-5), **source U
 
 ## 🖥️ CLI Reference
 
-> All commands: `python3 langskills_cli.py <command>`
+> All commands: `langskills-rai <command>` (or `python3 langskills_cli.py <command>` from source)
 
 <details>
 <summary>⚡ <b>Core Commands</b></summary>

@@ -96,7 +96,7 @@ def _format_refs(refs: list[DefRef]) -> list[str]:
 
 
 def cli_code_redundancy_report(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="langskills code-redundancy-report")
+    parser = argparse.ArgumentParser(prog="langskills-rai code-redundancy-report")
     parser.add_argument("--root", default=None, help="Repo root (defaults to detected)")
     parser.add_argument("--out", default="docs/code_redundancy_report.md")
     ns = parser.parse_args(argv)

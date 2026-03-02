@@ -27,7 +27,7 @@ def _parse_tags(raw: str | None) -> list[str]:
 
 
 def cli_queue_init(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="langskills queue-init")
+    parser = argparse.ArgumentParser(prog="langskills-rai queue-init")
     parser.add_argument("--queue", default="", help="Queue DB path (default: runs/queue.db)")
     ns = parser.parse_args(argv)
     store = _queue_store_from_args(ns.queue or None)
@@ -37,7 +37,7 @@ def cli_queue_init(argv: list[str] | None = None) -> int:
 
 
 def cli_queue_enqueue(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="langskills queue-enqueue")
+    parser = argparse.ArgumentParser(prog="langskills-rai queue-enqueue")
     parser.add_argument("--queue", default="", help="Queue DB path (default: runs/queue.db)")
     parser.add_argument("--source-url", required=True)
     parser.add_argument("--source-type", default="webpage")
@@ -82,7 +82,7 @@ def cli_queue_enqueue(argv: list[str] | None = None) -> int:
 
 
 def cli_queue_lease(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="langskills queue-lease")
+    parser = argparse.ArgumentParser(prog="langskills-rai queue-lease")
     parser.add_argument("--queue", default="", help="Queue DB path (default: runs/queue.db)")
     parser.add_argument("--limit", type=int, default=1)
     parser.add_argument("--stage", action="append", default=[])
@@ -106,7 +106,7 @@ def cli_queue_lease(argv: list[str] | None = None) -> int:
 
 
 def cli_queue_ack(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="langskills queue-ack")
+    parser = argparse.ArgumentParser(prog="langskills-rai queue-ack")
     parser.add_argument("--queue", default="", help="Queue DB path (default: runs/queue.db)")
     parser.add_argument("item_id", type=int)
     ns = parser.parse_args(argv)
@@ -118,7 +118,7 @@ def cli_queue_ack(argv: list[str] | None = None) -> int:
 
 
 def cli_queue_nack(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="langskills queue-nack")
+    parser = argparse.ArgumentParser(prog="langskills-rai queue-nack")
     parser.add_argument("--queue", default="", help="Queue DB path (default: runs/queue.db)")
     parser.add_argument("item_id", type=int)
     parser.add_argument("--reason", default="error")
@@ -136,7 +136,7 @@ def cli_queue_nack(argv: list[str] | None = None) -> int:
 
 
 def cli_queue_requeue(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="langskills queue-requeue")
+    parser = argparse.ArgumentParser(prog="langskills-rai queue-requeue")
     parser.add_argument("--queue", default="", help="Queue DB path (default: runs/queue.db)")
     parser.add_argument("item_id", type=int)
     parser.add_argument("--stage", required=True)
@@ -149,7 +149,7 @@ def cli_queue_requeue(argv: list[str] | None = None) -> int:
 
 
 def cli_queue_stats(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="langskills queue-stats")
+    parser = argparse.ArgumentParser(prog="langskills-rai queue-stats")
     parser.add_argument("--queue", default="", help="Queue DB path (default: runs/queue.db)")
     ns = parser.parse_args(argv)
     store = _queue_store_from_args(ns.queue or None)
@@ -204,7 +204,7 @@ def _render_queue_stats_table(
 
 
 def cli_queue_watch(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="langskills queue-watch")
+    parser = argparse.ArgumentParser(prog="langskills-rai queue-watch")
     parser.add_argument("--queue", default="", help="Queue DB path (default: runs/queue.db)")
     parser.add_argument("--interval-ms", type=int, default=1000)
     parser.add_argument("--once", action="store_true")
@@ -281,7 +281,7 @@ def cli_queue_watch(argv: list[str] | None = None) -> int:
 
 
 def cli_queue_gc(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="langskills queue-gc")
+    parser = argparse.ArgumentParser(prog="langskills-rai queue-gc")
     parser.add_argument("--queue", default="", help="Queue DB path (default: runs/queue.db)")
     parser.add_argument("--no-reclaim", action="store_true")
     ns = parser.parse_args(argv)
@@ -293,7 +293,7 @@ def cli_queue_gc(argv: list[str] | None = None) -> int:
 
 
 def cli_queue_drain(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="langskills queue-drain")
+    parser = argparse.ArgumentParser(prog="langskills-rai queue-drain")
     parser.add_argument("--queue", default="", help="Queue DB path (default: runs/queue.db)")
     parser.add_argument("--enable", action="store_true")
     parser.add_argument("--disable", action="store_true")

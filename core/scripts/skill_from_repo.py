@@ -25,7 +25,7 @@ from ..utils.time import utc_now_iso_z
 
 
 def cli_skill_from_repo(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="langskills skill-from-repo")
+    parser = argparse.ArgumentParser(prog="langskills-rai skill-from-repo")
     parser.add_argument("--target", choices=["cli", "workflow", "module", "troubleshooting"], default="cli")
     parser.add_argument("--top", type=int, default=10)
     parser.add_argument("--index", default="captures/symbol_index.jsonl")

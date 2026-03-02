@@ -172,7 +172,7 @@ def _resolve_user_data_dir(platform: str | None) -> str | None:
         tpl = p.as_posix()
         resolved = tpl % plat if "%s" in tpl else tpl
     else:
-        # Prefer LangSkills-managed persistent profiles under runs/ (these are created by `langskills auth ...`).
+        # Prefer LangSkills-managed persistent profiles under runs/ (these are created by `langskills-rai auth ...`).
         runs_dir = repo_root() / "runs" / "browser_data" / f"{plat}_user_data_dir"
         resolved = runs_dir.as_posix()
 

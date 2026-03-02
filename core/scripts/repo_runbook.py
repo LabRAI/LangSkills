@@ -8,7 +8,7 @@ from ..repo_understanding.runbook import run_golden_workflows
 
 
 def cli_repo_runbook(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="langskills repo-runbook")
+    parser = argparse.ArgumentParser(prog="langskills-rai repo-runbook")
     parser.add_argument("--out", default="captures/run_index.jsonl", help="Output JSONL (default: captures/run_index.jsonl)")
     parser.add_argument("--mode", choices=["smoke", "full"], default="smoke")
     parser.add_argument("--provider", default="openai", help="LLM provider for full mode (openai|ollama)")

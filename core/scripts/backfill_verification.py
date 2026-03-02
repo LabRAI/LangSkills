@@ -60,7 +60,7 @@ def _ensure_verification_block(md: str, *, skill_id: str) -> tuple[str, bool]:
 
 
 def cli_backfill_verification(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="langskills backfill-verification")
+    parser = argparse.ArgumentParser(prog="langskills-rai backfill-verification")
     parser.add_argument("--root", default="skills/by-skill")
     parser.add_argument("--dry-run", action="store_true")
     ns = parser.parse_args(argv)

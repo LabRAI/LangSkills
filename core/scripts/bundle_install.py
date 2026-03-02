@@ -226,7 +226,7 @@ def install_bundle(
 
     print(f"\nInstalled: {dest}", file=sys.stderr)
     print(
-        "Search with: python3 -m langskills.search \"your query\" --content --top 5",
+        "Search with: langskills-rai skill-search \"your query\" --content --top 5",
         file=sys.stderr,
     )
     return 0
@@ -277,7 +277,7 @@ def install_auto(
 def cli_bundle_install(argv: list[str] | None = None) -> int:
     """CLI entry point for ``langskills bundle-install``."""
     parser = argparse.ArgumentParser(
-        prog="langskills bundle-install",
+        prog="langskills-rai bundle-install",
         description="Download and install a LangSkills skill bundle from GitHub Releases",
     )
     parser.add_argument(

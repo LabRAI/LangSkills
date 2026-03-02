@@ -514,7 +514,7 @@ def _search_forum_mode(
 
 
 def cli_queue_seed(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="langskills queue-seed")
+    parser = argparse.ArgumentParser(prog="langskills-rai queue-seed")
     parser.add_argument("--topics-file", default="topics/topics.yaml")
     parser.add_argument("--limit", type=int, default=0, help="Limit number of topics (0 = all)")
     parser.add_argument("--target", type=int, default=50_000, help="Target number of queued sources")

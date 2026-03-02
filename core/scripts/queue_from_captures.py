@@ -32,7 +32,7 @@ def _resolve_domain(extra: dict, fallback: str = "linux") -> str:
 
 
 def cli_queue_from_captures(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="langskills queue-from-captures")
+    parser = argparse.ArgumentParser(prog="langskills-rai queue-from-captures")
     parser.add_argument("--captures", default="captures", help="Root of captures/ (default: captures)")
     parser.add_argument("--queue", default="", help="Queue DB path (default: runs/queue.db)")
     parser.add_argument("--stage", default="preprocess", help="Queue stage to enqueue (default: preprocess)")

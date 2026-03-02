@@ -20,7 +20,7 @@ def _iter_source_artifacts(repo_root: Path) -> list[Path]:
 
 
 def cli_backfill_sources(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="langskills backfill-sources")
+    parser = argparse.ArgumentParser(prog="langskills-rai backfill-sources")
     parser.add_argument("--overwrite", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
     ns = parser.parse_args(argv)

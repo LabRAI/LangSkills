@@ -522,7 +522,7 @@ def cli_skill_search(argv: list[str] | None = None) -> int:
     import argparse
 
     p = argparse.ArgumentParser(
-        prog="langskills skill-search",
+        prog="langskills-rai skill-search",
         description="Search the LangSkills skill library",
     )
     p.add_argument("query", help="Free-text search query")
