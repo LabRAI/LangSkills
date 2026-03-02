@@ -340,6 +340,8 @@ python3 langskills_cli.py bundle-install --auto
 
 ```bash
 python3 langskills_cli.py skill-search "<query>" [options]
+python3 langskills_cli.py skill-search --domains
+python3 langskills_cli.py skill-search --kinds
 ```
 
 ### Parameters
@@ -347,6 +349,8 @@ python3 langskills_cli.py skill-search "<query>" [options]
 | Flag | Description | Default |
 |:---|:---|:---|
 | `--top N` | Number of results | 5 |
+| `--domains` | List available domains and exit | off |
+| `--kinds` | List available skill kinds and exit | off |
 | `--domain <d>` | Filter by domain | all |
 | `--min-score N` | Minimum quality score (0-5) | 0 |
 | `--content` | Include full skill body | off |

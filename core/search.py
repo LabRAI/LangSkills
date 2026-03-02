@@ -460,6 +460,63 @@ def search_skills(
     return results
 
 
+def _list_distinct_values(column: str) -> list[str]:
+    """Return sorted unique values from ``skills_index.<column>``."""
+    values: set[str] = set()
+    bundles = _resolve_all_bundles()
+    if bundles:
+        for bp in bundles:
+            try:
+                conn = sqlite3.connect(f"file:{bp}?mode=ro", uri=True)
+                rows = conn.execute(
+                    f"SELECT DISTINCT {column} FROM skills_index "
+                    f"WHERE COALESCE({column}, '') != ''"
+                ).fetchall()
+                for row in rows:
+                    val = str(row[0] or "").strip()
+                    if val:
+                        values.add(val)
+            except Exception:
+                continue
+            finally:
+                try:
+                    conn.close()
+                except Exception:
+                    pass
+        return sorted(values)
+
+    idx_path = _index_db()
+    if not idx_path.exists():
+        raise FileNotFoundError(
+            f"No bundle found and index database missing: {idx_path}\n"
+            "Install a bundle with: langskills bundle-install"
+        )
+
+    conn = sqlite3.connect(f"file:{idx_path}?mode=ro", uri=True)
+    try:
+        rows = conn.execute(
+            f"SELECT DISTINCT {column} FROM skills_index "
+            f"WHERE COALESCE({column}, '') != ''"
+        ).fetchall()
+        for row in rows:
+            val = str(row[0] or "").strip()
+            if val:
+                values.add(val)
+    finally:
+        conn.close()
+    return sorted(values)
+
+
+def list_domains() -> list[str]:
+    """Return sorted unique domain values from installed bundles/index."""
+    return _list_distinct_values("domain")
+
+
+def list_kinds() -> list[str]:
+    """Return sorted unique skill_kind values from installed bundles/index."""
+    return _list_distinct_values("skill_kind")
+
+
 # ── formatters ───────────────────────────────────────────────────
 
 def format_brief(results: list[dict[str, Any]]) -> str:
@@ -525,8 +582,10 @@ def cli_skill_search(argv: list[str] | None = None) -> int:
         prog="langskills skill-search",
         description="Search the LangSkills skill library",
     )
-    p.add_argument("query", help="Free-text search query")
+    p.add_argument("query", nargs="?", default="", help="Free-text search query")
     p.add_argument("--top", type=int, default=10, help="Max results (default: 10)")
+    p.add_argument("--domains", action="store_true", help="List available domains and exit")
+    p.add_argument("--kinds", action="store_true", help="List available skill kinds and exit")
     p.add_argument("--domain", default="", help="Filter by domain (linux, ml, web, ...)")
     p.add_argument("--kind", default="", help="Filter by skill_kind (github, arxiv, ...)")
     p.add_argument("--source-type", default="", help="Filter by source_type (github, journal, ...)")
@@ -544,6 +603,27 @@ def cli_skill_search(argv: list[str] | None = None) -> int:
     args = p.parse_args(argv)
 
     fmt = "brief" if args.brief else args.format
+
+    if args.domains:
+        try:
+            domains = list_domains()
+        except FileNotFoundError as exc:
+            print(f"Error: {exc}", file=sys.stderr)
+            return 1
+        print("\n".join(domains) if domains else "No domains found.")
+        return 0
+
+    if args.kinds:
+        try:
+            kinds = list_kinds()
+        except FileNotFoundError as exc:
+            print(f"Error: {exc}", file=sys.stderr)
+            return 1
+        print("\n".join(kinds) if kinds else "No kinds found.")
+        return 0
+
+    if not str(args.query or "").strip():
+        p.error("query is required unless --domains or --kinds is set")
 
     try:
         results = search_skills(
