@@ -579,6 +579,8 @@ Copyright (c) 2026 [Responsible AI (RAI) Lab](https://github.com/LabRAI) @ Flori
 - **Skills:** 101,330 evidence-backed skills generated from 62K+ papers and 23K+ tech sources via LLM-powered quality gates
 - **Sources:** Every skill traces to real web pages, academic papers, or code repositories (arXiv, PMC, PLOS, Nature, eLife, GitHub, etc.)
 
+---
+
 <p align="center">
   <a href="https://star-history.com/#LabRAI/LangSkills&Date">
     <img src="https://api.star-history.com/svg?repos=LabRAI/LangSkills&type=Date" width="600" alt="Star History" />
