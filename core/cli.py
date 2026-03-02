@@ -94,6 +94,7 @@ def main(argv: list[str] | None = None) -> int:
     p_ss.add_argument("--min-score", type=float, default=0.0, help="Minimum overall_score")
     p_ss.add_argument("--domains", action="store_true", help="List available domains and exit")
     p_ss.add_argument("--kinds", action="store_true", help="List available skill kinds and exit")
+    p_ss.add_argument("--show-path", action="store_true", help="Show local skill.md paths in results")
     p_ss.add_argument("--content", action="store_true", help="Include full skill.md content")
     p_ss.add_argument("--max-chars", type=int, default=4000, help="Truncate skill content (0=unlimited)")
     p_ss.add_argument("--format", choices=["brief", "markdown", "json"], default="brief", help="Output format")
@@ -1270,6 +1271,8 @@ def main(argv: list[str] | None = None) -> int:
             raw_args.append("--domains")
         if ns.kinds:
             raw_args.append("--kinds")
+        if ns.show_path:
+            raw_args.append("--show-path")
         if ns.domain:
             raw_args += ["--domain", ns.domain]
         if ns.kind:
