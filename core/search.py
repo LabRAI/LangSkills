@@ -519,7 +519,20 @@ def list_kinds() -> list[str]:
 
 # ── formatters ───────────────────────────────────────────────────
 
-def format_brief(results: list[dict[str, Any]]) -> str:
+def _local_skill_md_path(item: dict[str, Any]) -> str:
+    """Best-effort local skill.md path from index metadata."""
+    raw_dir = str(item.get("dir") or "").strip()
+    if raw_dir:
+        base = raw_dir.replace("\\", "/").rstrip("/")
+    else:
+        skill_id = str(item.get("skill_id") or "").strip()
+        base = f"skills/by-skill/{skill_id}" if skill_id else ""
+    if not base:
+        return ""
+    return f"{base}/skill.md"
+
+
+def format_brief(results: list[dict[str, Any]], *, show_path: bool = False) -> str:
     """One line per result: score | domain | kind | title."""
     if not results:
         return "No results found."
@@ -529,11 +542,16 @@ def format_brief(results: list[dict[str, Any]]) -> str:
         domain = r.get("domain") or "-"
         kind = r.get("skill_kind") or "-"
         title = r.get("title") or "(untitled)"
-        lines.append(f"{i:>3}. [{score:.1f}] {domain:<14} {kind:<10} {title}")
+        line = f"{i:>3}. [{score:.1f}] {domain:<14} {kind:<10} {title}"
+        if show_path:
+            path = _local_skill_md_path(r)
+            if path:
+                line += f"\n     path: {path}"
+        lines.append(line)
     return "\n".join(lines)
 
 
-def format_markdown(results: list[dict[str, Any]]) -> str:
+def format_markdown(results: list[dict[str, Any]], *, show_path: bool = False) -> str:
     """Full Markdown output suitable for agent consumption."""
     if not results:
         return "No results found."
@@ -554,6 +572,10 @@ def format_markdown(results: list[dict[str, Any]]) -> str:
             f"- **Source type:** {source_type}\n"
             f"- **Skill ID:** `{skill_id[:12]}...`\n"
         )
+        if show_path:
+            path = _local_skill_md_path(r)
+            if path:
+                meta += f"- **Path:** `{path}`\n"
         body = ""
         if "skill_md" in r and r["skill_md"]:
             body = f"\n### Content\n\n{r['skill_md']}\n"
@@ -586,6 +608,7 @@ def cli_skill_search(argv: list[str] | None = None) -> int:
     p.add_argument("--top", type=int, default=10, help="Max results (default: 10)")
     p.add_argument("--domains", action="store_true", help="List available domains and exit")
     p.add_argument("--kinds", action="store_true", help="List available skill kinds and exit")
+    p.add_argument("--show-path", action="store_true", help="Show local skill.md paths in results")
     p.add_argument("--domain", default="", help="Filter by domain (linux, ml, web, ...)")
     p.add_argument("--kind", default="", help="Filter by skill_kind (github, arxiv, ...)")
     p.add_argument("--source-type", default="", help="Filter by source_type (github, journal, ...)")
@@ -641,9 +664,9 @@ def cli_skill_search(argv: list[str] | None = None) -> int:
         return 1
 
     if fmt == "brief":
-        print(format_brief(results))
+        print(format_brief(results, show_path=bool(args.show_path)))
     elif fmt == "markdown":
-        print(format_markdown(results))
+        print(format_markdown(results, show_path=bool(args.show_path)))
     else:
         print(format_json(results))
 

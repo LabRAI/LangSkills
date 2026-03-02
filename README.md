@@ -352,6 +352,7 @@ python3 langskills_cli.py skill-search --kinds
 | `--domains` | List available domains and exit | off |
 | `--kinds` | List available skill kinds and exit | off |
 | `--domain <d>` | Filter by domain | all |
+| `--show-path` | Show local `skill.md` path for each result | off |
 | `--min-score N` | Minimum quality score (0-5) | 0 |
 | `--content` | Include full skill body | off |
 | `--format markdown` | Output as Markdown | text |
@@ -360,6 +361,7 @@ python3 langskills_cli.py skill-search --kinds
 
 ```bash
 python3 langskills_cli.py skill-search "CRISPR gene editing" --domain research --top 3 --content --format markdown
+python3 langskills_cli.py skill-search "kubernetes networking" --top 5 --show-path
 ```
 
 ## Reading Results
