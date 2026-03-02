@@ -11,6 +11,9 @@
   <img alt="Papers: 62k+" src="https://img.shields.io/badge/papers-62%2C582-red?style=flat-square" />
 </p>
 
+<p>🌐 <a href="https://labrai.github.io/LangSkills/"><b>LangSkills — Evidence-Backed Skills for AI Agents</b></a></p>
+
+
 <h3>📄 101K Skills from 62K+ Papers & 23K+ Tech Sources — Search, Generate, Reuse</h3>
 
 
