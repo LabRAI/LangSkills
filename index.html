@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LangSkills — Evidence-Backed Skills for AI Agents</title>
+<meta name="description" content="101K+ structured skills from 62K+ papers & 23K+ tech sources. Search, generate, reuse — for Vibe Research & Vibe Coding.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+::selection{background:rgba(139,92,246,0.35);color:#fff}
+body{font-family:'DM Sans',system-ui,sans-serif;background:#07070e;color:#fff;overflow-x:hidden;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+a{text-decoration:none;color:inherit}
+.heading{font-family:'Outfit',sans-serif}
+.mono{font-family:'JetBrains Mono',monospace}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes pulse-glow{0%,100%{opacity:.3}50%{opacity:.7}}
+@keyframes fade-in-up{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.anim{animation:fade-in-up .8s cubic-bezier(.16,1,.3,1) both}
+.d1{animation-delay:.12s}.d2{animation-delay:.24s}.d3{animation-delay:.36s}.d4{animation-delay:.48s}
+.section-border{border-top:1px solid rgba(139,92,246,0.06)}
+.gradient-text{background:linear-gradient(135deg,#c4b5fd 0%,#a78bfa 30%,#818cf8 55%,#60a5fa 80%,#38bdf8 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.gradient-text-warm{background:linear-gradient(135deg,#fbbf24,#f59e0b,#f97316);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.section-prefix{font-family:'JetBrains Mono',monospace;background:linear-gradient(135deg,#a78bfa,#f59e0b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.cta-primary{background:linear-gradient(135deg,#8b5cf6,#6d28d9);box-shadow:0 4px 20px -4px rgba(139,92,246,0.4);transition:all .3s}
+.cta-primary:hover{box-shadow:0 8px 32px -4px rgba(139,92,246,0.5);transform:translateY(-1px);filter:brightness(1.1)}
+.glow-orb{position:absolute;border-radius:50%;filter:blur(100px);animation:pulse-glow 8s ease-in-out infinite;pointer-events:none}
+.hero-gradient{background:radial-gradient(ellipse 70% 50% at 50% -10%,rgba(139,92,246,0.14) 0%,transparent 60%),radial-gradient(ellipse 40% 35% at 78% 55%,rgba(245,158,11,0.05) 0%,transparent 50%),radial-gradient(ellipse 35% 30% at 15% 40%,rgba(59,130,246,0.04) 0%,transparent 50%)}
+.marquee-wrap{overflow:hidden;width:100%;-webkit-mask-image:linear-gradient(to right,transparent,#000 6%,#000 94%,transparent);mask-image:linear-gradient(to right,transparent,#000 6%,#000 94%,transparent)}
+.marquee-track{display:flex;gap:20px;width:max-content;animation:marquee var(--duration) linear infinite;animation-direction:var(--dir,normal)}
+.card-skill{flex-shrink:0;width:320px;border-radius:16px;padding:20px;transition:all .3s;background:linear-gradient(135deg,rgba(139,92,246,0.06) 0%,rgba(30,27,75,0.4) 50%,rgba(15,23,42,0.6) 100%);border:1px solid rgba(139,92,246,0.1)}
+.card-skill:hover{border-color:rgba(139,92,246,0.28)}
+.card-source{flex-shrink:0;width:288px;border-radius:16px;padding:20px;transition:all .3s;background:linear-gradient(135deg,rgba(245,158,11,0.04) 0%,rgba(30,27,75,0.4) 50%,rgba(15,23,42,0.6) 100%);border:1px solid rgba(245,158,11,0.08)}
+.card-source:hover{border-color:rgba(245,158,11,0.25)}
+.card-feature{display:block;border-radius:16px;padding:24px;transition:all .3s;background:linear-gradient(145deg,rgba(30,27,75,0.5) 0%,rgba(15,15,30,0.8) 100%);border:1px solid rgba(139,92,246,0.08)}
+.card-feature:hover{transform:translateY(-3px)}
+.card-roadmap{display:flex;align-items:flex-start;gap:16px;padding:16px;border-radius:12px;transition:all .2s;background:rgba(30,27,75,0.25);border:1px solid rgba(139,92,246,0.06)}
+.card-roadmap:hover{border-color:rgba(139,92,246,0.15)}
+.terminal{border-radius:16px;overflow:hidden;background:linear-gradient(180deg,rgba(18,15,42,0.95) 0%,rgba(8,8,20,0.98) 100%);border:1px solid rgba(139,92,246,0.12);box-shadow:0 8px 40px -8px rgba(0,0,0,0.5)}
+.terminal-bar{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:rgba(139,92,246,0.04);border-bottom:1px solid rgba(139,92,246,0.08);flex-wrap:wrap;gap:8px}
+.terminal-body{padding:24px;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.75;overflow-x:auto}
+.term-tab{padding:4px 12px;font-size:12px;border-radius:6px;cursor:pointer;transition:all .2s;border:1px solid transparent;background:transparent;color:rgba(148,163,184,0.4);font-family:'DM Sans',sans-serif}
+.term-tab.active{background:rgba(139,92,246,0.2);color:#a78bfa;border-color:rgba(139,92,246,0.3);font-weight:600}
+.copy-btn{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;font-size:12px;cursor:pointer;transition:all .2s;background:rgba(139,92,246,0.08);color:rgba(148,163,184,0.4);border:1px solid rgba(139,92,246,0.1);font-family:'DM Sans',sans-serif}
+.copy-btn.copied{background:rgba(40,200,64,0.15)!important;color:#28c840!important;border-color:rgba(40,200,64,0.2)!important}
+.grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+@media(max-width:640px){.grid-2{grid-template-columns:1fr}}
+.container{max-width:1024px;margin:0 auto;padding:0 24px}
+.container-lg{max-width:1152px;margin:0 auto;padding:0 24px}
+.container-sm{max-width:768px;margin:0 auto;padding:0 24px}
+.hide-mobile{display:none}
+@media(min-width:768px){.hide-mobile{display:flex}.hide-mobile-inline{display:inline-flex}}
+
+/* ── Hero title responsive ── */
+.hero-title{font-size:clamp(3.5rem,10vw,7rem);font-weight:800;letter-spacing:-0.035em;line-height:1;margin-bottom:24px}
+/* ── Nav responsive padding ── */
+@media(min-width:1024px){.nav-wrap{padding-left:64px!important;padding-right:64px!important}}
+/* ── Tagline ── */
+.hero-tagline{font-size:clamp(1.35rem,3.5vw,1.875rem);font-weight:700;margin-bottom:20px;color:#e2e8f0;letter-spacing:-0.015em}
+/* ── Description ── */
+.hero-desc{font-size:clamp(1rem,2vw,1.15rem);max-width:640px;margin:0 auto 16px;line-height:1.65;color:#94a3b8}
+/* ── Meta line ── */
+.hero-meta{font-size:13px;margin-bottom:40px;color:rgba(148,163,184,0.55);letter-spacing:0.01em}
+.hero-meta span{color:rgba(148,163,184,0.55)}
+.hero-meta b{font-weight:500;color:rgba(148,163,184,0.5)}
+/* ── Pill badge ── */
+.hero-badge{display:inline-flex;align-items:center;gap:10px;padding:6px 18px;border-radius:9999px;font-size:12px;font-weight:500;letter-spacing:0.02em;margin-bottom:32px;background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.15);color:rgba(167,139,250,0.9);backdrop-filter:blur(8px)}
+.hero-badge .dot{width:6px;height:6px;border-radius:50%;background:#a78bfa;animation:pulse-glow 2s ease-in-out infinite}
+/* ── CTA row ── */
+.cta-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:16px}
+.cta-secondary{padding:14px 32px;border-radius:12px;font-weight:500;font-size:14px;border:1px solid rgba(139,92,246,0.2);color:#cbd5e1;transition:all .3s}
+.cta-secondary:hover{border-color:rgba(139,92,246,0.4);background:rgba(139,92,246,0.06)}
+/* ── Announcement bar ── */
+.announce{display:flex;align-items:center;justify-content:center;gap:10px;padding:10px 20px;border-radius:12px;font-size:14px;background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.12);transition:all .2s}
+.announce:hover{background:rgba(245,158,11,0.1);border-color:rgba(245,158,11,0.2)}
+</style>
+</head>
+<body>
+
+<!-- BG -->
+<div style="position:fixed;inset:0;pointer-events:none;z-index:0">
+  <div class="glow-orb" style="width:500px;height:500px;background:rgba(139,92,246,0.07);top:-5%;left:20%"></div>
+  <div class="glow-orb" style="width:400px;height:400px;background:rgba(245,158,11,0.035);bottom:20%;right:15%;animation-delay:4s"></div>
+  <div class="glow-orb" style="width:300px;height:300px;background:rgba(59,130,246,0.035);top:40%;left:5%;animation-delay:2s"></div>
+  <div style="position:absolute;inset:0;opacity:0.018;background-image:linear-gradient(rgba(139,92,246,1) 1px,transparent 1px),linear-gradient(90deg,rgba(139,92,246,1) 1px,transparent 1px);background-size:80px 80px"></div>
+</div>
+
+<!-- Nav -->
+<nav class="nav-wrap" style="position:relative;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid rgba(139,92,246,0.06)">
+  <div style="display:flex;align-items:center;gap:12px">
+    <div class="heading" style="width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:18px;background:linear-gradient(135deg,#8b5cf6,#6d28d9);box-shadow:0 2px 12px -2px rgba(139,92,246,0.4)">L</div>
+    <span class="heading" style="font-size:18px;font-weight:600;letter-spacing:-0.02em">Lang<span class="gradient-text">Skills</span></span>
+  </div>
+  <div class="hide-mobile" style="align-items:center;gap:32px;font-size:14px;color:#8494a7">
+    <a href="#quickstart" onmouseover="this.style.color='#e2e8f0'" onmouseout="this.style.color='#8494a7'" style="transition:color .2s">Quick Start</a>
+    <a href="#features" onmouseover="this.style.color='#e2e8f0'" onmouseout="this.style.color='#8494a7'" style="transition:color .2s">Features</a>
+    <a href="https://github.com/LabRAI/LangSkills" onmouseover="this.style.color='#e2e8f0'" onmouseout="this.style.color='#8494a7'" style="transition:color .2s">GitHub</a>
+  </div>
+  <a href="#quickstart" class="hide-mobile hide-mobile-inline" style="align-items:center;padding:8px 16px;font-size:14px;font-weight:500;border-radius:8px;background:rgba(139,92,246,0.12);color:#a78bfa;border:1px solid rgba(139,92,246,0.2);transition:all .2s" onmouseover="this.style.background='rgba(139,92,246,0.2)';this.style.borderColor='rgba(139,92,246,0.35)'" onmouseout="this.style.background='rgba(139,92,246,0.12)';this.style.borderColor='rgba(139,92,246,0.2)'">Get Started →</a>
+</nav>
+
+<!-- Hero -->
+<section class="hero-gradient" style="position:relative;z-index:1">
+  <div style="max-width:896px;margin:0 auto;text-align:center;padding:96px 24px 64px">
+    <div class="anim">
+      <div class="hero-badge">
+        <span class="dot"></span>
+        101,330 Skills · 21 Domains · 100% Open Source
+      </div>
+    </div>
+    <h1 class="heading anim d1 hero-title"><span class="gradient-text">LangSkills</span></h1>
+    <p class="heading anim d2 hero-tagline">The reference book your AI agent needs.</p>
+    <p class="anim d2 hero-desc">Evidence-backed skills from 62K+ papers &amp; 23K+ tech sources.<br>Search, generate, reuse — for <b style="color:#c4b5fd;font-weight:500">Vibe Research</b> &amp; <b style="color:#c4b5fd;font-weight:500">Vibe Coding</b>.</p>
+    <p class="anim d3 hero-meta">Built by <b>LabRAI</b> · LLM-generated &amp; validated · FTS5 offline search · Works with Cursor, Claude Code, OpenClaw &amp; any RAG system</p>
+    <div class="anim d4 cta-row">
+      <a href="#quickstart" class="cta-primary" style="padding:14px 32px;border-radius:12px;color:#fff;font-weight:600;font-size:14px">Get Started — It's Free</a>
+      <a href="https://github.com/LabRAI/LangSkills" class="cta-secondary">View on GitHub ⭐</a>
+    </div>
+  </div>
+  <div style="max-width:768px;margin:0 auto;padding:0 24px 64px">
+    <a href="https://github.com/LabRAI/LangSkills" class="announce">
+      <span class="gradient-text-warm" style="font-weight:600">New</span>
+      <span style="color:#94a3b8">v0.1.0 — 101,330 skills across 21 domain bundles with FTS5 offline search →</span>
+    </a>
+  </div>
+</section>
+
+<!-- Inside the Library -->
+<section class="section-border" style="padding:64px 0;position:relative;z-index:1">
+  <div class="container-lg" style="margin-bottom:40px">
+    <h2 class="heading" style="font-size:1.5rem;font-weight:700"><span class="section-prefix">⟩ </span><span style="color:#f1f5f9">Inside the Library</span></h2>
+    <p style="font-size:14px;margin-top:6px;color:rgba(148,163,184,0.55);line-height:1.6">Real skills from real sources — 101,330 structured entries across 21 domains, each with provenance and quality scores.</p>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:20px">
+    <div>
+      <div class="container-lg" style="margin-bottom:12px"><span style="font-size:12px;font-weight:500;padding:4px 8px;border-radius:6px;background:rgba(139,92,246,0.1);color:#a78bfa">📊 62,582 Research + 23,765 Tech Skills</span></div>
+      <div class="marquee-wrap"><div class="marquee-track" id="mq-skills" style="--dir:normal"></div></div>
+    </div>
+    <div>
+      <div class="container-lg" style="margin-bottom:12px"><span style="font-size:12px;font-weight:500;padding:4px 8px;border-radius:6px;background:rgba(245,158,11,0.08);color:#fbbf24">📰 10+ Data Source Providers</span></div>
+      <div class="marquee-wrap"><div class="marquee-track" id="mq-sources" style="--dir:reverse"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- Quick Start -->
+<section id="quickstart" class="section-border" style="padding:80px 0;position:relative;z-index:1">
+  <div class="container-sm">
+    <h2 class="heading" style="font-size:1.5rem;font-weight:700;margin-bottom:32px"><span class="section-prefix">⟩ </span><span style="color:#f1f5f9">Quick Start</span></h2>
+    <div class="terminal">
+      <div class="terminal-bar">
+        <div style="display:flex;align-items:center;gap:16px">
+          <div style="display:flex;gap:8px">
+            <div style="width:12px;height:12px;border-radius:50%;background:#ff5f57"></div>
+            <div style="width:12px;height:12px;border-radius:50%;background:#febc2e"></div>
+            <div style="width:12px;height:12px;border-radius:50%;background:#28c840"></div>
+          </div>
+          <div style="display:flex;gap:4px" id="tabBar"></div>
+        </div>
+        <button class="copy-btn" id="copyBtn" onclick="doCopy()">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="4" width="7" height="7" rx="1.5"/><path d="M8 4V2.5A1.5 1.5 0 006.5 1H2.5A1.5 1.5 0 001 2.5v4A1.5 1.5 0 002.5 8H4"/></svg>
+          <span>Copy</span>
+        </button>
+      </div>
+      <div class="terminal-body" id="termBody"></div>
+    </div>
+    <p id="termHint" style="font-size:14px;text-align:center;margin-top:20px;color:rgba(148,163,184,0.55)"></p>
+  </div>
+</section>
+
+<!-- Why LangSkills -->
+<section id="features" class="section-border" style="padding:80px 0;position:relative;z-index:1">
+  <div class="container">
+    <h2 class="heading" style="font-size:1.5rem;font-weight:700;margin-bottom:16px"><span class="section-prefix">⟩ </span><span style="color:#f1f5f9">Why LangSkills</span></h2>
+    <p style="font-size:14px;color:#8494a7;margin-bottom:40px">Pre-built knowledge your agent can query instantly — instead of searching the internet every time.</p>
+    <div class="grid-2" id="featGrid"></div>
+    <div style="margin-top:40px;padding-top:32px;border-top:1px solid rgba(139,92,246,0.06)">
+      <div style="font-size:12px;font-weight:500;margin-bottom:16px;text-align:center;color:#64748b">Works with</div>
+      <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:24px" id="toolsRow"></div>
+    </div>
+  </div>
+</section>
+
+<!-- Roadmap -->
+<section class="section-border" style="padding:64px 0;position:relative;z-index:1">
+  <div class="container-sm">
+    <h2 class="heading" style="font-size:1.5rem;font-weight:700;margin-bottom:32px"><span class="section-prefix">⟩ </span><span style="color:#f1f5f9">What's Next</span></h2>
+    <div style="display:flex;flex-direction:column;gap:16px" id="roadmap"></div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="section-border" style="padding:40px 0;position:relative;z-index:1">
+  <div style="max-width:896px;margin:0 auto;padding:0 24px;text-align:center">
+    <div style="display:flex;align-items:center;justify-content:center;gap:16px;font-size:14px;margin-bottom:16px">
+      <a href="https://github.com/LabRAI/LangSkills" style="color:#64748b" onmouseover="this.style.color='#a78bfa'" onmouseout="this.style.color='#64748b'">GitHub</a>
+      <span style="color:rgba(100,116,139,0.2)">·</span>
+      <a href="#" style="color:#64748b" onmouseover="this.style.color='#a78bfa'" onmouseout="this.style.color='#64748b'">Docs</a>
+      <span style="color:rgba(100,116,139,0.2)">·</span>
+      <a href="#" style="color:#64748b" onmouseover="this.style.color='#a78bfa'" onmouseout="this.style.color='#64748b'">Blog</a>
+      <span style="color:rgba(100,116,139,0.2)">·</span>
+      <a href="#" style="color:#64748b" onmouseover="this.style.color='#a78bfa'" onmouseout="this.style.color='#64748b'">Discord</a>
+    </div>
+    <p style="font-size:12px;color:#475569">Built by <a href="https://github.com/LabRAI" style="color:#64748b" onmouseover="this.style.color='#a78bfa'" onmouseout="this.style.color='#64748b'">Responsible AI (RAI) Lab</a> 🧪 @ Florida State University</p>
+    <p style="font-size:12px;margin-top:4px;color:#334155">Open source · MIT Licensed · Evidence-backed skills for Vibe Research &amp; Vibe Coding.</p>
+  </div>
+</footer>
+
+<script>
+/* ═══ DATA ═══ */
+const skills=[
+  {t:"CRISPR-Cas9 Gene Editing: Complete Protocol for Mammalian Cell Lines",d:"research-plos",i:"🧬",src:"PLOS ONE · doi:10.1371/journal.pone.0245",sc:4.8,tags:["gene-editing","protocol","molecular-biology"]},
+  {t:"Kubernetes Pod Scheduling: Affinity Rules & Resource Quotas",d:"cloud",i:"☁️",src:"GitHub · kubernetes/kubernetes",sc:4.5,tags:["k8s","scheduling","devops"]},
+  {t:"RNA-Seq Differential Expression Analysis with DESeq2",d:"research-plos",i:"🧬",src:"PLOS Computational Biology",sc:4.9,tags:["rna-seq","bioinformatics","statistics"]},
+  {t:"React Server Components: Data Fetching Patterns & Caching",d:"web",i:"🌐",src:"GitHub · vercel/next.js",sc:4.3,tags:["react","rsc","next.js"]},
+  {t:"Linux Journalctl: Advanced Log Filtering & Analysis",d:"linux",i:"🐧",src:"StackOverflow · #systemd",sc:4.6,tags:["systemd","logging","sysadmin"]},
+  {t:"Transformer Attention Mechanisms: Implementation from Scratch",d:"ml",i:"🤖",src:"arXiv:2401.xxxxx",sc:4.7,tags:["transformers","attention","deep-learning"]},
+  {t:"Docker Multi-Stage Builds: Optimizing Image Size for Production",d:"devtools",i:"🐳",src:"GitHub · docker/docs",sc:4.4,tags:["docker","optimization","ci-cd"]},
+  {t:"Flow Cytometry Gating Strategies for Immune Cell Phenotyping",d:"research-elife",i:"🔬",src:"eLife · Immunology",sc:4.6,tags:["flow-cytometry","immunology","protocol"]},
+  {t:"PostgreSQL Query Optimization: EXPLAIN ANALYZE Deep Dive",d:"programming",i:"💾",src:"StackOverflow · #postgresql",sc:4.5,tags:["sql","performance","database"]},
+  {t:"Metagenomic 16S rRNA Sequencing Pipeline with QIIME2",d:"research-plos",i:"🧬",src:"PLOS Biology",sc:4.8,tags:["metagenomics","microbiome","pipeline"]},
+  {t:"Prometheus + Grafana: Custom Alert Rules & Dashboard Design",d:"observability",i:"📊",src:"GitHub · prometheus/prometheus",sc:4.2,tags:["monitoring","alerting","grafana"]},
+  {t:"LangChain RAG Pipeline: Chunking, Embedding & Retrieval Tuning",d:"llm",i:"🧠",src:"GitHub · langchain-ai/langchain",sc:4.4,tags:["rag","embeddings","langchain"]},
+];
+
+const sources=[
+  {i:"📄",n:"PLOS Journals",c:"35,505",tp:"research",ex:["PLOS ONE — general science","PLOS Biology — life sciences","PLOS CompBio — computational biology","PLOS Medicine — clinical research"]},
+  {i:"📐",n:"arXiv",c:"3,483",tp:"research",ex:["Pre-print papers across physics, CS, math","ML & AI research methodologies","Quantitative biology papers"]},
+  {i:"🔬",n:"eLife",c:"391",tp:"research",ex:["Peer-reviewed life science research","Neuroscience & immunology protocols","Cell biology experimental methods"]},
+  {i:"🌿",n:"Nature (Open)",c:"Part of 23K+",tp:"research",ex:["Open-access Nature publications","Cross-disciplinary research methods","High-impact experimental protocols"]},
+  {i:"🏥",n:"PMC",c:"Part of 23K+",tp:"research",ex:["PubMed Central full-text papers","Biomedical & clinical research","Public health methodologies"]},
+  {i:"🐙",n:"GitHub",c:"Part of 23K+",tp:"tech",ex:["High-star repo documentation","README & wiki extraction","Code patterns & architecture guides"]},
+  {i:"💬",n:"StackOverflow",c:"Part of 23K+",tp:"tech",ex:["Top-voted answers by domain","Troubleshooting & debugging patterns","Configuration best practices"]},
+  {i:"🔍",n:"Tavily",c:"Web search",tp:"tech",ex:["Real-time web source discovery","Technical blog extraction","Documentation crawling"]},
+  {i:"🌏",n:"Baidu / Zhihu / XHS",c:"Coming soon",tp:"tech",ex:["Chinese technical content","Zhihu expert answers","Xiaohongshu tech posts"]},
+];
+
+const feats=[
+  {i:"🔬",t:"Evidence-First, Never Hallucination-Only",d:"Every skill traces back to real papers, code repos, or web pages with full provenance — metadata, quality scores (0–5), and source links included.",a:"rgba(251,191,36,0.3)"},
+  {i:"🔧",t:"Fully Automated Pipeline",d:"Topic → discover sources → fetch & extract → LLM generates → validates quality → publishes. One command to create new skills from any domain.",a:"rgba(96,165,250,0.3)"},
+  {i:"⚡",t:"Offline, Instant, Zero Marginal Cost",d:"FTS5-powered SQLite search runs locally in milliseconds. No network, no extra tokens. Generate once, query unlimited times.",a:"rgba(45,212,191,0.3)"},
+  {i:"🏗️",t:"Extensible & Built to Scale",d:"Modular source providers, LLM backends (OpenAI / Ollama), queue-based batch processing. 21 domain bundles today, built to reach 1M+ skills.",a:"rgba(244,114,182,0.3)"},
+];
+
+const tools=[{n:"Cursor",e:"⌨️"},{n:"Claude Code",e:"🧠"},{n:"Codex",e:"📦"},{n:"Windsurf",e:"🏄"},{n:"OpenClaw",e:"🦞"},{n:"RAG",e:"🔗"},{n:"LangChain",e:"⛓️"},{n:"Custom Agents",e:"🤖"}];
+
+const road=[
+  {s:"🚀",l:"Scaling to 1M+ skills",d:"Expanding every domain with deeper, more granular knowledge units across all 21 bundles"},
+  {s:"🌏",l:"Full Chinese source coverage",d:"Zhihu & XHS (Xiaohongshu) providers are live but limited — expanding to full coverage in next release"},
+  {s:"🔍",l:"Improved quality scoring & dedup",d:"Better citation verification, relevance ranking, and cross-domain deduplication"},
+  {s:"🧩",l:"Community skill contributions",d:"Submit your own skills via PR, vote on quality, and build domain-specific packs for the community"},
+];
+
+const aiPrompt=`Do the following steps in order. Do NOT skip any step.
+
+1. Clone the repo and enter the directory:
+   git clone https://github.com/LabRAI/LangSkills.git && cd LangSkills
+
+2. Create a Python 3.10+ virtual environment and activate it:
+   python3 -m venv .venv && source .venv/bin/activate
+
+3. Upgrade pip and install all dependencies:
+   pip install -U pip && pip install -r requirements.txt
+
+4. Copy the environment template:
+   cp .env.example .env
+
+5. Ask me for my OPENAI_API_KEY and OPENAI_BASE_URL,
+   then write them into .env.
+
+6. Run the self-check to verify everything is working:
+   python3 langskills_cli.py self-check --skip-remote
+
+7. Auto-detect my project and install matching skill bundles:
+   python3 langskills_cli.py bundle-install --auto
+
+8. Run a quick smoke test:
+   python3 langskills_cli.py skill-search "machine learning" --top 3
+
+Done. Report the results of steps 6, 7 and 8.`;
+
+const tabs={
+  quick:{lines:[{c:"# Clone, install, go. 🧪"},{cmd:"git clone https://github.com/LabRAI/LangSkills.git && cd LangSkills"},{cmd:"pip install -r requirements.txt && cp .env.example .env"},{c:"# → Fill OPENAI_API_KEY + OPENAI_BASE_URL in .env, then:"},{cmd:"python3 langskills_cli.py bundle-install --auto"}],hint:"Works on macOS, Linux & Windows. Python 3.10+ required. Bundles auto-download from GitHub Releases.",copy:"git clone https://github.com/LabRAI/LangSkills.git && cd LangSkills\npip install -r requirements.txt && cp .env.example .env\npython3 langskills_cli.py bundle-install --auto"},
+  ai:{lines:null,hint:"Paste into Claude Code / Cursor / Codex / Windsurf — the agent handles everything automatically.",copy:aiPrompt},
+  search:{lines:[{c:"# Search 101K skills offline"},{cmd:'python3 langskills_cli.py skill-search "CRISPR" --domain research --top 5'},{cmd:'python3 langskills_cli.py skill-search "React hooks" --content --format markdown'},{c:"# Generate new skills from any topic"},{cmd:'python3 langskills_cli.py capture "Docker networking@15"'}],hint:"Results are structured Markdown — feed directly to any AI agent, RAG pipeline, or knowledge base.",copy:'python3 langskills_cli.py skill-search "CRISPR" --domain research --top 5'}
+};
+
+/* ═══ RENDER ═══ */
+function stars(sc){return [1,2,3,4,5].map(s=>`<svg width="12" height="12" viewBox="0 0 12 12" fill="${s<=Math.round(sc)?'#fbbf24':'rgba(148,163,184,0.15)'}"><path d="M6 0.5L7.4 4.3H11.5L8.1 6.7L9.4 10.5L6 8.1L2.6 10.5L3.9 6.7L0.5 4.3H4.6L6 0.5Z"/></svg>`).join('')+`<span style="font-size:12px;margin-left:4px;color:#fbbf24">${sc.toFixed(1)}</span>`}
+
+function skillCard(s){return`<div class="card-skill"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"><span style="font-size:12px;padding:4px 8px;border-radius:6px;background:rgba(139,92,246,0.1);color:#a78bfa;border:1px solid rgba(139,92,246,0.15)">${s.i} ${s.d}</span><div style="display:flex;align-items:center;gap:2px">${stars(s.sc)}</div></div><h4 style="color:#f1f5f9;font-size:14px;font-weight:600;margin-bottom:8px;line-height:1.4">${s.t}</h4><div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">${s.tags.map(t=>`<span style="font-size:12px;padding:2px 6px;border-radius:4px;background:rgba(139,92,246,0.06);color:#94a3b8">${t}</span>`).join('')}</div><div style="font-size:12px;color:#64748b">${s.src}</div></div>`}
+
+function srcCard(s){const r=s.tp==='research';return`<div class="card-source"><div style="display:flex;align-items:center;gap:12px;margin-bottom:12px"><span style="font-size:1.5rem">${s.i}</span><div><div style="color:#f1f5f9;font-size:14px;font-weight:600">${s.n}</div><div style="font-size:12px;color:#fbbf24">${s.c} skills</div></div><span style="margin-left:auto;font-size:12px;padding:2px 8px;border-radius:6px;background:${r?'rgba(248,113,113,0.1)':'rgba(96,165,250,0.1)'};color:${r?'#f87171':'#60a5fa'};border:1px solid ${r?'rgba(248,113,113,0.15)':'rgba(96,165,250,0.15)'}">${r?'📄 Research':'💻 Tech'}</span></div><div style="display:flex;flex-direction:column;gap:6px">${s.ex.map(e=>`<div style="font-size:12px;display:flex;gap:6px;color:#8494a7"><span style="color:#64748b">›</span><span>${e}</span></div>`).join('')}</div></div>`}
+
+function initMarquee(id,html,spd){const el=document.getElementById(id);el.innerHTML=html+html;requestAnimationFrame(()=>{el.style.setProperty('--duration',(el.scrollWidth/2/spd)+'s')})}
+
+/* Terminal */
+let curTab='quick';
+function setTab(tab){
+  curTab=tab;
+  document.querySelectorAll('.term-tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===tab));
+  const d=tabs[tab],body=document.getElementById('termBody');
+  if(d.lines){body.style.maxHeight='';body.style.overflowY='';body.innerHTML=d.lines.map(l=>{let h='';if(l.c)h+=`<div style="color:rgba(148,163,184,0.45)">${l.c}</div>`;if(l.cmd)h+=`<div><span style="color:rgba(139,92,246,0.5)">$ </span><span style="color:#c4b5fd">${l.cmd}</span></div><div style="height:8px"></div>`;return h}).join('')}
+  else{body.style.maxHeight='340px';body.style.overflowY='auto';body.innerHTML=`<pre style="white-space:pre-wrap;color:#c4b5fd;font-size:12px;line-height:1.7;margin:0">${d.copy}</pre>`}
+  document.getElementById('termHint').textContent=d.hint;
+}
+function doCopy(){
+  navigator.clipboard.writeText(tabs[curTab].copy);
+  const b=document.getElementById('copyBtn');b.classList.add('copied');
+  b.innerHTML='<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 6l3 3 5-5"/></svg><span>Copied</span>';
+  setTimeout(()=>{b.classList.remove('copied');b.innerHTML='<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="4" width="7" height="7" rx="1.5"/><path d="M8 4V2.5A1.5 1.5 0 006.5 1H2.5A1.5 1.5 0 001 2.5v4A1.5 1.5 0 002.5 8H4"/></svg><span>Copy</span>'},2000)
+}
+
+/* ═══ INIT ═══ */
+// Tab bar
+document.getElementById('tabBar').innerHTML=[['quick','Quick Start'],['ai','AI Setup'],['search','Search']].map(([k,l])=>`<button class="term-tab${k==='quick'?' active':''}" data-tab="${k}" onclick="setTab('${k}')">${l}</button>`).join('');
+
+// Marquees
+initMarquee('mq-skills',skills.map(skillCard).join(''),22);
+initMarquee('mq-sources',sources.map(srcCard).join(''),18);
+
+// Terminal
+setTab('quick');
+
+// Features
+document.getElementById('featGrid').innerHTML=feats.map(f=>`<a href="javascript:void(0)" class="card-feature" onmouseover="this.style.border='1px solid ${f.a}';this.style.boxShadow='0 8px 32px -8px ${f.a}'" onmouseout="this.style.border='1px solid rgba(139,92,246,0.08)';this.style.boxShadow='none'"><div style="font-size:1.875rem;margin-bottom:16px">${f.i}</div><h3 style="color:#f1f5f9;font-weight:600;font-size:1.125rem;margin-bottom:8px">${f.t}</h3><p style="color:#8494a7;font-size:14px;line-height:1.6">${f.d}</p></a>`).join('');
+
+// Tools
+document.getElementById('toolsRow').innerHTML=tools.map(t=>`<div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#8494a7"><span>${t.e}</span><span>${t.n}</span></div>`).join('');
+
+// Roadmap
+document.getElementById('roadmap').innerHTML=road.map(r=>`<div class="card-roadmap"><span style="font-size:1.25rem;margin-top:2px">${r.s}</span><div><div style="color:#e2e8f0;font-size:14px;font-weight:600">${r.l}</div><div style="color:#8494a7;font-size:12px;margin-top:2px">${r.d}</div></div></div>`).join('');
+</script>
+</body>
+</html>
