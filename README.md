@@ -8,6 +8,7 @@
   <a href="https://www.python.org/downloads/"><img alt="Python 3.10+" src="https://img.shields.io/badge/python-3.10+-3776AB?style=flat-square&logo=python&logoColor=white" /></a>
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-green?style=flat-square" /></a>
   <a href="https://github.com/LabRAI/LangSkills"><img alt="GitHub stars" src="https://img.shields.io/github/stars/LabRAI/LangSkills?style=flat-square&logo=github" /></a>
+  <a href="https://huggingface.co/datasets/Tommysha/langskills-bundles"><img alt="HF Bundles" src="https://img.shields.io/badge/🤗_HF-Bundles-FFD21E?style=flat-square" /></a>
   <img alt="Skills: 101k+" src="https://img.shields.io/badge/skills-101%2C330-8A2BE2?style=flat-square" />
   <img alt="Bundles: 21" src="https://img.shields.io/badge/bundles-21-orange?style=flat-square" />
   <img alt="Papers: 62k+" src="https://img.shields.io/badge/papers-62%2C582-red?style=flat-square" />
@@ -27,6 +28,7 @@
 
 ## 📰 News
 
+- **2026-03-04** — v0.1.0 published to [PyPI](https://pypi.org/project/langskills-rai/); skill bundles hosted on [Hugging Face](https://huggingface.co/datasets/Tommysha/langskills-bundles) with China mirror support
 - **2026-02-28** — v0.1.0: 101,330 skills across 21 domain bundles officially released
 - **2026-02-27** — Pre-built SQLite bundles with FTS5 full-text search ready for download
 - **2026-02-27** — Journal pipeline online: PMC, PLOS, Nature, eLife, arXiv full coverage
@@ -69,6 +71,8 @@ cp .env.example .env   # fill OPENAI_API_KEY + OPENAI_BASE_URL
 langskills-rai capture "Docker networking@15"
 ```
 
+> **China users**: `export HF_ENDPOINT=https://hf-mirror.com` before `bundle-install` for faster downloads.
+
 > Full setup details → [Installation](#-installation)
 
 ---
@@ -97,7 +101,7 @@ langskills-rai capture "Docker networking@15"
 <br/>
 
 ```bash
-# Install a domain bundle (downloads from GitHub Releases)
+# Install a domain bundle (downloads from Hugging Face)
 langskills-rai bundle-install --domain linux
 
 # Or auto-detect your project type and install matching bundles
@@ -267,6 +271,7 @@ langskills-rai self-check --skip-remote
 | `LLM_PROVIDER` | No | `openai` (default) or `ollama` |
 | `GITHUB_TOKEN` | No | Recommended for GitHub search (avoids rate limits) |
 | `TAVILY_API_KEY` | No | Required for Tavily web search |
+| `HF_ENDPOINT` | No | Hugging Face endpoint for bundle downloads (default: `https://huggingface.co`; use `https://hf-mirror.com` in China) |
 | `LANGSKILLS_WORKDIR` | No | Runtime data directory (default: `var/`) |
 
 > More variables → [Configuration](#%EF%B8%8F-configuration)
@@ -421,7 +426,7 @@ Each result includes: **title**, **domain**, **quality score** (0-5), **source U
 
 | Command | What It Does |
 |:---|:---|
-| `bundle-install --domain <d>` | Download a pre-built SQLite bundle from GitHub Releases |
+| `bundle-install --domain <d>` | Download a pre-built SQLite bundle from [Hugging Face](https://huggingface.co/datasets/Tommysha/langskills-bundles) |
 | `bundle-install --auto` | Auto-detect project type and install matching bundles |
 | `build-bundle --split-by-domain` | Build self-contained SQLite bundles from skills/ |
 | `build-site` | Generate `dist/index.json` + `dist/index.html` |
