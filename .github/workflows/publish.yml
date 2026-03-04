@@ -24,7 +24,9 @@ jobs:
         run: pip install --upgrade build setuptools-scm
 
       - name: Build sdist and wheel
-        run: python -m build
+        run: python -m build --outdir pypi-dist/
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: pypi-dist/
