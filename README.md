@@ -28,6 +28,7 @@
 
 ## 📰 News
 
+- **2026-03-05** — 100 GitHub Stars! Thank you to everyone who has supported LangSkills — your encouragement keeps us going!
 - **2026-03-04** — v0.1.0 published to [PyPI](https://pypi.org/project/langskills-rai/); skill bundles hosted on [Hugging Face](https://huggingface.co/datasets/Tommysha/langskills-bundles) with China mirror support
 - **2026-02-28** — v0.1.0: 101,330 skills across 21 domain bundles officially released
 - **2026-02-27** — Pre-built SQLite bundles with FTS5 full-text search ready for download
