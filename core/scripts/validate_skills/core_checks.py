@@ -22,18 +22,6 @@ from .helpers import (
     _verification_has_non_placeholder_command,
     plagiarism_check,
 )
-
-
-def _is_git_lfs_pointer_file(path: Path) -> bool:
-    if not path.exists():
-        return False
-    try:
-        head = path.read_bytes()[:64]
-        return head.startswith(b"version https://git-lfs.github.com/spec/")
-    except Exception:
-        return False
-
-
 def validate_skill_dir(
     *,
     d: Path,
@@ -43,7 +31,6 @@ def validate_skill_dir(
     strict: bool,
     check_package: bool,
     require_package_v2: bool = False,
-    fail_on_lfs_pointer: bool = False,
     require_evidence: bool = True,
     require_skill_kind: bool = False,
     require_verification: bool = True,
@@ -56,15 +43,10 @@ def validate_skill_dir(
     errors: list[str],
     warnings: list[str],
 ) -> bool:
-    """Validate a single skill directory. Returns False if the dir was skipped (LFS pointer)."""
+    """Validate a single skill directory."""
     skill_path = d / "skill.md"
     meta_path = d / "metadata.yaml"
     src_path = d / "source.json"
-
-    if _is_git_lfs_pointer_file(skill_path) or _is_git_lfs_pointer_file(meta_path):
-        msg = f"{rel}: git-lfs pointer file detected; run `git lfs pull` for full validation"
-        (errors if fail_on_lfs_pointer else warnings).append(msg)
-        return False
 
     # Read skill markdown
     md = read_text(skill_path)

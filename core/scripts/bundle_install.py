@@ -1,4 +1,4 @@
-"""Download and install LangSkills bundles from Hugging Face (primary) or GitHub Releases (fallback)."""
+"""Download and install LangSkills bundles from Hugging Face."""
 
 from __future__ import annotations
 
@@ -10,7 +10,6 @@ import sys
 import urllib.request
 from pathlib import Path
 
-_GITHUB_REPO = "LabRAI/LangSkills"
 _HF_REPO = "Tommysha/langskills-bundles"
 _HF_ENDPOINTS = [
     "https://huggingface.co",
@@ -18,18 +17,7 @@ _HF_ENDPOINTS = [
 ]
 _INSTALL_DIR = Path.home() / ".langskills"
 _CONFIG_PATH = _INSTALL_DIR / "search_config.json"
-
-
-def _hf_base_url() -> str:
-    """Return the HF endpoint base URL for downloads.
-
-    Respects ``HF_ENDPOINT`` env var, otherwise tries the official endpoint
-    first and falls back to the mirror.
-    """
-    custom = os.environ.get("HF_ENDPOINT", "").strip().rstrip("/")
-    if custom:
-        return f"{custom}/datasets/{_HF_REPO}/resolve/main"
-    return f"{_HF_ENDPOINTS[0]}/datasets/{_HF_REPO}/resolve/main"
+_SUPPORTED_HF_BUNDLE_TYPES = {"lite"}
 
 
 # ── Hugging Face helpers ─────────────────────────────────────────
@@ -52,8 +40,8 @@ def _hf_list_files(hf_repo: str) -> list[str]:
             with urllib.request.urlopen(req, timeout=15) as resp:
                 info = json.loads(resp.read().decode())
             siblings = info.get("siblings", [])
-            # Remember which endpoint worked for download URLs
-            os.environ.setdefault("_HF_ACTIVE_ENDPOINT", ep)
+            # Remember which endpoint worked for download URLs.
+            os.environ["_HF_ACTIVE_ENDPOINT"] = ep
             return [s["rfilename"] for s in siblings]
         except Exception:
             continue
@@ -92,66 +80,6 @@ def _hf_pick_asset(
     return sqlite_url, sha_url
 
 
-# ── GitHub Release helpers ───────────────────────────────────────
-
-def _find_latest_release(repo: str) -> dict:
-    """Fetch the latest GitHub release metadata via the public API."""
-    url = f"https://api.github.com/repos/{repo}/releases/latest"
-    req = urllib.request.Request(url, headers={"Accept": "application/vnd.github+json"})
-    token = os.environ.get("GITHUB_TOKEN", "").strip()
-    if token:
-        req.add_header("Authorization", f"Bearer {token}")
-    with urllib.request.urlopen(req, timeout=30) as resp:
-        return json.loads(resp.read().decode())
-
-
-def _find_release_by_tag(repo: str, tag: str) -> dict:
-    """Fetch a specific release by tag name."""
-    url = f"https://api.github.com/repos/{repo}/releases/tags/{tag}"
-    req = urllib.request.Request(url, headers={"Accept": "application/vnd.github+json"})
-    token = os.environ.get("GITHUB_TOKEN", "").strip()
-    if token:
-        req.add_header("Authorization", f"Bearer {token}")
-    with urllib.request.urlopen(req, timeout=30) as resp:
-        return json.loads(resp.read().decode())
-
-
-def _pick_asset(
-    release: dict, bundle_type: str, domain: str = "",
-) -> tuple[str, str] | None:
-    """Find the .sqlite asset and its .sha256 sidecar in a release.
-
-    When *domain* is given, match ``langskills-bundle-{bundle_type}-{domain}-``
-    instead of the generic pattern.
-
-    Returns (sqlite_url, sha256_url) or None.
-    """
-    assets = release.get("assets", [])
-    if domain:
-        pattern = f"langskills-bundle-{bundle_type}-{domain}-"
-    else:
-        pattern = f"langskills-bundle-{bundle_type}-"
-    sqlite_asset = None
-    sha_asset = None
-
-    for a in assets:
-        name = a.get("name", "")
-        dl = a.get("browser_download_url", "")
-        if not name.startswith(pattern.split("-v")[0]):
-            # For domain bundles we need stricter matching to avoid
-            # "linux" matching "linux-v..." but not "llm-v..."
-            if pattern not in name:
-                continue
-        if pattern in name and name.endswith(".sqlite"):
-            sqlite_asset = (name, dl)
-        elif pattern in name and name.endswith(".sqlite.sha256"):
-            sha_asset = (name, dl)
-
-    if sqlite_asset is None:
-        return None
-    return sqlite_asset[1], sha_asset[1] if sha_asset else ""
-
-
 # ── download / verify ────────────────────────────────────────────
 
 def _download_with_progress(url: str, dest: Path) -> None:
@@ -159,11 +87,8 @@ def _download_with_progress(url: str, dest: Path) -> None:
     dest.parent.mkdir(parents=True, exist_ok=True)
     req = urllib.request.Request(url, headers={"User-Agent": "langskills-rai"})
     hf_token = os.environ.get("HF_TOKEN", "").strip()
-    gh_token = os.environ.get("GITHUB_TOKEN", "").strip()
     if hf_token and ("huggingface.co" in url or "hf-mirror.com" in url):
         req.add_header("Authorization", f"Bearer {hf_token}")
-    elif gh_token and "github" in url:
-        req.add_header("Authorization", f"Bearer {gh_token}")
 
     with urllib.request.urlopen(req, timeout=300) as resp:
         total = int(resp.headers.get("Content-Length", 0))
@@ -195,7 +120,7 @@ def _verify_sha256(bundle_path: Path, checksum_url: str) -> bool:
         return True
 
     req = urllib.request.Request(checksum_url, headers={"User-Agent": "langskills-rai"})
-    token = os.environ.get("HF_TOKEN", "").strip() or os.environ.get("GITHUB_TOKEN", "").strip()
+    token = os.environ.get("HF_TOKEN", "").strip()
     if token:
         req.add_header("Authorization", f"Bearer {token}")
     with urllib.request.urlopen(req, timeout=30) as resp:
@@ -249,60 +174,53 @@ def _write_config(bundle_path: Path, domain: str = "") -> None:
 # ── public API ───────────────────────────────────────────────────
 
 def install_bundle(
-    release: str = "latest",
     bundle_type: str = "lite",
-    repo: str = _GITHUB_REPO,
     check_only: bool = False,
     domain: str = "",
-    source: str = "auto",
 ) -> int:
-    """Download and install a bundle from Hugging Face or GitHub Releases.
+    """Download and install a domain bundle from Hugging Face.
 
     Parameters
     ----------
     domain : str
         If given, download the domain-specific bundle (e.g. ``"linux"``).
-    source : str
-        ``"hf"`` for Hugging Face, ``"github"`` for GitHub Releases,
-        ``"auto"`` tries HF first then falls back to GitHub.
 
     Returns 0 on success, 1 on failure.
     """
-    asset_info = None
-
-    # ── Try Hugging Face first ──
-    if source in ("auto", "hf"):
-        print(f"Fetching file list from Hugging Face ({_HF_REPO}) ...", file=sys.stderr)
-        try:
-            hf_files = _hf_list_files(_HF_REPO)
-            asset_info = _hf_pick_asset(hf_files, bundle_type, domain=domain)
-            if asset_info:
-                print("Source: Hugging Face", file=sys.stderr)
-        except Exception as exc:
-            print(f"Hugging Face unavailable: {exc}", file=sys.stderr)
-            if source == "hf":
-                return 1
-
-    # ── Fallback to GitHub Releases ──
-    if asset_info is None and source in ("auto", "github"):
-        print(f"Fetching release info from GitHub ({repo}) ...", file=sys.stderr)
-        try:
-            if release == "latest":
-                rel = _find_latest_release(repo)
-            else:
-                rel = _find_release_by_tag(repo, release)
-            tag = rel.get("tag_name", "unknown")
-            print(f"Release: {tag}", file=sys.stderr)
-            asset_info = _pick_asset(rel, bundle_type, domain=domain)
-            if asset_info:
-                print("Source: GitHub Releases", file=sys.stderr)
-        except Exception as exc:
-            print(f"GitHub unavailable: {exc}", file=sys.stderr)
-
-    if asset_info is None:
-        label = f"{bundle_type}-{domain}" if domain else bundle_type
-        print(f"Error: no {label} bundle found", file=sys.stderr)
+    if bundle_type not in _SUPPORTED_HF_BUNDLE_TYPES:
+        supported = ", ".join(sorted(_SUPPORTED_HF_BUNDLE_TYPES))
+        print(
+            f"Error: Hugging Face only publishes {supported} domain bundles. "
+            f"Requested bundle type '{bundle_type}' is local-build only.",
+            file=sys.stderr,
+        )
         return 1
+
+    if not domain:
+        print(
+            "Error: Hugging Face bundles are published per domain. "
+            "Use --domain <name> or --auto.",
+            file=sys.stderr,
+        )
+        return 1
+
+    print(f"Fetching file list from Hugging Face ({_HF_REPO}) ...", file=sys.stderr)
+    try:
+        hf_files = _hf_list_files(_HF_REPO)
+    except Exception as exc:
+        print(f"Hugging Face unavailable: {exc}", file=sys.stderr)
+        return 1
+
+    asset_info = _hf_pick_asset(hf_files, bundle_type, domain=domain)
+    if asset_info is None:
+        label = f"{bundle_type}-{domain}"
+        print(
+            f"Error: no {label} bundle found in Hugging Face dataset {_HF_REPO}",
+            file=sys.stderr,
+        )
+        return 1
+
+    print("Source: Hugging Face", file=sys.stderr)
 
     sqlite_url, sha_url = asset_info
 
@@ -334,18 +252,24 @@ def install_bundle(
 
 
 def install_auto(
-    release: str = "latest",
     bundle_type: str = "lite",
-    repo: str = _GITHUB_REPO,
     check_only: bool = False,
     project_dir: str = "",
-    source: str = "auto",
 ) -> int:
     """Auto-detect project type and install matching domain bundles.
 
     Returns 0 on success, 1 if any domain fails.
     """
     from ..detect_project import detect_domains
+
+    if bundle_type not in _SUPPORTED_HF_BUNDLE_TYPES:
+        supported = ", ".join(sorted(_SUPPORTED_HF_BUNDLE_TYPES))
+        print(
+            f"Error: Hugging Face only publishes {supported} domain bundles. "
+            f"Requested bundle type '{bundle_type}' is local-build only.",
+            file=sys.stderr,
+        )
+        return 1
 
     target = Path(project_dir) if project_dir else Path.cwd()
     domains = detect_domains(target)
@@ -359,12 +283,9 @@ def install_auto(
     for d in domains:
         print(f"\n--- Installing domain: {d} ---", file=sys.stderr)
         ret = install_bundle(
-            release=release,
             bundle_type=bundle_type,
-            repo=repo,
             check_only=check_only,
             domain=d,
-            source=source,
         )
         if ret != 0:
             print(f"Warning: failed to install domain '{d}'", file=sys.stderr)
@@ -381,23 +302,13 @@ def cli_bundle_install(argv: list[str] | None = None) -> int:
     """CLI entry point for ``langskills bundle-install``."""
     parser = argparse.ArgumentParser(
         prog="langskills-rai bundle-install",
-        description="Download and install a LangSkills skill bundle from Hugging Face or GitHub Releases",
-    )
-    parser.add_argument(
-        "--release",
-        default="latest",
-        help="GitHub release tag or 'latest' (default: latest)",
+        description="Download and install LangSkills domain bundles from Hugging Face",
     )
     parser.add_argument(
         "--bundle",
         choices=["lite", "full"],
         default="lite",
-        help="Bundle type (default: lite)",
-    )
-    parser.add_argument(
-        "--repo",
-        default=_GITHUB_REPO,
-        help=f"GitHub repo (default: {_GITHUB_REPO})",
+        help="Bundle type (lite is available from Hugging Face; full is local-build only)",
     )
     parser.add_argument(
         "--check",
@@ -412,39 +323,33 @@ def cli_bundle_install(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--auto",
         action="store_true",
-        help="Auto-detect project type and install matching bundles",
+        help="Auto-detect project type and install matching bundles (default when --domain is omitted)",
     )
     parser.add_argument(
         "--project-dir",
         default="",
         help="Project directory for --auto detection (default: cwd)",
     )
-    parser.add_argument(
-        "--source",
-        choices=["auto", "hf", "github"],
-        default="auto",
-        help="Download source: 'auto' tries HF first (default: auto)",
-    )
 
     args = parser.parse_args(argv)
 
+    if args.auto and args.domain:
+        parser.error("--auto cannot be combined with --domain")
+
+    if not args.auto and not args.domain:
+        args.auto = True
+
     if args.auto:
         return install_auto(
-            release=args.release,
             bundle_type=args.bundle,
-            repo=args.repo,
             check_only=args.check,
             project_dir=args.project_dir,
-            source=args.source,
         )
 
     return install_bundle(
-        release=args.release,
         bundle_type=args.bundle,
-        repo=args.repo,
         check_only=args.check,
         domain=args.domain,
-        source=args.source,
     )
 
 

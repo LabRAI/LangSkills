@@ -109,13 +109,24 @@ def main(argv: list[str] | None = None) -> int:
     p_bb.add_argument("--domain", default="", help="Comma-separated domain list (e.g. linux,web,research-arxiv)")
     p_bb.add_argument("--min-score", type=float, default=0.0, help="Exclude skills below this overall_score")
 
-    p_bi = sub.add_parser("bundle-install", help="Download a skill bundle from GitHub Releases")
-    p_bi.add_argument("--release", default="latest", help="Release tag or 'latest'")
-    p_bi.add_argument("--bundle", choices=["lite", "full"], default="lite", help="Bundle type (default: lite)")
-    p_bi.add_argument("--repo", default="", help="GitHub repo override")
+    p_bi = sub.add_parser(
+        "bundle-install",
+        help="Download skill bundles from Hugging Face",
+        description="Download and install LangSkills domain bundles from Hugging Face",
+    )
+    p_bi.add_argument(
+        "--bundle",
+        choices=["lite", "full"],
+        default="lite",
+        help="Bundle type (lite is available from Hugging Face; full is local-build only)",
+    )
     p_bi.add_argument("--check", action="store_true", help="Dry-run: show what would be downloaded")
     p_bi.add_argument("--domain", default="", help="Install domain-specific bundle (e.g. linux, web, research-arxiv)")
-    p_bi.add_argument("--auto", action="store_true", help="Auto-detect project type and install matching bundles")
+    p_bi.add_argument(
+        "--auto",
+        action="store_true",
+        help="Auto-detect project type and install matching bundles (default when --domain is omitted)",
+    )
     p_bi.add_argument("--project-dir", default="", help="Project directory for --auto detection (default: cwd)")
 
     sub.add_parser("bundle-rebuild", help="Rebuild skills/index.sqlite from skills/index.json")
@@ -1306,9 +1317,7 @@ def main(argv: list[str] | None = None) -> int:
     if ns.cmd == "bundle-install":
         from .scripts.bundle_install import cli_bundle_install
 
-        raw_args = ["--release", ns.release, "--bundle", ns.bundle]
-        if ns.repo:
-            raw_args += ["--repo", ns.repo]
+        raw_args = ["--bundle", ns.bundle]
         if ns.check:
             raw_args.append("--check")
         if getattr(ns, "domain", ""):

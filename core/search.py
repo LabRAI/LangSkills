@@ -386,7 +386,7 @@ def search_skills(
     if not idx_path.exists():
         raise FileNotFoundError(
             f"No bundle found and index database missing: {idx_path}\n"
-            "Install a bundle with: langskills bundle-install"
+            "Install bundles with: langskills-rai bundle-install --auto"
         )
 
     conn = sqlite3.connect(f"file:{idx_path}?mode=ro", uri=True)
@@ -499,7 +499,7 @@ def _list_distinct_values(column: str) -> list[str]:
     if not idx_path.exists():
         raise FileNotFoundError(
             f"No bundle found and index database missing: {idx_path}\n"
-            "Install a bundle with: langskills-rai bundle-install"
+            "Install bundles with: langskills-rai bundle-install --auto"
         )
 
     conn = sqlite3.connect(f"file:{idx_path}?mode=ro", uri=True)

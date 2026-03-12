@@ -74,6 +74,8 @@ langskills-rai capture "Docker networking@15"
 
 > **China users**: `export HF_ENDPOINT=https://hf-mirror.com` before `bundle-install` for faster downloads.
 
+> Pre-built bundles are distributed from [Hugging Face](https://huggingface.co/datasets/Tommysha/langskills-bundles). The repo itself only keeps the code and local build workflow.
+
 > Full setup details → [Installation](#-installation)
 
 ---
@@ -229,6 +231,9 @@ langskills-rai bundle-install --domain linux
 langskills-rai self-check --skip-remote
 ```
 
+`bundle-install` defaults to auto-detection when you omit both `--auto` and
+`--domain`.
+
 ### Option B: From source (for development / skill generation)
 
 <details>
@@ -244,6 +249,9 @@ cp .env.example .env                 # fill OPENAI_API_KEY + OPENAI_BASE_URL
 langskills-rai self-check --skip-remote
 ```
 
+> Pre-built bundles are downloaded separately from Hugging Face via
+> `bundle-install`.
+
 </details>
 
 <details>
@@ -257,6 +265,9 @@ pip install -e ".[dev]"
 copy .env.example .env               # fill OPENAI_API_KEY + OPENAI_BASE_URL
 langskills-rai self-check --skip-remote
 ```
+
+> Pre-built bundles are downloaded separately from Hugging Face via
+> `bundle-install`.
 
 </details>
 
@@ -346,7 +357,7 @@ Search 101,330 evidence-backed skills covering 62K+ research papers and 23K+ cod
 
 ```bash
 pip install langskills-rai
-# Install all bundles (~1 GB) or pick a domain:
+# Install matching bundles for the current project or pick a domain:
 langskills-rai bundle-install --auto
 ```
 
@@ -432,6 +443,8 @@ Each result includes: **title**, **domain**, **quality score** (0-5), **source U
 | `build-bundle --split-by-domain` | Build self-contained SQLite bundles from skills/ |
 | `build-site` | Generate `dist/index.json` + `dist/index.html` |
 | `reindex-skills` | Rebuild `skills/index.json` from the by-skill directory |
+
+`bundle-install` without flags behaves like `bundle-install --auto`.
 
 </details>
 
@@ -564,9 +577,12 @@ Master config: **`config/langskills.json`** — domains, URL rules, quality gate
 |:---|:---|
 | `skills/by-skill/` | Published skills by domain/topic |
 | `skills/by-source/` | Published skills by source |
-| `dist/` | Pre-built SQLite bundles + site |
+| `dist/` | Local build output for generated bundles + site (not committed for distribution) |
 | `captures/` | Per-run capture artifacts |
 | `config/` | Master config + schedules |
+
+Maintainers publish pre-built bundles to Hugging Face out-of-band; this
+repository only keeps the code and local build workflow.
 
 </details>
 

@@ -605,12 +605,16 @@ def generate_release_notes(repo_root: Path, version: str) -> str:
 ## Installation
 
 ```bash
-# Quick install (downloads lite bundle)
-python3 -m langskills.scripts.bundle_install
+# Install matching bundles for the current project
+langskills-rai bundle-install --auto
 
-# Or manual
-langskills bundle-install --release latest --bundle lite
+# Or install a specific domain bundle from Hugging Face
+langskills-rai bundle-install --domain linux
 ```
+
+Pre-built bundles are distributed via the Hugging Face dataset
+`Tommysha/langskills-bundles`. The repo-local `dist/` directory is for local
+build outputs and is not the public distribution channel.
 
 ## Checksums
 
