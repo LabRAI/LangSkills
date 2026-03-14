@@ -9,15 +9,15 @@
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-green?style=flat-square" /></a>
   <a href="https://github.com/LabRAI/LangSkills"><img alt="GitHub stars" src="https://img.shields.io/github/stars/LabRAI/LangSkills?style=flat-square&logo=github" /></a>
   <a href="https://huggingface.co/datasets/Tommysha/langskills-bundles"><img alt="HF Bundles" src="https://img.shields.io/badge/🤗_HF-Bundles-FFD21E?style=flat-square" /></a>
-  <img alt="Skills: 101k+" src="https://img.shields.io/badge/skills-101%2C330-8A2BE2?style=flat-square" />
+  <img alt="Skills: 119k+" src="https://img.shields.io/badge/skills-119%2C608-8A2BE2?style=flat-square" />
   <img alt="Bundles: 21" src="https://img.shields.io/badge/bundles-21-orange?style=flat-square" />
-  <img alt="Papers: 62k+" src="https://img.shields.io/badge/papers-62%2C582-red?style=flat-square" />
+  <img alt="Papers: 95k+" src="https://img.shields.io/badge/papers-95%2C093-red?style=flat-square" />
 </p>
 
 <p>🌐 <a href="https://labrai.github.io/LangSkills/"><b>LangSkills — Evidence-Backed Skills for AI Agents</b></a></p>
 
 
-<h3>📄 101K Skills from 62K+ Papers & 23K+ Tech Sources — Search, Generate, Reuse</h3>
+<h3>📄 119K Skills from 95K+ Papers & 24K+ Tech Sources — Search, Generate, Reuse</h3>
 
 
 [**Quick Start**](#-quick-start) · [**Skill Library**](#-the-skill-library) · [**Pipeline**](#-the-pipeline) · [**Installation**](#-installation) · [**OpenClaw**](#-openclaw-integration) · [**CLI Reference**](#%EF%B8%8F-cli-reference) · [**Configuration**](#%EF%B8%8F-configuration)
@@ -30,6 +30,7 @@
 
 - **2026-03-05** — 100 GitHub Stars! Thank you to everyone who has supported LangSkills — your encouragement keeps us going!
 - **2026-03-04** — v0.1.0 published to [PyPI](https://pypi.org/project/langskills-rai/); skill bundles hosted on [Hugging Face](https://huggingface.co/datasets/Tommysha/langskills-bundles) with China mirror support
+- **2026-03-15** — v0.1.1: 119,608 skills across 21 domain bundles — added 32K+ journal skills, cleaned ghost entries
 - **2026-02-28** — v0.1.0: 101,330 skills across 21 domain bundles officially released
 - **2026-02-27** — Pre-built SQLite bundles with FTS5 full-text search ready for download
 - **2026-02-27** — Journal pipeline online: PMC, PLOS, Nature, eLife, arXiv full coverage
@@ -38,7 +39,7 @@
 
 ## ✨ Key Features
 
-- **📚 Massive Pre-Built Skill Library**: 101,330 evidence-backed skills covering 62K+ research papers and 23K+ coding/tech sources — all searchable offline via FTS5-powered SQLite bundles.
+- **📚 Massive Pre-Built Skill Library**: 119,608 evidence-backed skills covering 95K+ research papers and 24K+ coding/tech sources — all searchable offline via FTS5-powered SQLite bundles.
 
 - **🔧 Fully Automated Skill Pipeline**: Give it a topic → it discovers sources → fetches & extracts text → generates skills with an LLM → validates quality → publishes. One command, zero manual work.
 
@@ -82,22 +83,22 @@ langskills-rai capture "Docker networking@15"
 
 ## 📄 The Skill Library
 
-**62,582 research skills** distilled from academic papers + **23,765 coding/tech skills** from GitHub, StackOverflow, and the web — all searchable offline.
+**95,093 research skills** distilled from academic papers + **24,515 coding/tech skills** from GitHub, StackOverflow, and the web — all searchable offline.
 
 | Domain | Skills | Sources |
 |:---|---:|:---|
-| 📄 research-plos-\* | 35,505 | PLOS ONE, Biology, CompBio, Medicine, Genetics, NTD, Pathogens |
+| 📄 research-plos-\* | 66,977 | PLOS ONE, Biology, CompBio, Medicine, Genetics, NTD, Pathogens |
 | 📄 research-arxiv | 3,483 | arXiv papers |
-| 📄 research-elife | 391 | eLife journal |
-| 📄 research-other | 23,203 | Other academic sources |
+| 📄 research-elife | 941 | eLife journal |
+| 📄 research-other | 23,692 | Other academic sources |
 | 💻 linux | 7,455 | Linux / sysadmin |
 | 💻 web | 6,029 | Web development |
 | 💻 programming | 4,071 | General programming |
 | 💻 devtools | 2,243 | Developer tools |
 | 💻 security | 1,182 | Security |
 | 💻 cloud / data / ml / llm / observability | 2,785 | Infra & ML |
-| 🗂️ other | 14,983 | Uncategorized |
-| | **101,330** | **21 SQLite bundles** |
+| 🗂️ other | 750 | Uncategorized |
+| | **119,608** | **21 SQLite bundles** |
 
 <details>
 <summary><b>🔍 How to Use the Library</b></summary>
@@ -321,7 +322,7 @@ Done. Report the results of steps 3 and 4.
 
 ## 🦞 OpenClaw Integration
 
-LangSkills is available as an [OpenClaw](https://github.com/nicobailon/openclaw) skill — giving any OpenClaw-powered agent access to 101K+ evidence-backed skills.
+LangSkills is available as an [OpenClaw](https://github.com/nicobailon/openclaw) skill — giving any OpenClaw-powered agent access to 119K+ evidence-backed skills.
 
 **Install from Claw Hub** (coming soon):
 
@@ -335,7 +336,7 @@ clawhub install langskills-search
 ---
 name: langskills-search
 version: 0.1.0
-description: Search 101K evidence-backed skills from 62K+ papers & 23K+ tech sources
+description: Search 119K evidence-backed skills from 95K+ papers & 24K+ tech sources
 author: LabRAI
 tags: [research, skills, knowledge-base, search, evidence]
 requires:
@@ -345,7 +346,7 @@ metadata: {"source": "https://github.com/LabRAI/LangSkills", "license": "MIT", "
 
 # LangSkills Search
 
-Search 101,330 evidence-backed skills covering 62K+ research papers and 23K+ coding/tech sources — all offline via FTS5 SQLite.
+Search 119,608 evidence-backed skills covering 62K+ research papers and 23K+ coding/tech sources — all offline via FTS5 SQLite.
 
 ## When to Use
 
@@ -609,7 +610,7 @@ Copyright (c) 2026 [Responsible AI (RAI) Lab](https://github.com/LabRAI) @ Flori
 
 - **Authors:** [Tianming Sha](https://shatianming5.github.io/) (Stony Brook University), [Dr. Yue Zhao](https://viterbi-web.usc.edu/~yzhao010/) (University of Southern California), [Dr. Lichao Sun](https://lichao-sun.github.io/) (Lehigh University), [Dr. Yushun Dong](https://yushundong.github.io/) (Florida State University)
 - **Design:** Modular pipeline architecture with multi-source intelligence, built for extensibility and offline-first search
-- **Skills:** 101,330 evidence-backed skills generated from 62K+ papers and 23K+ tech sources via LLM-powered quality gates
+- **Skills:** 119,608 evidence-backed skills generated from 62K+ papers and 23K+ tech sources via LLM-powered quality gates
 - **Sources:** Every skill traces to real web pages, academic papers, or code repositories (arXiv, PMC, PLOS, Nature, eLife, GitHub, etc.)
 
 ---
